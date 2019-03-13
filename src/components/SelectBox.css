@@ -1,0 +1,101 @@
+.selectWrapper {
+  position: relative;
+  display: inline-block;
+  width: 279px;
+  height: 40px;
+  z-index: 20;
+}
+
+.select {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  display: inline-block;
+  width: 279px;
+  height: 40px;
+  overflow: hidden;
+  line-height: 40px;
+  font-size: 14px;
+  border: 1px solid #eee;
+  background: #f6f6f9;
+  background-size: 12px 7px;
+  color: #a8a8a8;
+  position: relative;
+}
+
+
+.select.show{
+  background-color: #f6f6f9;
+}
+
+.inputBox {
+  font-size: 14px;
+  color: #a8a8a8;
+  width: calc(100% - 43px);
+  height: 37px;
+  border: 0;
+  padding: 0 20px;
+  background-color: transparent;
+}
+
+.inputBox.use{
+  color: #474747;
+}
+
+.select:after {
+  z-index: 1;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  content: "";
+  display: block;
+  width: 14px;
+  height: 14px;
+  background: url("/static/img/bg/pulldown-icon.png") no-repeat 0 0px;
+  background-size: 14px 14px;
+}
+
+.select.show:after {
+  background: url("/static/img/bg/pullup-icon.png") no-repeat 0 0px;
+  background-size: 14px 14px;
+}
+
+.optionWrapper {
+  position: absolute;
+  top:39px;
+  left:0;
+  z-index: 10;
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border:1px solid #eee;
+  max-height:240px;
+  overflow-y: scroll;
+  background-color: #fff;
+}
+
+.option {
+  display: block;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 100%;
+  border-bottom:1px solid #eee;
+  height: 40px;
+  font-size: 14px;
+  line-height: 40px;
+  padding: 0 5px 0 20px;
+  color: #474747;
+  white-space: nowrap;
+  overflow: hidden;
+  -ms-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+}
+.option:last-child {
+  border-bottom: none;
+}
+
+.option:hover {
+  background-color: #ffbf00;
+}
