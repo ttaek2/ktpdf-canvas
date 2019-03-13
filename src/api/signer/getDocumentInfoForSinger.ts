@@ -2,7 +2,8 @@ import ApiFetch from "../ApiFetch";
 import apiPath from "../enum/apiPath";
 
 export async function getDocumentInfoForSigner(documentNo: number, signerNo: string):Promise<object> {
-  const DOCUMENT_INFO_API_PATH = `${apiPath.CONTRACT.DOCUMENT}/doc${documentNo}/signer/${signerNo}`;
+  // const DOCUMENT_INFO_API_PATH = `${apiPath.CONTRACT.DOCUMENT}/doc${documentNo}/signer/${signerNo}`;
+  const DOCUMENT_INFO_API_PATH = `${apiPath.CONTRACT.DOCUMENT}/${documentNo}/signer/${signerNo}`;
   console.log(DOCUMENT_INFO_API_PATH);
   const config = {};
   // const config = { headers: {'Authorization': "Bearer " + cookies.get('token')}};

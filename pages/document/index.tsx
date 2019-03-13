@@ -9,13 +9,19 @@ import {getDocumentInfo} from "../../src/api/document/getDocumentInfo";
 import {ISigner} from "../../src/interface/ISigner";
 
 interface IDocumentProps {
-  documentNo: number;
+  documentNo: string;
   documentUrl: string;
   signerList: Array<ISigner>;
 }
 
 interface IDocumentInfoAPIResponse {
   doc: string;
+
+  docId: string;
+  docName: string;
+  fileName: string;
+  filePath: string;
+  userId: string; 
   signers: Array<ISigner>;
 }
 
@@ -67,7 +73,12 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
     getDocumentInfo(documentNo)
       .then((data: IDocumentInfoAPIResponse) => {
         this.setState({
-          documentUrl: data.doc,
+          // documentUrl: data.doc,
+          documentNo: data.docId, // 문서아이디  
+          docName: data.docName,
+          fileName: data.fileName,      
+          documentUrl: data.filePath, // 문서경로
+          userId: data.userId, 
           signerList: data.signers
         })
       });
@@ -76,6 +87,7 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
   render() {
     const {documentNo} = this.props;
     const {documentUrl, signerList} = this.state;
+    const {docName, fileName, userId} = this.state;
 
     const users = signerList ? signerList.map((user, index) => ({
       ...user,
@@ -91,6 +103,9 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
           documentUrl={documentUrl}
           signerList={users}
           documentNo={documentNo}
+          docName={docName}
+          fileName={fileName}
+          userId={userId}
         />
       </div>
     );
