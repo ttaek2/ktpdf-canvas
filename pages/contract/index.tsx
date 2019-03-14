@@ -43,7 +43,7 @@ class Contract extends React.Component<any, React.ComponentState> {
   render() {
     const { documentNo } = this.props;
     const { signer, inputs, documentUrl } = this.state;
-
+console.log("inputs.length : " + inputs.length);
     if(inputs.length < 1) return null;
 
     return(

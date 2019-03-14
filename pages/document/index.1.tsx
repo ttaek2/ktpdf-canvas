@@ -13,10 +13,20 @@ interface IDocumentProps {
   documentNo: string;
   documentUrl: string;
   signerList: Array<ISigner>;
-  
-  tmpDocId: string;
-  tmpUserId: string;
+  tmpDocId: string; // 템플릿문서아이디
   inputs:[];
+  signerNo: string; //사용자 아이디
+}
+
+interface IInput {
+  inputType: string;
+  font: string;
+  charSize: string;
+  signerNo: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
 }
 
 interface IDocumentInfoAPIResponse {
@@ -27,7 +37,9 @@ interface IDocumentInfoAPIResponse {
   fileName: string;
   filePath: string;
   userId: string; 
-  signers: Array<ISigner>;  
+  signers: Array<ISigner>;
+  tmpDocId: string;
+  inputs: Array<IInput>;
 }
 
 const backgroundColorList = [
@@ -58,9 +70,13 @@ const defaultBackgroundColor = '#fff';
 class Document extends React.Component<IDocumentProps, React.ComponentState> {
 
   static async getInitialProps({query}) {
+    console.log("================== getInitialProps ================================ ");
+
+    // 파라메터로 임시아이디, 생성자아이디 받는다.
     let documentNo = query.docNo;
-    let {tmpDocId, tmpUserId } = query;
-    return {documentNo, tmpDocId, tmpUserId};
+    let {tmpDocId, signerNo } = query;
+
+    return {documentNo, tmpDocId, signerNo};
   }
 
   constructor(props) {
@@ -70,60 +86,47 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
       documentNo: 0,
       signerList: [],
       documentUrl: '',
-      inputs: []
+      inputs:[]
     }
   }
 
   componentDidMount() {
     console.log("componentDidMount");
     const documentNo = this.props.documentNo;
+    const tmpDocId = this.props.tmpDocId;
+    const signerNo = this.props.signerNo;
     
-    const {tmpDocId, tmpUserId} = this.props;
-    // console.log("tmpDocId 1 : " + tmpDocId);
-    // console.log("tmpUserId 2 : " + tmpUserId);
-
-    // 템플릿 아이디가 있다면 기존 객체를 조회해본다.
-    if(tmpDocId != undefined){
-      console.log(" api 서버에서 조회를 시작한다.");
-      getDocumentInfoForSigner(tmpDocId, tmpUserId)
-      .then((data: any) => {
-        this.setState({
-          // signer: data.signer,
-          // documentUrl: data.filePath,
-          inputs: data.inputs
-        });
-      });
-    }else{
-      console.log("tmpDocId 1 is undefined ");
-    }
-
     getDocumentInfo(documentNo)
       .then((data: IDocumentInfoAPIResponse) => {
         this.setState({
           // documentUrl: data.doc,
-          documentNo: data.docId, // 문서아이디  
+          // documentNo: data.docId, // 문서아이디  
           docName: data.docName,
           fileName: data.fileName,      
-          documentUrl: data.filePath, // 문서경로
+          documentUrl: data.filePath, // 문서경로 url 형식
           userId: data.userId, 
           signerList: data.signers
         })
-      });      
+      });
+
+      if(tmpDocId != undefined){
+        getDocumentInfoForSigner(tmpDocId, signerNo)
+        .then((data: any) => {
+          this.setState({
+            // signer: data.signer,
+            // documentUrl: data.filePath,
+            inputs: data.inputs
+          });
+        });
+      }    
   }
 
   render() {
-    // const {documentNo} = this.props;
+    
     const {documentNo} = this.props;
-    const {documentUrl, signerList} = this.state;
-    const {docName, fileName, userId} = this.state;
-
-    // const {tmpDocId, tmpUserId} = this.props;
-    // console.log("tmpDocId : " + tmpDocId);
-    // console.log("tmpUserId : " + tmpUserId);
-    const {inputs} = this.state;
-    // console.log("============================= inputs 1222222");
-    console.log(inputs);
-
+    const {documentUrl, signerList, docName, fileName, userId} = this.state;    
+    const {inputs} = this.state;    
+    console.log("inputs : " + inputs.length);
     const users = signerList ? signerList.map((user, index) => ({
       ...user,
       backgroundColor: backgroundColorList[index] ? backgroundColorList[index] : defaultBackgroundColor,
@@ -141,7 +144,6 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
           docName={docName}
           fileName={fileName}
           userId={userId}
-          inputs={inputs}
         />
       </div>
     );

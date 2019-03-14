@@ -69,6 +69,18 @@ const getInitBoxData = (page, signerIndex, type, boxIndex) => {
   }
 };
 
+interface IInput {
+  inputType: string;
+  font: string;
+  charSize: string;
+  signerNo: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  page: number;
+}
+
 interface IDocumentProps {
   documentNo: string;
   documentUrl: string;
@@ -76,6 +88,7 @@ interface IDocumentProps {
   docName: string;
   fileName: string;
   userId: string;
+  inputs: Array<IInput>;
 }
 
 class DocumentContainer extends React.Component<IDocumentProps, React.ComponentState> {
@@ -88,6 +101,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       docName: '',
       fileName: '',
       userId: '',
+      inputs: [],
 
       signerList: [],
       numPages: null,
@@ -135,6 +149,22 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
   componentDidMount() {
     this.initBoxData();
+
+    console.log("============================== componentDidMount ");
+    const {inputs} = this.props;
+    console.log("Document.tsx => inputs : " + inputs.length);
+    console.log(inputs);
+    const restoreViewInfo = inputs.map((input, index) => {
+      console.log(" >>>>>>>>>>>>>>>>>>>>>>>>>> " + input.signerNo)
+      return getInitBoxData(input.page, 0, input.inputType, index);      
+    });
+
+    this.setState({
+      boxDataList: restoreViewInfo
+    });
+    
+    // getInitBoxData(pageNumber, selectSignerIndex, 'text', copyBoxDataList.length);
+
     $(window).scroll(() => {
       // console.log($(window).scrollTop(), $(window).height(), $(document).height());
       // if($(window).scrollTop() + $(window).height() == $(document).height()) {
@@ -186,11 +216,14 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     }
   }
 
-  private initBoxData() {
+  private initBoxData() {    
+    console.log("            initBoxData          ");
     const {signerList} = this.props;
+    // const {signerList, inputs} = this.props;
 
     this.setState({
       signerList
+      // ,inputs
     });
   }
 
@@ -687,6 +720,9 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       e,
       selectSignerIndex
     } = this.state;
+
+    console.log('==================== boxDataList : ');
+    console.log(boxDataList);
 
     const pdfItem = [];
     for (let i = 1; i <= numPages; i++) {
