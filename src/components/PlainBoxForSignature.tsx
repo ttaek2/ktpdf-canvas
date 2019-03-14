@@ -51,8 +51,10 @@ class PlainBoxForSignature extends React.Component<IBoxForSignatureProps, React.
 
     const editableStyle = {
       ...nonEditableStyle,
-      border: '1px solid #000',
+      // border: '1px solid #000',
       backgroundColor: backgroundColor ? backgroundColor : '#fff',
+      opacity: 0.7,
+      border: 'dotted 2px black',
     }
 
     return (

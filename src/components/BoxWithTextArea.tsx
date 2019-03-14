@@ -1,7 +1,12 @@
 import React, {Component} from 'react';
 import PopupForTextarea from "./PopupForTextarea";
-// import Popup from "./Popup";
-import Popup from 'reactjs-popup';
+import Popup from "./Popup";
+// import Popup from 'reactjs-popup';
+import {IoMdCloseCircle} from 'react-icons/io';
+import { IconContext } from "react-icons";
+
+const defaultZIndex = 20;
+const oo = 987654321;
 
 class BoxWithTextArea extends Component<any, any> {
   mouseDown = false;
@@ -12,11 +17,13 @@ class BoxWithTextArea extends Component<any, any> {
     super(props);
 
     this.state = {
-      width: 200,
-      height: 100,
+      width: props.width,
+      height: props.height,
       isShowPopup: false,
       left: props.left,
       top: props.top,
+      zIndex: defaultZIndex,
+      showCloseBtn: false,
     };
 
     this.keyPositionMouseDown = this.keyPositionMouseDown.bind(this);
@@ -47,24 +54,28 @@ class BoxWithTextArea extends Component<any, any> {
     this.mouseDown = true;
     this.pageX = e.pageX;
     this.pageY = e.pageY;
+    this.setState({
+      zIndex: oo
+    })
   }
 
   onMouseMove = (e) => {
-    console.log('mouse move')
+    e.preventDefault();
+    // console.log('mouse move')
     if(!this.mouseDown)
       return;
 
-    // const movementX = e.pageX - this.pageX;
-    // const movementY = e.pageY - this.pageY;
+    const movementX = e.pageX - this.pageX;
+    const movementY = e.pageY - this.pageY;
 
-    const movementX = e.movementX;
-    const movementY = e.movementY;
+    // const movementX = e.movementX;
+    // const movementY = e.movementY;
 
     this.pageX = e.pageX;
     this.pageY = e.pageY;
 
-    let {boxIndex, left, top, updateMarkerPos} = this.props;
-    // let {left, top} = this.state;
+    // let {boxIndex, left, top, updateMarkerPos} = this.props;
+    let {left, top} = this.state;
     // const left = marker.left + movementX;
     // const top = marker.top + movementY;
     left += movementX;
@@ -75,13 +86,26 @@ class BoxWithTextArea extends Component<any, any> {
     //   left,
     //   top
     // })
-    updateMarkerPos(boxIndex, left, top);
+    // updateMarkerPos(boxIndex, left, top);
+    this.setState({
+      left,
+      top,
+      isShowPopup: false,
+    })
   }
   onMouseUp = (e) => {
     this.mouseDown = false;
+    this.setState({
+      zIndex: defaultZIndex
+    })
   }
   onMouseLeave = (e) => {
+    console.log('mouse leave')
     this.mouseDown = false;
+    this.setState({
+      zIndex: defaultZIndex,
+      showCloseBtn: false,
+    })
   }
 
   updateType(e) {
@@ -109,10 +133,27 @@ class BoxWithTextArea extends Component<any, any> {
     this.setState({ isShowPopup: true });
   }
 
+  togglePopup = (e) => {
+    this.setState({
+      isShowPopup: !this.state.isShowPopup
+    })
+  }
+
   handleDoubleClick = (e) => {
     this.popup.open = true;
   }
 
+  onMouseEnter = (e) => {
+    console.log('mouse enter!')
+    this.setState({
+      showCloseBtn: true,
+    })
+  }
+
+  onCloseBtnClick = (e) => {
+    const {deleteTextArea, boxIndex} = this.props;
+    deleteTextArea(boxIndex);
+  }
 
   render() {
     const {
@@ -132,12 +173,29 @@ class BoxWithTextArea extends Component<any, any> {
       fontSize
     } = this.props;
 
+    // const {
+    //   left,
+    //   top,
+    //   zIndex
+    // } = this.state;
+
     // console.log('rendering BoxWithTextArea', fontFamily, fontSize);
 
-    const { isShowPopup } = this.state;
+    const { isShowPopup, showCloseBtn } = this.state;
     const { backgroundColor } = users[signerIndex];
 
-    const box = (
+    const closeicon = {
+      color: backgroundColor, 
+      className: "global-class-name", 
+      size: "2em",
+      style: {
+        // position: 'absolute',
+
+      }
+    }
+
+    return (
+
       <div
         data-number={boxIndex}
         data-type={type}
@@ -149,15 +207,33 @@ class BoxWithTextArea extends Component<any, any> {
           top,
           left,
           border: `1px solid ${backgroundColor}`,
-          zIndex: 20,
-          backgroundColor: '#fff'
+          // zIndex: zIndex,
+          backgroundColor: '#fff',
+          opacity: 0.7
         }}
         // onMouseDown={this.onMouseDown}
         // onMouseMove={this.onMouseMove}
         // onMouseUp={this.onMouseUp}
         // onMouseLeave={this.onMouseLeave}
-        onDoubleClick={this.handleDoubleClick}
+        // onDoubleClick={this.handleDoubleClick}
       >
+        <Popup
+          isShowPopup={isShowPopup}
+          closePopup={this.closePopup}
+          // customStyle={{
+          //   top: '-150px',
+          //   height: '130px'
+          // }}
+        >
+          <PopupForTextarea
+            setFontSize={setFontSize}
+            setFontFamily={setFontFamily}
+            deleteTextArea={deleteTextArea}
+            boxIndex={boxIndex}
+            fontFamily={this.props.fontFamily}
+            fontSize={this.props.fontSize}
+          />
+        </Popup>
         <div
           data-number={boxIndex}
           data-type={type}
@@ -168,11 +244,14 @@ class BoxWithTextArea extends Component<any, any> {
          onMouseOver={this.updateTypePos}
          onMouseDown={this.keyPositionMouseDown}
          onMouseUp={this.resetType}
-         onDoubleClick={this.showPopup}
+         onDoubleClick={this.togglePopup}
+
+         onMouseEnter={this.onMouseEnter}
+         onMouseLeave={this.onMouseLeave}
         >
           {/* <input type='text' */}
           <textarea
-            disabled={true}
+            disabled={false}
           
             style={{
               width: `${width}px`,
@@ -180,10 +259,26 @@ class BoxWithTextArea extends Component<any, any> {
               resize: 'none',
               fontFamily: fontFamily,
               fontSize: fontSize,
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
             }}
             placeholder="텍스트"
           />
+          {showCloseBtn && 
+          // {true && 
+            <div 
+              style={{
+                position: 'absolute',
+                right: '-20px',
+                top: '0px'
+              }}
+              onClick={this.onCloseBtnClick}
+            >
+              <IconContext.Provider value={closeicon}>
+                <IoMdCloseCircle  />
+              </IconContext.Provider>
+            </div>
+          }
+          
         </div>
         <div style={{
           position: 'absolute',
@@ -199,37 +294,37 @@ class BoxWithTextArea extends Component<any, any> {
           onMouseDown={this.keyMouseDown}
           onMouseUp={this.resetType}
         />
+        
       </div>
-    );
-    
-    return (
 
-      <Popup 
-        trigger={box} 
-        position="top"
-        contentStyle={{
-          padding: '0px',
-          borderRadius: '10px',
-          overflow: 'hidden'
-        }}
-        // on='click'
-        on='never'
-        open={false}
-        ref={ref => this.popup = ref}
-        // closeOnDocumentClick={false}
-      >
-        {close => (
-          <PopupForTextarea
-            setFontSize={setFontSize}
-            setFontFamily={setFontFamily}
-            deleteTextArea={deleteTextArea}
-            boxIndex={boxIndex}
-            fontFamily={this.props.fontFamily}
-            fontSize={this.props.fontSize}
+
+
+      // <Popup 
+      //   trigger={box} 
+      //   position="top"
+      //   contentStyle={{
+      //     padding: '0px',
+      //     borderRadius: '10px',
+      //     overflow: 'hidden'
+      //   }}
+      //   // on='click'
+      //   on='hover'
+      //   open={false}
+      //   ref={ref => this.popup = ref}
+      //   // closeOnDocumentClick={false}
+      // >
+      //   {close => (
+      //     <PopupForTextarea
+      //       setFontSize={setFontSize}
+      //       setFontFamily={setFontFamily}
+      //       deleteTextArea={deleteTextArea}
+      //       boxIndex={boxIndex}
+      //       fontFamily={this.props.fontFamily}
+      //       fontSize={this.props.fontSize}
             
-          />
-        )}
-      </Popup>
+      //     />
+      //   )}
+      // </Popup>
 
 
       // <div

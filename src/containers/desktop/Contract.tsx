@@ -35,11 +35,15 @@ interface IContractProps {
 }
 
 const convertView = (view_w, view_h, left, top, width, height) => {
+  console.log('convertView')
+  console.log(view_w, view_h, left, top, width, height);
 
   const x = Number(left) * view_w;
   const w = Number(width) * Number(view_w);
   const h = Number(height) * Number(view_h);
   const y = (((Number(top) * view_h) - view_h) + Number(h)) * -1;
+
+  console.log(x, y, w, h)
 
   return {
     x,
@@ -112,17 +116,17 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     const { pageWidth, pageHeight } = this.state;
     const { signer, inputs } = this.props;
 
-    const restoreViewInfo = inputs.map(input => {
-      const { x, y, w, h } = convertView(pageWidth, pageHeight, input.x, input.y, input.w, input.h);
-      return {
-        ...input,
-        x,
-        y,
-        w,
-        h
-      }
-    });
-    // const restoreViewInfo = inputs;
+    // const restoreViewInfo = inputs.map(input => {
+    //   const { x, y, w, h } = convertView(pageWidth, pageHeight, input.x, input.y, input.w, input.h);
+    //   return {
+    //     ...input,
+    //     x,
+    //     y,
+    //     w,
+    //     h
+    //   }
+    // });
+    const restoreViewInfo = inputs;
 
     this.setState({
       signer,

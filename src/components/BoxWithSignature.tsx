@@ -63,6 +63,11 @@ class BoxWithSignature extends Component<any, any> {
     this.setState({ isShowPopup: true });
   }
 
+  onCloseBtnClick = (e) => {
+    const {deleteSignatureArea, boxIndex} = this.props;
+    deleteSignatureArea(boxIndex);
+  }
+
   render() {
     const {
       top,
@@ -83,7 +88,7 @@ class BoxWithSignature extends Component<any, any> {
     const closeicon = {
       color: "white", 
       className: "global-class-name", 
-      size: "1.3em",
+      size: "2em",
       style: {
         float: 'right'
       }
@@ -116,16 +121,20 @@ class BoxWithSignature extends Component<any, any> {
           backgroundColor: `${backgroundColor}`,
           color: 'white',
         }}>
-          <IconContext.Provider value={closeicon}>
-            <IoMdCloseCircle  />
-          </IconContext.Provider>
+          <span
+            onClick={this.onCloseBtnClick}  
+          >
+            <IconContext.Provider value={closeicon}>
+              <IoMdCloseCircle  />
+            </IconContext.Provider>
+          </span>
         </div>
         <div style={{
           position: 'relative',
           width: '100%',
           height: '100%',
           backgroundColor: 'white',
-          opacity: 0.8
+          opacity: 0.7
         }}/>
         <div 
           style={{

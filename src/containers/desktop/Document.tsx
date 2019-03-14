@@ -204,6 +204,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   }
 
   private documentMouseMove(e: React.MouseEvent) {
+    e.preventDefault();
     console.log('document mouse move!');
     const pageX = e.pageX - $(e.currentTarget).offset().left;
     const pageY = e.pageY - $(e.currentTarget).offset().top;
@@ -228,6 +229,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   }
 
   private getNewPdfItem(e: React.MouseEvent) {
+    console.log('getNewPdfItem called')
     e.preventDefault();
     const {pageNumber} = this.state;
     const idx = Number(e.currentTarget.getAttribute('data-index')) + 1;
@@ -513,11 +515,11 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
       const {zoom: scale, pageWidth, pageHeight} = this.state;
 
-      const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
-      // const x = left / scale;
-      // const y = top / scale;
-      // const w = width / scale;
-      // const h = height / scale;
+      // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
+      const x = left / scale;
+      const y = top / scale;
+      const w = width / scale;
+      const h = height / scale;
 
 
       return {
@@ -546,11 +548,11 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
       const {zoom: scale, pageWidth, pageHeight} = this.state;
 
-      const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
-      // const x = left / scale;
-      // const y = top / scale;
-      // const w = width / scale;
-      // const h = height / scale;
+      // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
+      const x = left / scale;
+      const y = top / scale;
+      const w = width / scale;
+      const h = height / scale;
 
       return {
         inputType: 'sign',
