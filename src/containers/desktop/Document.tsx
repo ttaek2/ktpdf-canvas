@@ -470,13 +470,13 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         height
       } = data;
 
-      const {zoom: scale} = this.state;
+      const {zoom: scale, pdfWidth, pdfHeight} = this.state;
 
-      // const { x, y, w, h } = convertView(view_w, view_h, left, top, width, height);
-      const x = left / scale;
-      const y = top / scale;
-      const w = width / scale;
-      const h = height / scale;
+      const { x, y, w, h } = convertView(pdfWidth, pdfHeight, left, top, width, height);
+      // const x = left / scale;
+      // const y = top / scale;
+      // const w = width / scale;
+      // const h = height / scale;
 
 
       return {
@@ -503,13 +503,13 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         height
       } = data;
 
-      const {zoom: scale} = this.state;
+      const {zoom: scale, pdfWidth, pdfHeight} = this.state;
 
-      // const { x, y, w, h } = convertView(view_w, view_h, left, top, width, height);
-      const x = left / scale;
-      const y = top / scale;
-      const w = width / scale;
-      const h = height / scale;
+      const { x, y, w, h } = convertView(pdfWidth, pdfHeight, left, top, width, height);
+      // const x = left / scale;
+      // const y = top / scale;
+      // const w = width / scale;
+      // const h = height / scale;
 
       return {
         inputType: 'sign',

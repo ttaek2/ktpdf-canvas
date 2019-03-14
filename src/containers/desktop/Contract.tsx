@@ -111,17 +111,17 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     const { view_w, view_h } = this.state;
     const { signer, inputs } = this.props;
 
-    // const restoreViewInfo = inputs.map(input => {
-    //   const { x, y, w, h } = convertView(view_w, view_h, input.x, input.y, input.w, input.h);
-    //   return {
-    //     ...input,
-    //     x,
-    //     y,
-    //     w,
-    //     h
-    //   }
-    // });
-    const restoreViewInfo = inputs;
+    const restoreViewInfo = inputs.map(input => {
+      const { x, y, w, h } = convertView(view_w, view_h, input.x, input.y, input.w, input.h);
+      return {
+        ...input,
+        x,
+        y,
+        w,
+        h
+      }
+    });
+    // const restoreViewInfo = inputs;
 
     this.setState({
       signer,
