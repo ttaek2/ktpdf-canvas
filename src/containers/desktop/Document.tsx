@@ -15,6 +15,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 const styled = require('./common.css');
 
 const convertView = (view_w, view_h, left, top, width, height) => {
+  console.log(view_w, view_h, left, top, width, height);
   const x = (left / view_w);
   const y = ((view_h - top - height) / view_h);
 
@@ -477,9 +478,9 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         height
       } = data;
 
-      const {zoom: scale, pdfWidth, pdfHeight} = this.state;
+      const {zoom: scale, pageWidth, pageHeight} = this.state;
 
-      const { x, y, w, h } = convertView(pdfWidth, pdfHeight, left, top, width, height);
+      const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
       // const x = left / scale;
       // const y = top / scale;
       // const w = width / scale;
@@ -510,9 +511,9 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         height
       } = data;
 
-      const {zoom: scale, pdfWidth, pdfHeight} = this.state;
+      const {zoom: scale, pageWidth, pageHeight} = this.state;
 
-      const { x, y, w, h } = convertView(pdfWidth, pdfHeight, left, top, width, height);
+      const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
       // const x = left / scale;
       // const y = top / scale;
       // const w = width / scale;
@@ -724,7 +725,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
               onClick={this.addSignatureArea}>서명 영역
             </button>
           </div>
-          <div style={{padding: '500px 0'}}>
+          <div style={{padding: '100px 0'}}>
             <button style={{
               width: '140px',
               height: '50px',
