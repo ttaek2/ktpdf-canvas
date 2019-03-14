@@ -72,19 +72,26 @@ class PopupForTextarea extends React.Component<IPopup, React.ComponentState> {
       border: 0,
       borderTop: '1px solid #ccc',
       margin: '1em 0',
-      padding: 0
+      padding: 0,
     }
     return (
       <div style={{
         padding: '10px',
         margin: '0px',
-        backgroundColor: '#eee'
+        backgroundColor: '#eee',
+        border: 'solid 1px',
+        borderRadius: '10px',
+        width: '170px',
+        fontSize: '15px', 
       }}>
         <div style={{
           position: 'relative',
-          zIndex: 11
+          zIndex: 11,
+          height: '20px',
+          padding: '2px',
         }}>
-          크  기
+          <span style={{float: 'left', padding: '5px'}}>크  기</span>
+          
           <select 
             style={{width: '100px', height: '22px', float: 'right'}}
             onChange={this.handleFontSizeChange}
@@ -107,9 +114,12 @@ class PopupForTextarea extends React.Component<IPopup, React.ComponentState> {
         <hr style={hrStyle} />
         <div style={{
           position: 'relative',
-          zIndex: 10
+          zIndex: 10,
+          height: '20px',
+          padding: '2px',
         }}>
-          글자체
+          <span style={{float: 'left', padding: '5px'}}>글자체</span>
+          
           <select 
             style={{width: '100px', height: '22px', float: 'right'}}
             onChange={this.handleFontChange}
@@ -132,7 +142,7 @@ class PopupForTextarea extends React.Component<IPopup, React.ComponentState> {
         {/* <div style={{textAlign: 'center'}}>
           <button style={{width: '80%'}} onClick={this.deleteThisTextArea}>삭제</button>
         </div> */}
-        {children}
+        {/* {children} */}
       </div>
     );
   }

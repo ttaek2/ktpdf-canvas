@@ -51,7 +51,10 @@ class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.Co
       resize: 'none',
       fontFamily: `${font}`,
       fontSize: `${charSize}px`,
-      boxSizing: 'border-box'
+      // boxSizing: 'border-box',
+      backgroundColor: 'white',
+      opacity: 0.7,
+      border: 'dotted 2px orange',
     };
 
     const nonEditableStyle = {

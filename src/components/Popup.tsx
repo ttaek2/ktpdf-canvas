@@ -2,13 +2,16 @@ import * as React from "react";
 
 let PopupStyle: React.CSSProperties = {
   position: 'absolute',
-  top: '-150px',
-  left: 0,
+  top: '-110px',
+  // left: 0,
+  left: '50%',
+  transform: 'translateX(-50%)',
   zIndex: 100,
-  width: '204px',
-  height: '130px',
-  border: '1px solid #000',
-  backgroundColor: '#fff'
+  // right: 0
+  // width: '204px',
+  // height: '130px',
+  // border: '1px solid #000',
+  // backgroundColor: '#fff'
 };
 
 interface IPopupProps {
@@ -37,9 +40,11 @@ class Popup extends React.Component<IPopupProps, React.ComponentState> {
 
     return (
       <div style={PopupStyle}>
-        <div style={{
+        {/* <div style={{
           textAlign: 'right'
-        }}><button onClick={closePopup}>X</button></div>
+        }}>
+          <button onClick={closePopup}>X</button>
+        </div> */}
         {children}
       </div>
     );

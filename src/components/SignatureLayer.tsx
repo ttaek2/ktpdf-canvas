@@ -83,25 +83,30 @@ class SignatureLayer extends React.Component<ISignatureLayerProps, React.Compone
         />
         <div style={{
           position: 'relative',
-          top: '50%',
+          top: '40%',
           left: '50%',
-          width: '800px',
-          height: '600px',
-          marginTop: '-400px',
-          marginLeft: '-350px',
+          width: '700px',
+          height: '500px',
+          transform: 'translate(-50%, -50%)',
+          // marginTop: '-400px',
+          // marginLeft: '-350px',
           backgroundColor: '#fff'
         }}>
-          <div style={{textAlign: 'right'}}>
+          <div style={{textAlign: 'right', float: 'right',}}>
             <button style={{
-              width: '50px',
-              height: '50px'
+              width: '20px',
+              height: '20px',
             }} onClick={this.close}>X</button>
           </div>
           <SignatureCanvas
             ref={this.signCanvasRef}
             canvasProps={{
-              width: 800,
-              height: 450,
+              position: 'absolute',
+              width: '700px',
+              height: '500px',
+              top: '-100px',
+              padding: '0px',
+              margin: '0px',
               className: 'sigCanvas',
             }}
           />
