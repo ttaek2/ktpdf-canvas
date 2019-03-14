@@ -69,9 +69,12 @@ const getInitBoxData = (page, signerIndex, type, boxIndex) => {
 };
 
 interface IDocumentProps {
-  documentNo: number;
+  documentNo: string;
   documentUrl: string;
   signerList: Array<ISigner>;
+  docName: string;
+  fileName: string;
+  userId: string;
 }
 
 class DocumentContainer extends React.Component<IDocumentProps, React.ComponentState> {
@@ -81,6 +84,10 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   constructor(props) {
     super(props);
     this.state = {
+      docName: '',
+      fileName: '',
+      userId: '',
+
       signerList: [],
       numPages: null,
       pageNumber: 1,
@@ -526,11 +533,11 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   }
 
   private updateDocumentInfo() {
-    const {documentNo} = this.props;
+    const {documentNo, docName, fileName, documentUrl, userId} = this.props;
     const {boxDataList} = this.state;
     const dataList = this.convertDataForAPI(boxDataList);
 
-    setDocumentInfo(documentNo, dataList).then(_ => {
+    setDocumentInfo(documentNo, docName, fileName, documentUrl, userId, dataList).then(_ => {
       alert('저장 완료');
     });
   }

@@ -31,11 +31,11 @@ class Contract extends React.Component<any, React.ComponentState> {
     const { signerNo, documentNo } = this.props;
     getDocumentInfoForSigner(documentNo, signerNo)
       .then((data: any) => {
-        console.log(data.inputs);
+        // console.log(data.inputs);
         this.setState({
           signer: data.signer,
           inputs: data.inputs,
-          documentUrl: data.doc
+          documentUrl: data.filePath
         });
       });
   }

@@ -1,10 +1,10 @@
 import ApiFetch from "../ApiFetch";
 import apiPath from "../enum/apiPath";
 
-export async function getDocumentInfo(documentNo: number) {
+export async function getDocumentInfo(documentNo: string) {
   if(!documentNo) return false;
 
-  const DOCUMENT_INFO_API_PATH = `${apiPath.CONTRACT.DOCUMENT}/doc${documentNo}`;
+  const DOCUMENT_INFO_API_PATH = `${apiPath.CONTRACT.DOCUMENT}/${documentNo}`;
   console.log('DOCUMENT_INFO_API_PATH = ' + DOCUMENT_INFO_API_PATH);
   const config = {};
 
