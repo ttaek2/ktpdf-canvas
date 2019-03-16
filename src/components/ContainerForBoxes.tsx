@@ -1,92 +1,60 @@
 import React, {Component} from 'react';
 import BoxWithTextArea from "./BoxWithTextArea";
 import BoxWithSignature from "./BoxWithSignature";
+import { InputBox, TextBox, SignBox } from 'src/interface/InputBox';
+import { ISigner } from 'src/interface/ISigner';
 
-class ContainerForBoxes extends Component<any, any> {
+interface Props {
+  boxDataList: Array<InputBox>;
+  updateInputBox: (boxIndex: number, update: object) => void;
+  deleteInputBox: (index: number) => void;
+  users: Array<ISigner>;
+  page: number;
+  scale: number;
+}
 
-  constructor(props) {
+class ContainerForBoxes extends Component<Props, null> {
+
+  constructor(props: Props) {
     super(props);
   }
 
   render() {
     const {
       boxDataList,
-      updateEventObjectToNull,
-      updateCustomBoxSize,
-      updateEventObject,
-      updateType,
+      updateInputBox,
+      deleteInputBox,
       page,
       users,
-      deleteTextArea,
-      setFontSize,
-      setFontFamily,
-      deleteSignatureArea,
       scale
     } = this.props;
-
-    const boxesInPage = boxDataList.filter(box => page === box.page);
 
     return (
       <div style={{width: '100%', height: '100%'}}>
         {
-          boxesInPage.map(box => {
-            const {
-              page,
-              top,
-              left,
-              type,
-              width,
-              height,
-              boxIndex,
-              signerIndex,
-              fontFamily,
-              fontSize
-            } = box;
-
-            if(type === 'text') {
+          boxDataList.map(box => {
+            
+            if(box.type === 'text') {
               return(
                 <BoxWithTextArea
-                  key={`${boxIndex}${type}`}
-                  page={page}
-                  top={top}
-                  left={left}
-                  boxIndex={boxIndex}
-                  width={width}
-                  height={height}
+                  key={`${box.boxIndex}${box.type}`}
+                  boxData={box as TextBox}
                   users={users}
-                  signerIndex={signerIndex}
-                  updateEventObjectToNull={updateEventObjectToNull}
-                  updateCustomBoxSize={updateCustomBoxSize}
-                  updateEventObject={updateEventObject}
-                  updateType={updateType}
-                  setFontFamily={setFontFamily}
-                  setFontSize={setFontSize}
-                  deleteTextArea={deleteTextArea}
-                  fontFamily={fontFamily}
-                  fontSize={fontSize}
-                  updateMarkerPos={this.props.updateMarkerPos}
+                  updateInputBox={updateInputBox}
+                  deleteInputBox={deleteInputBox}
                   scale={scale}
                 />
               )
             }
 
-            if(type === 'sign') {
+            else if(box.type === 'sign') {
               return(
                 <BoxWithSignature
-                  key={`${boxIndex}${type}`}
-                  page={page}
-                  top={top}
-                  left={left}
-                  boxIndex={boxIndex}
-                  width={width}
-                  height={height}
+                  key={`${box.boxIndex}${box.type}`}
+                  boxData={box as SignBox}
                   users={users}
-                  signerIndex={signerIndex}
-                  updateEventObjectToNull={updateEventObjectToNull}
-                  updateCustomBoxSize={updateCustomBoxSize}
-                  updateEventObject={updateEventObject}
-                  updateType={updateType}
-                  deleteSignatureArea={deleteSignatureArea}
+                  updateInputBox={updateInputBox}
+                  deleteInputBox={deleteInputBox}
                   scale={scale}
                 />
               )
