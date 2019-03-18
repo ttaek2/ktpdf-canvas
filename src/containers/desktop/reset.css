@@ -8,7 +8,7 @@ html {
   body {
     height: 100%;
     width: 100%;
-    background-color: #444;
+    background-color: gray;
   }
 
 /* body {
@@ -50,7 +50,7 @@ a {
     cursor: pointer;
 }
 
-canvas {
+/* canvas {
     position: relative;
     left: 50%;
     transform: translateX(-50%);
@@ -58,15 +58,8 @@ canvas {
     margin-bottom: 10px;
     border: 1px solid transparent;
     background-clip: content-box;
-    opacity: 0.7
-}
+} */
 
-
-
-.doc-area {
-    
-}
-
-.page canvas {
-    
+.testDiv {
+    background-color: blue;
 }

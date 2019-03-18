@@ -150,7 +150,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   }
 
   componentDidUpdate(_, prevState): void {
-    const $view = $('.doc-area');
+    const $view = $('.inputbox-area');
     const view_w = $view.width();
     const view_h = $view.height();
 
@@ -190,8 +190,8 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     const {pageNumber} = this.state;
     const idx = Number(e.currentTarget.getAttribute('data-index')) + 1;
     
-    $('li.thumbnailList').find('canvas').css('opacity', 0.7);
-    $(e.currentTarget).find('canvas').css('opacity', 1);
+    // $('li.thumbnailList').find('canvas').css('opacity', 0.7);
+    // $(e.currentTarget).find('canvas').css('opacity', 1);
     
     this.setState({pageNumber: idx});
   }
@@ -216,7 +216,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       pageWidth: page.width,
       pageHeight: page.height
     })
-    $('.viewerContainer').find('canvas').css('opacity', 1.0);
+    // $('.documentContainer').find('canvas').css('opacity', 1.0);
   }
 
   private checkSelectedValue(): boolean {
@@ -667,8 +667,13 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
   onThumbnailRenderSuccess = (page) => {
     if(page.pageNumber == 1) {
-      $('li.thumbnailList').find('canvas').first().css('opacity', 1.0);
+      // $('li.thumbnailList').find('canvas').first().css('opacity', 1.0);
     }
+  }
+
+  onSelectionChange = (e) => {
+    const index = e.target.value;
+    this.setSelectedIndex({index});
   }
 
 
@@ -686,120 +691,113 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     const curPageInputBox = boxDataList.filter(box => box.page === pageNumber);
 
     return (
-      <div>
-        <div className={styled.rightSidebar}>
-          <div>
-            <div style={{fontSize: '15px'}}>{`${pageNumber} / ${numPages}`}</div>
+      <div className="container service">
+        <div className='editor'>
+          <div className='header'>
             <ZoomController updateRightContentZoom={this.updateRightContentZoom} zoom={zoom}/>
-            <SelectBox
-              width={'200px'}
-              option={signerList.map(user => user.signerNm)}
-              datas={signerList}
-              callback={this.setSelectedIndex}
-            />
           </div>
-          <div style={{padding: '2px', textAlign: 'center'}}>
-            <button
-              style={{
-                width: '140px',
-                height: '40px'
-              }}
-              onClick={this.addTextArea}>텍스트 영역
-            </button>
-          </div>
-          <div style={{padding: '2px', textAlign: 'center'}}>
-            <button
-              style={{
-                width: '140px',
-                height: '40px',
-                marginLeft: '-1px'
-              }}
-              onClick={this.addSignatureArea}>서명 영역
-            </button>
-          </div>
-          <div style={{padding: '100px 0'}}>
-            <button style={{
-              width: '140px',
-              height: '50px',
-              marginLeft: '15%',
-              position: 'relative',
-              zIndex: 30
-            }} onClick={this.updateDocumentInfo}
-            >저장
-            </button>
-          </div>
-        </div>
-        <div className={styled.wrapper}>
-          
-          <ul className={styled.leftContents}>
-                  <Document
-                    className={styled.listCanvas}
-                    file={this.props.documentUrl}
-                  >
-                    {Array.from(
-                      new Array(numPages),
-                      (el, index) => (
-                        <li key={index} style={{padding: '2px'}} className='thumbnailList'>
-                          <a href="#" data-index={index} onClick={this.getNewPdfItem}>
-                            <Page
-                              key={`page_${index + 1}`}
-                              pageNumber={index + 1}
-                              renderMode='canvas'
-                              renderTextLayer={false}
-                              renderAnnotationLayer={false}
-                              onLoadSuccess={page => console.log(`thumbnail page-${page.pageNumber} loaded`)}
-                              onRenderSuccess={this.onThumbnailRenderSuccess}
-                              scale={0.25}
-                            />
-                          </a>
-                        </li>
-                      ),
-                    )}
-                  </Document>
-          </ul>
-          <div
-            className={styled.rightContents}
-            // style={{zoom}}
-          >
-            <div
-              className="doc-area"
-              style={{
-                width: this.state.pageWidth,
-                height: '100%',
-                position: 'absolute',
-                zIndex: 10,
-                left: '50%',
-                transform: 'translateX(-50%)',
-              }}
-              // onMouseMove={this.documentMouseMove}
-              // onMouseUp={this.updateEventObjectToNull}
-            >
-                  <ContainerForBoxes
-                    updateInputBox={this.updateInputBox}
-                    boxDataList={curPageInputBox}
-                    users={signerList}
-                    page={pageNumber}
-                    deleteInputBox={this.deleteInputBox}
-                    scale={zoom}
-                  />
+          <div className="edit-body">
+            <div className="thumbnail">
+
+              <ul>
+                      <Document
+                        file={this.props.documentUrl}
+                      >
+                        {Array.from(
+                          new Array(numPages),
+                          (el, index) => (
+                            <li 
+                              key={index}
+                              className={pageNumber === index+1  ? 'on' : undefined}
+                            >
+                              <a href="#" data-index={index} onClick={this.getNewPdfItem}>
+                                <Page
+                                  key={`page_${index + 1}`}
+                                  pageNumber={index + 1}
+                                  renderMode='canvas'
+                                  renderTextLayer={false}
+                                  renderAnnotationLayer={false}
+                                  onLoadSuccess={page => console.log(`thumbnail page-${page.pageNumber} loaded`)}
+                                  onRenderSuccess={this.onThumbnailRenderSuccess}
+                                  scale={0.22}
+                                />
+                              </a>
+                            </li>
+                          ),
+                        )}
+                      </Document>
+              </ul>
+
             </div>
-            <Document
-              className='viewerContainer'
-              file={this.props.documentUrl}
-              onLoadSuccess={this.onDocumentLoadSuccess}
-            >
-              <Page 
-                className={styled.page}
-                pageNumber={pageNumber}
-                renderTextLayer={false}
-                renderAnnotationLayer={false}
-                scale={zoom}
-                onLoadSuccess={this.onPageLoadSuccess}
-                onRenderSuccess={this.onPageRenderSuccess}
+            <div className="editor-view">
+              
+              <Document
+                className='documentContainer'
+                file={this.props.documentUrl}
+                onLoadSuccess={this.onDocumentLoadSuccess}
               >
-              </Page>
-            </Document>
-            
+                <Page 
+                  className='pageContainer'
+                  pageNumber={pageNumber}
+                  renderTextLayer={false}
+                  renderAnnotationLayer={false}
+                  scale={zoom}
+                  onLoadSuccess={this.onPageLoadSuccess}
+                  onRenderSuccess={this.onPageRenderSuccess}
+                >
+                  <div
+                    className="inputbox-area"
+                    style={{
+                      width: this.state.pageWidth,
+                      height: this.state.pageHeight,
+                      position: 'absolute',
+                      paddingTop: '10px',
+                      paddingBottom: '10px',
+                      zIndex: 10,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                    }}
+                    // onMouseMove={this.documentMouseMove}
+                    // onMouseUp={this.updateEventObjectToNull}
+                  >
+                        <ContainerForBoxes
+                          updateInputBox={this.updateInputBox}
+                          boxDataList={curPageInputBox}
+                          users={signerList}
+                          page={pageNumber}
+                          deleteInputBox={this.deleteInputBox}
+                          scale={zoom}
+                        />
+                  </div>
+                </Page>
+              </Document>
+
+            </div>
+            <div className="edit-pallet">
+              <div className="input-select secondary">
+                <select
+                  onChange={this.onSelectionChange}
+                  style={selectSignerIndex >= 0 && signerList[selectSignerIndex] ? {color: signerList[selectSignerIndex].backgroundColor} : undefined}
+                >
+                  <option value="">참여자 지정</option>
+                  {signerList.map((signer, index) => 
+                    <option 
+                      value={index}
+                      style={{color: signer.backgroundColor}}
+                    >{signer.signerNm}</option>  
+                  )}
+                </select>
+              </div>
+              <ul>
+                <li><a href="#" onClick={this.addTextArea}><span className="icon-insert-txt"></span>텍스트 입력</a></li>
+                <li><a href="#" onClick={this.addSignatureArea}><span className="icon-stamp"></span>서명 (Stamp)</a></li>
+                <li><a href="#"><span className="icon-checklist"></span>체크항목</a></li>
+                <li><a href="#"><span className="icon-selected-list"></span>선택항목</a></li>
+                <li><a href="#"><span className="icon-memo"></span>메모 입력</a></li>
+                <li><a onClick={this.updateDocumentInfo}>저장</a></li>
+              </ul>
+
+            </div>
           </div>
         </div>
       </div>

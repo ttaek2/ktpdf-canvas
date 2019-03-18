@@ -81,7 +81,7 @@ class PopupForTextarea extends React.Component<IPopup, React.ComponentState> {
         backgroundColor: '#eee',
         border: 'solid 1px',
         borderRadius: '10px',
-        width: '170px',
+        width: '200px',
         fontSize: '15px', 
       }}>
         <div style={{

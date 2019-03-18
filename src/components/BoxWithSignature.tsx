@@ -97,7 +97,7 @@ class BoxWithSignature extends Component<Props, any> {
     const closeicon = {
       color: "white", 
       className: "global-class-name", 
-      size: "2em",
+      size: "1.3em",
       style: {
         float: 'right'
       }

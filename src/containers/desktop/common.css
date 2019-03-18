@@ -76,7 +76,10 @@ canvas.selected {
   opacity: 1.0
 }
 
+.testDiv {
+  /* background-color: blue; */
+}
 
-
-
-
+.testDiv .testDivDiv {
+  background-color: green;  
+}

@@ -1,6 +1,8 @@
 import * as React from "react";
 import SelectBox from "./SelectBox";
 
+// const style = require('../../style.css');
+
 interface IZoomController {
   updateRightContentZoom: (...args) => void;
   zoom: number;
@@ -84,11 +86,16 @@ class ZoomController extends React.Component<IZoomController, React.ComponentSta
     }
 
     return (
-      <div className="Toolbar" style={{padding: '10px'}}>
-        <button className="ZoomIn" style={zoomBtnStyle} onClick={(e) => this.zoomOut(e)}>-</button>
-        <button className="ZoomOut" style={zoomBtnStyle} onClick={(e) => this.zoomIn(e)}>+</button>
-        <span className="ZoomPercent" style={zoomPercentStyle} >{(this.props.zoom * 100).toFixed(1)}%</span>
-      </div>
+      <ul className="zoom">
+        <li><a href="#" onClick={(e) => this.zoomIn(e)}><span className="icon-zoomin"></span></a></li>
+        <li><a href="#" onClick={(e) => this.zoomOut(e)}><span className="icon-zoomout"></span></a></li>
+      </ul>
+
+      // <div className="Toolbar" style={{padding: '10px'}}>
+      //   <button className="ZoomIn" style={zoomBtnStyle} onClick={(e) => this.zoomOut(e)}>-</button>
+      //   <button className="ZoomOut" style={zoomBtnStyle} onClick={(e) => this.zoomIn(e)}>+</button>
+      //   <span className="ZoomPercent" style={zoomPercentStyle} >{(this.props.zoom * 100).toFixed(1)}%</span>
+      // </div>
 
 
 

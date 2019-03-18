@@ -60,7 +60,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     console.log('constructor!');
     this.state = {
       signer: [],
-      inputs: props.inputs,
+      inputs: [],
       numPages: null,
       pageNumber: 1,
       showSignLayer: false,
@@ -83,29 +83,31 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
 
   componentDidMount() {
     console.log('componentDidMount!');
-    const $view = $('.doc-area');
+    const $view = $('.inputbox-area');
     const view_w = $view.width();
     const view_h = $view.height();
-    this.setState({
-      view_w,
-      view_h
-    }, this.initBoxData);
+    console.log(view_w, view_h)
+    // this.setState({
+    //   view_w,
+    //   view_h
+    // }, this.initBoxData);
   }
 
   componentDidUpdate(_, prevState) {
     
-    const $view = $('.doc-area');
+    const $view = $('.inputbox-area');
     const view_w = $view.width();
     const view_h = $view.height();
     console.log('componentDidUpdate')
-    if(view_h < 0 || prevState.view_h !== view_h){  
-      // console.log('view_h = ' + view_h);
-      this.setState({
-        view_w,
+    console.log(view_w, view_h)
+    // if(view_h < 0 || prevState.view_h !== view_h){  
+    //   // console.log('view_h = ' + view_h);
+    //   this.setState({
+    //     view_w,
 
-        view_h
-      }, this.initBoxData);
-    }
+    //     view_h
+    //   }, this.initBoxData);
+    // }
   }
 
   private updateTextArea(index, value) {
@@ -137,6 +139,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     this.setState({
       signer,
       originInputs: inputs,
+      inputs
       // inputs: restoreViewInfo
     });
   }
@@ -146,8 +149,8 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     const {pageNumber} = this.state;
     const idx = Number(e.currentTarget.getAttribute('data-index')) + 1;
 
-    $('li.thumbnailList').find('canvas').css('opacity', 0.7);
-    $(e.currentTarget).find('canvas').css('opacity', 1);
+    // $('li.thumbnailList').find('canvas').css('opacity', 0.7);
+    // $(e.currentTarget).find('canvas').css('opacity', 1);
     
     this.setState({pageNumber: idx});
   }
@@ -271,7 +274,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
 
   onThumbnailRenderSuccess = (page) => {
     if(page.pageNumber == 1) {
-      $('li.thumbnailList').find('canvas').first().css('opacity', 1.0);
+      // $('li.thumbnailList').find('canvas').first().css('opacity', 1.0);
     }
   }
 
@@ -286,7 +289,8 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       pageWidth: page.width,
       pageHeight: page.height
     })
-    $('.viewerContainer').find('canvas').css('opacity', 1.0);
+    this.initBoxData();
+    // $('.viewerContainer').find('canvas').css('opacity', 1.0);
   }
 
   public render(): JSX.Element {
@@ -300,127 +304,105 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       zoom
     } = this.state;
 
-    const pdfItem = [];
-    for (let i = 1; i <= numPages; i++) {
-      pdfItem.push(i);
-    }
-
-    // console.log('rendering contract')
-    // console.log(inputs)
 
     return (
-      <div>
-        <div className={styled.rightSidebar}>
-          <div>
-            <div style={{fontSize: '15px'}}>{`${pageNumber} / ${numPages}`}</div>
+      <div className="container service">
+        <div className='editor'>
+          <div className='header'>
             <ZoomController updateRightContentZoom={this.updateRightContentZoom} zoom={zoom}/>
-            <div style={{
-              fontSize: '15px',
-            }}>{signer.signerNm}</div>
           </div>
-          <div style={{padding: '600px 0'}}>
-            <button style={{
-              width: '140px',
-              height: '50px',
-              marginLeft: '15%',
-              position: 'relative',
-              zIndex: 30
-            }} onClick={this.saveContractInfo}
-            >저장
-            </button>
-          </div>
-        </div>
-        
-
-        <DimmedLayer showSignLayer={showSignLayer} >
-          <SignatureLayer
-            inputs={inputs}
-            signerNo={signer.signerNo}
-            controlSignLayer={this.controlSignLayer}
-            selectedIndex={selectedIndex}
-            updateSignUrl={this.updateSignUrl}
-          />
-        </DimmedLayer>
-        <div className={styled.wrapper}>
-          {/* <ul className={styled.leftContents}>
-            {pdfItem.length > 0 && pdfItem.map((item, index) =>
-              <li key={index}>
-                <a href="#" data-index={index} onClick={this.getNewPdfItem}>
-                  <Document
-                    className={styled.listCanvas}
-                    file={this.props.documentUrl}
-                  >
-                    <Page pageNumber={item}/>
-                  </Document>
-                </a>
-              </li>
-            )}
-          </ul> */}
-
-          <ul className={styled.leftContents}>
-            <Document
-              className={styled.listCanvas}
-              file={this.props.documentUrl}
-            >
-              {Array.from(
-                new Array(numPages),
-                (el, index) => (
-                  <li key={index} style={{padding: '2px'}} className='thumbnailList'>
-                    <a href="#" data-index={index} onClick={this.getNewPdfItem}>
-                      <Page
-                        key={`page_${index + 1}`}
-                        pageNumber={index + 1}
-                        renderMode='canvas'
-                        renderTextLayer={false}
-                        renderAnnotationLayer={false}
-                        onLoadSuccess={page => console.log(`thumbnail page-${page.pageNumber} loaded`)}
-                        onRenderSuccess={this.onThumbnailRenderSuccess}
-                        scale={0.25}
-                      />
-                    </a>
-                  </li>
-                ),
-              )}
-            </Document>
-          </ul>
-          <div
-            // style={{ zoom }}
-            className={styled.rightContents}
-          >
-            <div
-              className="doc-area"
-              style={{
-                width: this.state.pageWidth,
-                height: '100%',
-                position: 'absolute',
-                zIndex: 10,
-                left: '50%',
-                transform: 'translateX(-50%)',
-              }}
-            >
-              <PlainBoxContainer
-                users={[signer]}
-                inputs={inputs}
-                updateTextArea={this.updateTextArea}
-                controlSignLayer={this.controlSignLayer}
-                pageNumber={pageNumber}
-              />
+          <div className="edit-body">
+            <div className="thumbnail">
+              <ul>
+                      <Document
+                        file={this.props.documentUrl}
+                      >
+                        {Array.from(
+                          new Array(numPages),
+                          (el, index) => (
+                            <li 
+                              key={index}
+                              className={pageNumber === index+1  ? 'on' : undefined}
+                            >
+                              <a href="#" data-index={index} onClick={this.getNewPdfItem}>
+                                <Page
+                                  key={`page_${index + 1}`}
+                                  pageNumber={index + 1}
+                                  renderMode='canvas'
+                                  renderTextLayer={false}
+                                  renderAnnotationLayer={false}
+                                  onLoadSuccess={page => console.log(`thumbnail page-${page.pageNumber} loaded`)}
+                                  onRenderSuccess={this.onThumbnailRenderSuccess}
+                                  scale={0.22}
+                                />
+                              </a>
+                            </li>
+                          ),
+                        )}
+                      </Document>
+              </ul>
             </div>
-            <Document
-              className='viewerContainer'
-              file={this.props.documentUrl}
-              onLoadSuccess={this.onDocumentLoadSuccess}
-            >
-              <Page 
-                className={styled.page}
-                pageNumber={pageNumber}
-                renderTextLayer={false}
-                renderAnnotationLayer={false}
-                scale={zoom}
-                onLoadSuccess={this.onPageLoadSuccess}
-                onRenderSuccess={this.onPageRenderSuccess}
-              />
-            </Document>
+            <div className="editor-view">
+              <Document
+                className='documentContainer'
+                file={this.props.documentUrl}
+                onLoadSuccess={this.onDocumentLoadSuccess}
+              >
+                <Page 
+                  className='pageContainer'
+                  pageNumber={pageNumber}
+                  renderTextLayer={false}
+                  renderAnnotationLayer={false}
+                  scale={zoom}
+                  onLoadSuccess={this.onPageLoadSuccess}
+                  onRenderSuccess={this.onPageRenderSuccess}
+                >
+                  <div
+                    className="inputbox-area"
+                    style={{
+                      width: this.state.pageWidth,
+                      height: this.state.pageHeight,
+                      position: 'absolute',
+                      paddingTop: '10px',
+                      paddingBottom: '10px',
+                      zIndex: 10,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                    }}
+                    // onMouseMove={this.documentMouseMove}
+                    // onMouseUp={this.updateEventObjectToNull}
+                  >
+                        <PlainBoxContainer
+                          users={[signer]}
+                          inputs={inputs}
+                          updateTextArea={this.updateTextArea}
+                          controlSignLayer={this.controlSignLayer}
+                          pageNumber={pageNumber}
+                        />
+                  </div>
+                </Page>
+              </Document>
+            </div>
+            
+            <div className="edit-pallet">
+              <ul>
+                <li><a onClick={this.saveContractInfo}>저장</a></li>
+              </ul>
+            </div>
+          
+          
+          
+
+          <DimmedLayer showSignLayer={showSignLayer} >
+            <SignatureLayer
+              inputs={inputs}
+              signerNo={signer.signerNo}
+              controlSignLayer={this.controlSignLayer}
+              selectedIndex={selectedIndex}
+              updateSignUrl={this.updateSignUrl}
+            />
+          </DimmedLayer>
+
           </div>
         </div>
       </div>
