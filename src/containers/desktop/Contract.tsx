@@ -57,9 +57,10 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
 
   constructor(props) {
     super(props);
+    console.log('constructor!');
     this.state = {
       signer: [],
-      inputs: [],
+      inputs: props.inputs,
       numPages: null,
       pageNumber: 1,
       showSignLayer: false,
@@ -80,7 +81,8 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     this.updateRightContentZoom = this.updateRightContentZoom.bind(this);
   }
 
-  async componentDidMount() {
+  componentDidMount() {
+    console.log('componentDidMount!');
     const $view = $('.doc-area');
     const view_w = $view.width();
     const view_h = $view.height();
@@ -91,13 +93,16 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
   }
 
   componentDidUpdate(_, prevState) {
+    
     const $view = $('.doc-area');
     const view_w = $view.width();
     const view_h = $view.height();
-
-    if(view_h < 0 || prevState.view_h !== view_h){
+    console.log('componentDidUpdate')
+    if(view_h < 0 || prevState.view_h !== view_h){  
+      // console.log('view_h = ' + view_h);
       this.setState({
         view_w,
+
         view_h
       }, this.initBoxData);
     }
@@ -112,6 +117,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
   }
 
   private initBoxData() {
+    console.log('initBoxData!')
     // const { view_w, view_h } = this.state;
     const { pageWidth, pageHeight } = this.state;
     const { signer, inputs } = this.props;
@@ -131,7 +137,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     this.setState({
       signer,
       originInputs: inputs,
-      inputs: restoreViewInfo
+      // inputs: restoreViewInfo
     });
   }
 
@@ -193,7 +199,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     if(!isValidInputs) return false;
 
     const newInputs = inputs.map((input, index) => {
-      const { x, y, w, h } = originInputs[index];
+      const { asdf, x, y, w, h } = originInputs[index];
 
       if(input.inputType === 'sign') {
         const newSignUrl = input.signUrl && input.signUrl.replace(domain, '');
@@ -231,17 +237,22 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     const ratio = nextScale / prevScale;
     console.log(prevScale, nextScale, ratio)
     const newBoxDataList = this.scaleMarker(ratio);
+    console.log(newBoxDataList)
     this.setState({
       zoom,
       inputs: newBoxDataList
-    });
+    }, () => { console.log(this.state.inputs) });
   }
 
   private scaleMarker(scale) {
+    
     const {inputs} = this.state;
+    console.log('scaling start')
+    console.log(inputs);
+
     const copyBoxDataList = deepCopy(inputs);
-    console.log('scale = ', scale)
-    console.log(inputs)
+    // console.log('scale = ', scale)
+    // console.log(inputs)
     const newBoxDataList = copyBoxDataList.map((data, boxIndex) => {
         return {
           ...data,
@@ -252,6 +263,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
         }
       }
     );
+    console.log('scaling done')
     console.log(newBoxDataList)
 
     return newBoxDataList;
@@ -292,6 +304,9 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     for (let i = 1; i <= numPages; i++) {
       pdfItem.push(i);
     }
+
+    // console.log('rendering contract')
+    // console.log(inputs)
 
     return (
       <div>

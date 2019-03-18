@@ -69,8 +69,8 @@ class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.Co
           position: 'relative'
         }}
       >
-        <input type="text"
-        // <textarea
+        {/* <input type="text" */}
+        <textarea
           disabled={editable ? false : true}
           style={editable ? editableStyle : nonEditableStyle}
           onChange={this.handleOnChange}
