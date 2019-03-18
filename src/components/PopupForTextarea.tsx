@@ -2,10 +2,10 @@ import * as React from "react";
 import SelectBox from "./SelectBox";
 
 interface IPopup {
-  setFontSize: (...args) => void;
-  setFontFamily: (...args) => void;
-  deleteTextArea: (...args) => void;
+  updateInputBox: (boxIndex: number, update: object) => void;
   boxIndex: number;
+  fontFamily: string;
+  fontSize: number;
 }
 
 const fontFamilyList = ['Times-Roman', 'Courier-Bold', 'Dotum', 'Gulim', 'Batang', 'Gungsuh'];
@@ -27,39 +27,39 @@ class PopupForTextarea extends React.Component<IPopup, React.ComponentState> {
   constructor(props) {
     super(props);
 
-    this.updateFontSize = this.updateFontSize.bind(this);
-    this.updateFontFamily = this.updateFontFamily.bind(this);
-    this.deleteThisTextArea = this.deleteThisTextArea.bind(this);
+    // this.updateFontSize = this.updateFontSize.bind(this);
+    // this.updateFontFamily = this.updateFontFamily.bind(this);
+    // this.deleteThisTextArea = this.deleteThisTextArea.bind(this);
   }
 
-  updateFontSize({ datas, index }) {
-    const { setFontSize, boxIndex } = this.props;
-    const selectedFontSize = datas[index];
-    setFontSize(boxIndex, selectedFontSize);
-  }
+  // updateFontSize({ datas, index }) {
+  //   const { updateInputBox, boxIndex } = this.props;
+  //   const selectedFontSize = datas[index];
+  //   updateInputBox(boxIndex, {fontSize: selectedFontSize} );
+  // }
 
-  updateFontFamily({ datas, index }) {
-    const { setFontFamily, boxIndex } = this.props;
-    const selectedFontFamily = datas[index];
-    setFontFamily(boxIndex, selectedFontFamily);
-  }
+  // updateFontFamily({ datas, index }) {
+  //   const { updateInputBox, boxIndex } = this.props;
+  //   const selectedFontFamily = datas[index];
+  //   updateInputBox(boxIndex, {fontFamily: selectedFontFamily} );
+  // }
 
   handleFontChange = (e) => {
     const {name, value} = e.target;
-    const { setFontFamily, boxIndex } = this.props;
-    setFontFamily(boxIndex, value);
+    const { updateInputBox, boxIndex } = this.props;
+    updateInputBox(boxIndex, {fontFamily: value} );
   }
 
   handleFontSizeChange = (e) => {
     const {name, value} = e.target;
-    const { setFontSize, boxIndex } = this.props;
-    setFontSize(boxIndex, Number(value));
+    const { updateInputBox, boxIndex } = this.props;
+    updateInputBox(boxIndex, {fontSize: Number(value)} );
   }
 
-  deleteThisTextArea() {
-    const { boxIndex, deleteTextArea } = this.props;
-    deleteTextArea(boxIndex);
-  }
+  // deleteThisTextArea() {
+  //   const { boxIndex, deleteTextArea } = this.props;
+  //   deleteTextArea(boxIndex);
+  // }
 
   render() {
     const {
@@ -95,7 +95,7 @@ class PopupForTextarea extends React.Component<IPopup, React.ComponentState> {
           <select 
             style={{width: '100px', height: '22px', float: 'right'}}
             onChange={this.handleFontSizeChange}
-            defaultValue={this.props.fontSize}
+            defaultValue={this.props.fontSize + ''}
           >
             {fontSizeList.map(fontSize => 
               <option 
