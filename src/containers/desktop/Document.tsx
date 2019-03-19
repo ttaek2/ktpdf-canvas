@@ -664,7 +664,8 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       return {
         inputType: 'checkbox',
         page,
-        signerNo: signerList[signerIndex].signerNo,
+        // signerNo: signerList[signerIndex].signerNo,
+        signerNo: signerList[signerIndex].signerId,
         x,
         y,
         w,
