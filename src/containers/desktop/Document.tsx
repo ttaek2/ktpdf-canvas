@@ -722,7 +722,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     console.log(inputs);
     const boxDataList = inputs.map((input, index) => {
       return getInitBoxData(input.page, 0, input.inputType, index);
-    });    
+    });
 
 
     const pdfItem = [];
