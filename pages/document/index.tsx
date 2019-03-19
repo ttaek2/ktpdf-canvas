@@ -29,6 +29,7 @@ interface IDocumentInfoAPIResponse {
   filePath: string;
   userId: string; 
   signers: Array<ISigner>;  
+  inputs:[];
 }
 
 const backgroundColorList = [
@@ -61,20 +62,20 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
   static async getInitialProps({query}) {
 
     // 포탈에서 호출 시 시작
-    console.log("query 1 :: " + JSON.stringify(query));
+    // console.log("query 1 :: " + JSON.stringify(query));
 
     // //let docInfo = JSON.stringify(query);
     let docInfo = JSON.parse(JSON.stringify(query));
     let params = JSON.parse(docInfo.params);
 
-    console.log("params.docId : " + params.docId);
-    console.log("params.regId : " + params.regId);
-    console.log("params.tmpDocId : " + params.tmpDocId);
-    console.log("params.docPath : " + params.docPath);
-    console.log("params.docName : " + params.docName);
+    // console.log("params.docId : " + params.docId);
+    // console.log("params.regId : " + params.regId);
+    // console.log("params.tmpDocId : " + params.tmpDocId);
+    // console.log("params.docPath : " + params.docPath);
+    // console.log("params.docName : " + params.docName);
 
     let signers = params.signers;
-    console.log("signers : " + signers.length);    
+    // console.log("signers : " + signers.length);    
     
     let documentNo = params.docId;    
     let documentUrl = params.docPath;
@@ -102,45 +103,44 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
   }
 
   componentWillMount(){
-    console.log("componentWillMount      >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    // console.log("componentWillMount");
   }
 
   componentDidMount() {
-    console.log("componentDidMount>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    const documentNo = this.props.documentNo;
-    
-    const {tmpDocId, regId} = this.props;
-    console.log("tmpDocId 1 : " + tmpDocId);
-    // console.log("regId 2 : " + regId);
+    // console.log("componentDidMount>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    const documentNo = this.props.documentNo;    
+    // const {tmpDocId, regId} = this.props;    
 
     // 템플릿 아이디가 있다면 기존 객체를 조회해본다.
-    if(tmpDocId == undefined || tmpDocId == ''){
-      console.log("tmpDocId 1 is undefined ");
-    }else{
-      console.log(" api 서버에서 조회를 시작한다.");
-      getDocumentInfoForSigner(tmpDocId, regId)
-      .then((data: any) => {           
-        this.setState({
-          // signer: data.signer,
-          // documentUrl: data.filePath,          
-          inputs: data.inputs
-        });
-      });
-    }
+    // if(tmpDocId == undefined || tmpDocId == ''){
+    //   // console.log("tmpDocId 1 is undefined ");
+    // }else{
+    //   // console.log(" api 서버에서 조회를 시작한다.");
+    //   getDocumentInfoForSigner(tmpDocId, regId)
+    //   .then((data: any) => {           
+    //     this.setState({
+    //       // signer: data.signer,
+    //       // documentUrl: data.filePath,          
+    //       inputs: data.inputs
+    //     });
+    //   });
+    // }
 
-    // 여기서 뭘 해야 할까? 세션체크? 파일경로 조회?
-    getDocumentInfo(documentNo)
-      .then((data: IDocumentInfoAPIResponse) => {
-        this.setState({
-          // documentUrl: data.doc,
-          documentNo: data.docId // 문서아이디  
-          ,docName: data.docName
-          ,fileName: data.fileName   
-          // ,documentUrl: data.filePath // 문서경로
-          ,userId: data.userId
-          // ,signerList: data.signers
-        })
-      });      
+    // 템플릿 아이디가 있다면 기존 객체를 조회해본다.
+    // getDocumentInfo(documentNo)
+    // getDocumentInfo(documentNo, tmpDocId, regId)
+    //   .then((data: IDocumentInfoAPIResponse) => {
+    //     // this.setState({
+    //     //   // documentUrl: data.doc,
+    //     //   // documentNo: data.docId // 문서아이디  
+    //     //   // ,docName: data.docName
+    //     //   // ,fileName: data.fileName   
+    //     //   // ,documentUrl: data.filePath // 문서경로
+    //     //   // ,userId: data.userId
+    //     //   // ,signerList: data.signers
+    //     //   inputs: data.inputs
+    //     // })
+    //   });      
   }
 
   render() {
@@ -148,13 +148,12 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
     const {documentNo} = this.props;
     // const {documentUrl, signerList} = this.state;
     const {documentUrl, signerList} = this.props;
-    const {docName, fileName, userId} = this.state;
+    const {docName, fileName} = this.state;
 
-    // const {tmpDocId, regId} = this.props;
+    const {tmpDocId, regId} = this.props;
     // console.log("regId : " + regId);
     const {inputs} = this.state;
-    console.log("============================= inputs");
-    console.log(inputs);
+    console.log("====== index.tsx ->  render ");    
 
     const users = signerList ? signerList.map((user, index) => ({
       ...user,
@@ -176,8 +175,9 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
           documentNo={documentNo}
           docName={docName}
           fileName={fileName}
-          userId={userId}
+          userId={regId}
           inputs={inputs}
+          tmpDocId={tmpDocId}
         />
       </div>
     );
