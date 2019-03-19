@@ -11,12 +11,16 @@ import $ from 'jquery';
 import ContainerForBoxes from "../../components/ContainerForBoxes";
 import { InputBox, TextBox, SignBox, CheckBox } from "src/interface/InputBox";
 
+import {getDocumentInfo} from "../../../src/api/document/getDocumentInfo";
+
+import Index from "./Index";
+
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const styled = require('./common.css');
 
 const convertView = (view_w, view_h, left, top, width, height) => {
-  console.log(view_w, view_h, left, top, width, height);
+  // console.log(view_w, view_h, left, top, width, height);
   const x = (left / view_w);
   const y = ((view_h - top - height) / view_h);
 
@@ -68,6 +72,45 @@ const getInitSignBox = (page, signerIndex, boxIndex): SignBox => {
     boxIndex
   }
 }
+const roadInitTextBox = (input, index): TextBox => {
+  return {
+    type: 'text',
+    top: input.y,
+    left: input.x,
+    fontSize: input.charSize,
+    fontFamily: input.font,
+    width: input.w,
+    height: input.h,
+    signerIndex:0,  // 생성자꺼...
+    page: input.page,
+    boxIndex : index
+  }
+}
+
+const roadInitSignBox = (input, index): SignBox => {
+  return {
+    type: 'sign',
+    top: input.y,
+    left: input.x,    
+    width: input.w,
+    height: input.h,
+    signerIndex:0,  // 생성자꺼...
+    page: input.page,
+    boxIndex : index
+  }
+}
+
+interface IInput {
+  inputType: string;
+  font: string;
+  charSize: string;
+  signerNo: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  page: number;
+}
 
 const getInitCheckBox = (page, signerIndex, boxIndex): CheckBox => {
   return {
@@ -88,7 +131,10 @@ interface IDocumentProps {
   signerList: Array<ISigner>;
   docName: string;
   fileName: string;
-  userId: string;
+  userId: string;  
+  // inputs: Array<IInput>;
+  inputs: []
+  tmpDocId: string;
 }
 
 class DocumentContainer extends React.Component<IDocumentProps, React.ComponentState> {
@@ -99,6 +145,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       docName: '',
       fileName: '',
       userId: '',
+      inputs: [],
 
       signerList: [],
       numPages: null,
@@ -121,6 +168,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       selectedBoxPage: 1,
       selectedBoxType: '',
       selectedBoxIndex: -1
+      ,tmpDocId:''
     };
 
     this.checkSelectedValue = this.checkSelectedValue.bind(this);
@@ -134,14 +182,35 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     this.getNewPdfItem = this.getNewPdfItem.bind(this);
     this.updateDocumentInfo = this.updateDocumentInfo.bind(this);
     this.updateRightContentZoom = this.updateRightContentZoom.bind(this);
+
+
+    this.roadInputData = this.roadInputData.bind(this);
   }
 
   componentDidMount() {
+
+    console.log("Document.tsx ============================== componentDidMount ");
     this.initBoxData();
+
+    const {documentNo, tmpDocId, userId} = this.props;    
+    console.log("userId :: " + userId)
+    // 템플릿 아이디가 있다면 기존 객체를 조회해본다.
+    if(tmpDocId != ''){
+      getDocumentInfo(documentNo, tmpDocId, userId)
+      .then((data: IDocumentProps) => {
+        // alert("=====================================");
+        console.log(data.inputs);
+        this.roadInputData(data.inputs);
+      });
+    }
+    
+
+    // getInitBoxData(pageNumber, selectSignerIndex, 'text', copyBoxDataList.length);
+
     $(window).scroll(() => {
       // console.log($(window).scrollTop(), $(window).height(), $(document).height());
       // if($(window).scrollTop() + $(window).height() == $(document).height()) {
-      //   console.log('bottom boom!')
+      //   console.log('Document.tsx bottom boom!')
       //   let {pageNumber, numPages} = this.state;
       //   pageNumber++;
       //   if(pageNumber <= numPages) {
@@ -151,7 +220,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       //   }
       // }
       // else if($(window).scrollTop() == 0) {
-      //   console.log('top boom!')
+      //   console.log('Document.tsx top boom!')
       //   let {pageNumber, numPages} = this.state;
       //   pageNumber--;
       //   if(pageNumber >= 1) {
@@ -164,6 +233,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   }
 
   componentDidUpdate(_, prevState): void {
+    console.log('Document.tsx componentDidUpdate');
     const $view = $('.inputbox-area');
     const view_w = $view.width();
     const view_h = $view.height();
@@ -178,7 +248,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
   // private documentMouseMove(e: React.MouseEvent) {
   //   e.preventDefault();
-  //   console.log('document mouse move!');
+  //   console.log('Document.tsx document mouse move!');
   //   const pageX = e.pageX - $(e.currentTarget).offset().left;
   //   const pageY = e.pageY - $(e.currentTarget).offset().top;
 
@@ -190,16 +260,20 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   //   }
   // }
 
-  private initBoxData() {
+  private initBoxData() {    
+    console.log("Document.tsx Document.tsx             initBoxData          ");
+    
     const {signerList} = this.props;
-
+    // const {signerList, inputs} = this.props;
+    
     this.setState({
       signerList
+      // ,inputs
     });
   }
 
   private getNewPdfItem(e: React.MouseEvent) {
-    console.log('getNewPdfItem called')
+    // console.log('Document.tsx getNewPdfItem called')
     e.preventDefault();
     const {pageNumber} = this.state;
     const idx = Number(e.currentTarget.getAttribute('data-index')) + 1;
@@ -212,20 +286,20 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
 
   private onDocumentLoadSuccess(pdf) {
-    console.log('DocumentLoadSuccess')
-    console.log(pdf)
+    // console.log('Document.tsx DocumentLoadSuccess')
+    // console.log(pdf)
     this.setState({
       numPages: pdf.numPages
     });
   };
 
   onPageLoadSuccess = (page) => {
-    console.log('PageLoadSuccess')
+    // console.log('Document.tsx PageLoadSuccess')
   }
 
   onPageRenderSuccess = (page) => {
-    console.log('PageRenderSuccess')
-    console.log(page.width, page.height)
+    console.log('Document.tsx PageRenderSuccess')
+    // console.log(page.width, page.height)
     this.setState({
       pageWidth: page.width,
       pageHeight: page.height
@@ -342,6 +416,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   // }
 
   private updateInputBox(boxIndex: number, update: object) {
+    console.log('Document.tsx updateInputBox');
     const {boxDataList} = this.state;
     const newBoxDataList = boxDataList.map(box => {
       if(box.boxIndex === boxIndex) {
@@ -527,7 +602,8 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         font: fontFamily,
         charSize: fontSize,
         page,
-        signerNo: signerList[signerIndex].signerNo,
+        // signerNo: signerList[signerIndex].signerNo,
+        signerNo: signerList[signerIndex].signerId,
         x,
         y,
         w,
@@ -557,7 +633,8 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       return {
         inputType: 'sign',
         page,
-        signerNo: signerList[signerIndex].signerNo,
+        // signerNo: signerList[signerIndex].signerNo,
+        signerNo: signerList[signerIndex].signerId,
         x,
         y,
         w,
@@ -612,7 +689,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     const {zoom: prevScale} = this.state;
     const nextScale = zoom;
     const ratio = nextScale / prevScale;
-    console.log(prevScale, nextScale, ratio)
+    // console.log(prevScale, nextScale, ratio)
     const newBoxDataList = this.scaleMarker(ratio);
     this.setState({
       zoom,
@@ -742,9 +819,60 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     this.setSelectedIndex({index});
   }
 
+  
+  
+  private roadInputData(inputs:any) {
+    console.log(" ================= ");
+    console.log(inputs);
+    const {boxDataList} = this.state;
+
+    
+    const copyBoxDataList = [...boxDataList];
+    
+    inputs.forEach((input, index) => {      
+      if(input.inputType == 'text'){
+        const initBoxData = roadInitTextBox(input, index);
+        copyBoxDataList.push(initBoxData);
+      }else if(input.inputType == 'sign'){
+        const initBoxData = roadInitSignBox(input, index);
+        copyBoxDataList.push(initBoxData);
+      }
+    });
+
+    // inputs.forEach(element => {
+    //   console.log(element.page);
+    //   // const initBoxData = roadInitTextBox(element.page, selectSignerIndex, element.index);
+    //   // copyBoxDataList.push(initBoxData);  
+    // });
+    
+
+    this.setState({
+      boxDataList: copyBoxDataList,
+    });
+
+    // const {
+    //   boxDataList,
+    //   pageNumber,
+    //   selectSignerIndex,
+    // } = this.state;
+    // const isSelected = this.checkSelectedValue();
+    // if (!isSelected) {
+    //   return false;
+    // }
+
+    // const copyBoxDataList = [...boxDataList];
+    // const initBoxData = roadInitTextBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
+    // copyBoxDataList.push(initBoxData);
+
+    // this.setState({
+    //   boxDataList: copyBoxDataList,
+    // });
+  }
+
 
   public render(): JSX.Element {
-    console.log('rendering document');
+    console.log('Document.tsx rendering document');
+
     const {
       pageNumber,
       numPages,
@@ -753,6 +881,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       zoom,
       selectSignerIndex
     } = this.state;
+
 
     const curPageInputBox = boxDataList.filter(box => box.page === pageNumber);
 
@@ -783,7 +912,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
                                   renderMode='canvas'
                                   renderTextLayer={false}
                                   renderAnnotationLayer={false}
-                                  onLoadSuccess={page => console.log(`thumbnail page-${page.pageNumber} loaded`)}
+                                  // onLoadSuccess={page => console.log(`thumbnail page-${page.pageNumber} loaded`)}
                                   onRenderSuccess={this.onThumbnailRenderSuccess}
                                   scale={0.22}
                                 />

@@ -4,13 +4,12 @@ import 'es6-promise';
 import 'reset-css/reset.css';
 import "@babel/polyfill";
 import * as React from 'react';
-import ContractContainer from '../../src/containers/desktop/Contract';
+import CompleteContainer from '../../src/containers/desktop/Complete';
 import HTML5Backend from "react-dnd-html5-backend";
 import {DragDropContextProvider} from "react-dnd";
-import {getDocumentInfoForSigner} from "../../src/api/signer/getDocumentInfoForSinger";
-import Head from 'next/head'
+import {getCompleteInfo} from "../../src/api/complete/getCompleteInfo";
 
-class Contract extends React.Component<any, React.ComponentState> {
+class Complete extends React.Component<any, React.ComponentState> {
 
   static async getInitialProps({ query }) {
     const { docNo, signerNo } = query;
@@ -30,7 +29,7 @@ class Contract extends React.Component<any, React.ComponentState> {
 
   componentDidMount() {
     const { signerNo, documentNo } = this.props;
-    getDocumentInfoForSigner(documentNo, signerNo)
+    getCompleteInfo(documentNo, signerNo)
       .then((data: any) => {
         // console.log(data.inputs);
         this.setState({
@@ -44,17 +43,14 @@ class Contract extends React.Component<any, React.ComponentState> {
   render() {
     const { documentNo } = this.props;
     const { signer, inputs, documentUrl } = this.state;
-console.log("inputs.length : " + inputs.length);
-    if(inputs.length < 1) return null;
+    
+    console.log("inputs.length : " + inputs.length);
+    //if(inputs.length < 1) return null;
 
     return(
       <div>
-        <Head>
-          <title>kt - document</title>
-          <link href="/assets/css/style.css" rel="stylesheet" />
-        </Head>
         <DragDropContextProvider backend={HTML5Backend}>
-          <ContractContainer
+          <CompleteContainer
             signer={signer}
             inputs={inputs}
             documentUrl={documentUrl}
@@ -66,4 +62,4 @@ console.log("inputs.length : " + inputs.length);
   }
 }
 
-export default Contract;
+export default Complete;
