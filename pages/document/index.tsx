@@ -6,8 +6,9 @@ import "@babel/polyfill";
 import * as React from 'react';
 import DocumentContainer from '../../src/containers/desktop/Document';
 import {getDocumentInfo} from "../../src/api/document/getDocumentInfo";
-import {ISigner} from "../../src/interface/ISigner";
 import {getDocumentInfoForSigner} from "../../src/api/signer/getDocumentInfoForSinger";
+import {ISigner} from "../../src/interface/ISigner";
+import Head from 'next/head'
 
 interface IDocumentProps {
   documentNo: string;
@@ -165,6 +166,10 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
 
     return (
       <div>
+        <Head>
+          <title>kt - document</title>
+          <link href="/assets/css/style.css" rel="stylesheet" />
+        </Head>
         <DocumentContainer
           documentUrl={documentUrl}
           signerList={users}

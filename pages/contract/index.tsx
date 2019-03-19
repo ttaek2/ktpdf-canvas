@@ -8,6 +8,7 @@ import ContractContainer from '../../src/containers/desktop/Contract';
 import HTML5Backend from "react-dnd-html5-backend";
 import {DragDropContextProvider} from "react-dnd";
 import {getDocumentInfoForSigner} from "../../src/api/signer/getDocumentInfoForSinger";
+import Head from 'next/head'
 
 class Contract extends React.Component<any, React.ComponentState> {
 
@@ -48,6 +49,10 @@ console.log("inputs.length : " + inputs.length);
 
     return(
       <div>
+        <Head>
+          <title>kt - document</title>
+          <link href="/assets/css/style.css" rel="stylesheet" />
+        </Head>
         <DragDropContextProvider backend={HTML5Backend}>
           <ContractContainer
             signer={signer}

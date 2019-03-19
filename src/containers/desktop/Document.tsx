@@ -9,6 +9,7 @@ import {setDocumentInfo} from "../../api/document/setDocumentInfo";
 import ZoomController from "../../components/ZoomController";
 import $ from 'jquery';
 import ContainerForBoxes from "../../components/ContainerForBoxes";
+import { InputBox, TextBox, SignBox } from "src/interface/InputBox";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -41,33 +42,32 @@ const defaultData = {
   boxIndex: -1
 };
 
-const getInitBoxData = (page, signerIndex, type, boxIndex) => {
-  if(type === 'text') {
-    return {
-      type,
-      top: defaultData.top,
-      left: defaultData.textLeft,
-      fontSize: defaultData.fontSize,
-      fontFamily: defaultData.fontFamily,
-      width: defaultData.width,
-      height: defaultData.height,
-      signerIndex,
-      page,
-      boxIndex
-    }
-  } else if(type === 'sign') {
-    return {
-      type,
-      top: defaultData.top,
-      left: defaultData.signLeft,
-      width: defaultData.width,
-      height: defaultData.height,
-      signerIndex,
-      page,
-      boxIndex
-    }
+const getInitTextBox = (page, signerIndex, boxIndex): TextBox => {
+  return {
+    type: 'text',
+    top: defaultData.top,
+    left: defaultData.textLeft,
+    fontSize: defaultData.fontSize,
+    fontFamily: defaultData.fontFamily,
+    width: 300,
+    height: 30,
+    signerIndex,
+    page,
+    boxIndex
   }
-};
+}
+const getInitSignBox = (page, signerIndex, boxIndex): SignBox => {
+  return {
+    type: 'sign',
+    top: defaultData.top,
+    left: defaultData.signLeft,
+    width: 100,
+    height: 100,
+    signerIndex,
+    page,
+    boxIndex
+  }
+}
 
 interface IInput {
   inputType: string;
@@ -92,8 +92,6 @@ interface IDocumentProps {
 }
 
 class DocumentContainer extends React.Component<IDocumentProps, React.ComponentState> {
-
-  pageWidth = 0;
 
   constructor(props) {
     super(props);
@@ -126,25 +124,16 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       selectedBoxIndex: -1
     };
 
-    this.updateOffset = this.updateOffset.bind(this);
     this.checkSelectedValue = this.checkSelectedValue.bind(this);
     this.addSignatureArea = this.addSignatureArea.bind(this);
-    this.deleteSignatureArea = this.deleteSignatureArea.bind(this);
+    this.updateInputBox = this.updateInputBox.bind(this);
+    this.deleteInputBox = this.deleteInputBox.bind(this);
     this.addTextArea = this.addTextArea.bind(this);
-    this.deleteTextArea = this.deleteTextArea.bind(this);
-    this.setFontSize = this.setFontSize.bind(this);
-    this.setFontFamily = this.setFontFamily.bind(this);
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
     this.onDocumentLoadSuccess = this.onDocumentLoadSuccess.bind(this);
     this.getNewPdfItem = this.getNewPdfItem.bind(this);
     this.updateDocumentInfo = this.updateDocumentInfo.bind(this);
-    this.updateBoxSize = this.updateBoxSize.bind(this);
     this.updateRightContentZoom = this.updateRightContentZoom.bind(this);
-    this.documentMouseMove = this.documentMouseMove.bind(this);
-    this.updateCustomBoxSize = this.updateCustomBoxSize.bind(this);
-    this.updateEventObject = this.updateEventObject.bind(this);
-    this.updateEventObjectToNull = this.updateEventObjectToNull.bind(this);
-    this.updateType = this.updateType.bind(this);
   }
 
   componentDidMount() {
@@ -181,8 +170,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   }
 
   componentDidUpdate(_, prevState): void {
-
-    const $view = $('.doc-area');
+    const $view = $('.inputbox-area');
     const view_w = $view.width();
     const view_h = $view.height();
 
@@ -194,19 +182,19 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     }
   }
 
-  private documentMouseMove(e: React.MouseEvent) {
-    e.preventDefault();
-    console.log('document mouse move!');
-    const pageX = e.pageX - $(e.currentTarget).offset().left;
-    const pageY = e.pageY - $(e.currentTarget).offset().top;
+  // private documentMouseMove(e: React.MouseEvent) {
+  //   e.preventDefault();
+  //   console.log('document mouse move!');
+  //   const pageX = e.pageX - $(e.currentTarget).offset().left;
+  //   const pageY = e.pageY - $(e.currentTarget).offset().top;
 
-    const { type } = this.state;
-    if(type === 'size') {
-      this.setState({ pageX, pageY }, this.updateCustomBoxSize);
-    } else if(type === 'pos') {
-      this.setState({ pageX, pageY }, this.updateCustomBoxPosition);
-    }
-  }
+  //   const { type } = this.state;
+  //   if(type === 'size') {
+  //     this.setState({ pageX, pageY }, this.updateCustomBoxSize);
+  //   } else if(type === 'pos') {
+  //     this.setState({ pageX, pageY }, this.updateCustomBoxPosition);
+  //   }
+  // }
 
   private initBoxData() {    
     console.log("            initBoxData          ");
@@ -225,8 +213,8 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     const {pageNumber} = this.state;
     const idx = Number(e.currentTarget.getAttribute('data-index')) + 1;
     
-    $('li.thumbnailList').find('canvas').css('opacity', 0.7);
-    $(e.currentTarget).find('canvas').css('opacity', 1);
+    // $('li.thumbnailList').find('canvas').css('opacity', 0.7);
+    // $(e.currentTarget).find('canvas').css('opacity', 1);
     
     this.setState({pageNumber: idx});
   }
@@ -251,7 +239,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       pageWidth: page.width,
       pageHeight: page.height
     })
-    $('.viewerContainer').find('canvas').css('opacity', 1.0);
+    // $('.documentContainer').find('canvas').css('opacity', 1.0);
   }
 
   private checkSelectedValue(): boolean {
@@ -273,14 +261,12 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       return false;
     }
 
-    const copyBoxDataList = deepCopy(boxDataList);
-    const initBoxData = getInitBoxData(pageNumber, selectSignerIndex, 'text', copyBoxDataList.length);
+    const copyBoxDataList = [...boxDataList];
+    const initBoxData = getInitTextBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
     copyBoxDataList.push(initBoxData);
 
     this.setState({
       boxDataList: copyBoxDataList,
-      e: null,
-      type: 'pos'
     });
   }
 
@@ -296,21 +282,18 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       return false;
     }
 
-    const copyBoxDataList = deepCopy(boxDataList);
-    const initBoxData = getInitBoxData(pageNumber, selectSignerIndex, 'sign', copyBoxDataList.length);
+    const copyBoxDataList = [...boxDataList];
+    const initBoxData = getInitSignBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
     copyBoxDataList.push(initBoxData);
 
     this.setState({
       boxDataList: copyBoxDataList,
-      e: null,
-      type: 'pos'
     });
   }
 
-  private deleteTextArea(index: number): void {
+  private deleteInputBox(index: number): void {
     const { boxDataList } = this.state;
-    const copyBoxDataList = deepCopy(boxDataList);
-    const newBoxDataList = copyBoxDataList.filter((box) => {
+    const newBoxDataList = boxDataList.filter((box) => {
       const boxIndex = box.boxIndex;
       return boxIndex !== index;
     });
@@ -318,25 +301,40 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     this.setState({boxDataList: newBoxDataList});
   }
 
-  private deleteSignatureArea(index: number): void {
-    const { boxDataList } = this.state;
-    const copyBoxDataList = deepCopy(boxDataList);
-    const newBoxDataList = copyBoxDataList.filter((box) => {
-      const boxIndex = box.boxIndex;
-      return boxIndex !== index;
-    });
+  // private deleteSignatureArea(index: number): void {
+  //   const { boxDataList } = this.state;
+  //   const copyBoxDataList = deepCopy(boxDataList);
+  //   const newBoxDataList = copyBoxDataList.filter((box) => {
+  //     const boxIndex = box.boxIndex;
+  //     return boxIndex !== index;
+  //   });
 
-    this.setState({boxDataList: newBoxDataList});
-  }
+  //   this.setState({boxDataList: newBoxDataList});
+  // }
 
-  private setFontSize(index: number, fontSize: string) {
+  // private setFontSize(index: number, fontSize: string) {
+  //   const {boxDataList} = this.state;
+  //   const newBoxDataList = boxDataList.map((box, boxIndex) => {
+  //     if(index === boxIndex) {
+  //       return {
+  //         ...box,
+  //         fontSize
+  //       }
+  //     }
+
+  //     return box;
+  //   });
+
+  //   this.setState({boxDataList: newBoxDataList});
+  // }
+
+  private updateInputBox(boxIndex: number, update: object) {
     const {boxDataList} = this.state;
-    const copyBoxDataList = deepCopy(boxDataList);
-    const newBoxDataList = copyBoxDataList.map((box, boxIndex) => {
-      if(index === boxIndex) {
+    const newBoxDataList = boxDataList.map(box => {
+      if(box.boxIndex === boxIndex) {
         return {
           ...box,
-          fontSize
+          ...update
         }
       }
 
@@ -346,47 +344,45 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     this.setState({boxDataList: newBoxDataList});
   }
 
-  private setFontFamily(index: number, fontFamily: string) {
-    const {boxDataList} = this.state;
-    const copyBoxDataList = deepCopy(boxDataList);
-    const newBoxDataList = copyBoxDataList.map((box, boxIndex) => {
-      if(index === boxIndex) {
-        return {
-          ...box,
-          fontFamily
-        }
-      }
+  // private setFontFamily(index: number, fontFamily: string) {
+  //   const {boxDataList} = this.state;
+  //   const newBoxDataList = boxDataList.map((box, boxIndex) => {
+  //     if(index === boxIndex) {
+  //       return {
+  //         ...box,
+  //         fontFamily
+  //       }
+  //     }
 
-      return box;
-    });
+  //     return box;
+  //   });
 
-    this.setState({boxDataList: newBoxDataList});
-  }
+  //   this.setState({boxDataList: newBoxDataList});
+  // }
 
   private setSelectedIndex({index: selectSignerIndex}) {
     this.setState({selectSignerIndex});
   }
 
-  private updateSize(size, number) {
-    const { width, height } = size;
-    const {boxDataList} = this.state;
-    const copyBoxDataList = deepCopy(boxDataList);
-    const newBoxDataList = copyBoxDataList.map((data, boxIndex) => {
-      if (boxIndex === number) {
-        return {
-          ...data,
-          width,
-          height
-        }
-      }
+  // private updateSize(size, number) {
+  //   const { width, height } = size;
+  //   const {boxDataList} = this.state;
+  //   const newBoxDataList = boxDataList.map((data, boxIndex) => {
+  //     if (boxIndex === number) {
+  //       return {
+  //         ...data,
+  //         width,
+  //         height
+  //       }
+  //     }
 
-      return {
-        ...data
-      }
-    });
+  //     return {
+  //       ...data
+  //     }
+  //   });
 
-    return newBoxDataList;
-  }
+  //   return newBoxDataList;
+  // }
 
   private scaleMarker(scale) {
     const {boxDataList} = this.state;
@@ -405,83 +401,83 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     return newBoxDataList;
   }
 
-  private checkOffset(offset) {
-    const { view_w, view_h } = this.state;
-    const { top: topNotchecked, left: leftNotChecked } = offset;
-    let top;
-    let left;
+  // private checkOffset(offset) {
+  //   const { view_w, view_h } = this.state;
+  //   const { top: topNotchecked, left: leftNotChecked } = offset;
+  //   let top;
+  //   let left;
 
-    top = topNotchecked;
-    left = leftNotChecked;
+  //   top = topNotchecked;
+  //   left = leftNotChecked;
 
-    if(topNotchecked < 0) {
-      top = 0;
-    }
+  //   if(topNotchecked < 0) {
+  //     top = 0;
+  //   }
 
-    if(leftNotChecked < 0) {
-      left = 0;
-    }
+  //   if(leftNotChecked < 0) {
+  //     left = 0;
+  //   }
 
-    if(topNotchecked > view_w) {
-      top = view_w;
-    }
+  //   if(topNotchecked > view_w) {
+  //     top = view_w;
+  //   }
 
-    if(leftNotChecked > view_h) {
-      left = view_h;
-    }
+  //   if(leftNotChecked > view_h) {
+  //     left = view_h;
+  //   }
 
-    return {
-      top,
-      left
-    }
-  }
+  //   return {
+  //     top,
+  //     left
+  //   }
+  // }
 
-  private updateOffset(offset, number) {
-    // const { top, left } = this.checkOffset(offset);
-    const { top, left } = offset;
-    const {boxDataList} = this.state;
-    const copyBoxDataList = deepCopy(boxDataList);
-    const newBoxDataList = copyBoxDataList.map((data, boxIndex) => {
-      if (boxIndex === number) {
-        return {
-          ...data,
-          top: top > -1 ? top : 0,
-          left: left > -1 ? left: 0
-        }
-      }
+  // private updateOffset(offset, number) {
+  //   // const { top, left } = this.checkOffset(offset);
+  //   const { top, left } = offset;
+  //   const {boxDataList} = this.state;
+  //   const copyBoxDataList = deepCopy(boxDataList);
+  //   const newBoxDataList = copyBoxDataList.map((data, boxIndex) => {
+  //     if (boxIndex === number) {
+  //       return {
+  //         ...data,
+  //         top: top > -1 ? top : 0,
+  //         left: left > -1 ? left: 0
+  //       }
+  //     }
 
-      return {
-        ...data
-      }
-    });
+  //     return {
+  //       ...data
+  //     }
+  //   });
 
-    return newBoxDataList;
-  }
+  //   return newBoxDataList;
+  // }
 
-  private updateBoxSize(boxIndex, width, height, type) {
-    const isTextArea = type === 'text';
-    const {boxDataList, pageNumber} = this.state;
-    const copyBoxDataList = deepCopy(boxDataList);
-    const newBoxDataList = copyBoxDataList.map((data, index) => {
-      const isSelectedBox = data.page === Number(pageNumber) && index === Number(boxIndex);
-      if (!isSelectedBox) return {...data};
-      if (isTextArea) {
-        return {
-          ...data,
-          textWidth: width,
-          textHeight: height
-        }
-      } else {
-        return {
-          ...data,
-          signWidth: width,
-          signHeight: height
-        }
-      }
-    });
+  // private updateBoxSize(boxIndex, width, height, type) {
+  //   const isTextArea = type === 'text';
+  //   const {boxDataList, pageNumber} = this.state;
+  //   const copyBoxDataList = deepCopy(boxDataList);
+  //   const newBoxDataList = copyBoxDataList.map((data, index) => {
+  //     const isSelectedBox = data.page === Number(pageNumber) && index === Number(boxIndex);
+  //     if (!isSelectedBox) return {...data};
+  //     if (isTextArea) {
+  //       return {
+  //         ...data,
+  //         textWidth: width,
+  //         textHeight: height
+  //       }
+  //     } else {
+  //       return {
+  //         ...data,
+  //         signWidth: width,
+  //         signHeight: height
+  //       }
+  //     }
+  //   });
 
-    this.setState({boxDataList: newBoxDataList});
-  }
+  //   this.setState({boxDataList: newBoxDataList});
+  // }
 
   private convertDataForAPI(boxDataList) {
     const {
@@ -581,121 +577,126 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     });
   }
 
-  private updateCustomBoxSize() {
-    const { pageX, pageY, e, type, selectedBoxIndex } = this.state;
-    if(!e || type !== 'size') return false;
+  // private updateCustomBoxSize() {
+  //   const { pageX, pageY, e, type, selectedBoxIndex } = this.state;
+  //   if(!e || type !== 'size') return false;
 
-    const parentBox = e.parent()[0];
-    const top = parentBox.offsetTop;
-    const left = parentBox.offsetLeft;
+  //   const parentBox = e.parent()[0];
+  //   const top = parentBox.offsetTop;
+  //   const left = parentBox.offsetLeft;
 
-    const newHeight = pageY - top;
-    const newWidth = pageX - left;
+  //   const newHeight = pageY - top;
+  //   const newWidth = pageX - left;
 
-    const newBoxDataList = this.updateSize({width: newWidth, height: newHeight}, selectedBoxIndex);
+  //   const newBoxDataList = this.updateSize({width: newWidth, height: newHeight}, selectedBoxIndex);
 
-    this.setState({
-      boxWidth: newWidth,
-      boxHeight: newHeight,
-      boxDataList: newBoxDataList
-    });
-  }
+  //   this.setState({
+  //     boxWidth: newWidth,
+  //     boxHeight: newHeight,
+  //     boxDataList: newBoxDataList
+  //   });
+  // }
 
-  private updateCustomBoxPosition() {
-    const {
-      pageX,
-      pageY,
-      initPageX,
-      initPageY,
-      e,
-      type,
-      selectedBoxIndex,
-      boxDataList,
-      pageWidth,
-      pageHeight
-    } = this.state;
+  // private updateCustomBoxPosition() {
+  //   const {
+  //     pageX,
+  //     pageY,
+  //     initPageX,
+  //     initPageY,
+  //     e,
+  //     type,
+  //     selectedBoxIndex,
+  //     boxDataList,
+  //     pageWidth,
+  //     pageHeight
+  //   } = this.state;
 
-    const isNotStable = (!e || type !== 'pos' || selectedBoxIndex < 0 || !boxDataList[selectedBoxIndex]);
-    if(isNotStable) return false;
+  //   const isNotStable = (!e || type !== 'pos' || selectedBoxIndex < 0 || !boxDataList[selectedBoxIndex]);
+  //   if(isNotStable) return false;
 
-    const moveX = pageX - initPageX;
-    const moveY = pageY - initPageY;
+  //   const moveX = pageX - initPageX;
+  //   const moveY = pageY - initPageY;
 
-    const { top:prevBoxPageY , left:prevBoxPageX, width, height } = boxDataList[selectedBoxIndex];
-    let boxPageX = prevBoxPageX + moveX;
-    if(boxPageX + width > pageWidth)
-      boxPageX = prevBoxPageX;
-    let boxPageY = prevBoxPageY + moveY;
-    if(boxPageY + height > pageHeight)
-      boxPageY = prevBoxPageY;
+  //   const { top:prevBoxPageY , left:prevBoxPageX, width, height } = boxDataList[selectedBoxIndex];
+  //   let boxPageX = prevBoxPageX + moveX;
+  //   if(boxPageX + width > pageWidth)
+  //     boxPageX = prevBoxPageX;
+  //   let boxPageY = prevBoxPageY + moveY;
+  //   if(boxPageY + height > pageHeight)
+  //     boxPageY = prevBoxPageY;
 
-    const newBoxDataList = this.updateOffset({top: boxPageY, left: boxPageX}, selectedBoxIndex);
+  //   const newBoxDataList = this.updateOffset({top: boxPageY, left: boxPageX}, selectedBoxIndex);
 
-    this.setState({
-      boxPageX,
-      boxPageY,
-      initPageX: pageX,
-      initPageY: pageY,
-      boxDataList: newBoxDataList
-    });
-  }
+  //   this.setState({
+  //     boxPageX,
+  //     boxPageY,
+  //     initPageX: pageX,
+  //     initPageY: pageY,
+  //     boxDataList: newBoxDataList
+  //   });
+  // }
 
-  private updateEventObject(e) {
-    const { type: controlType } = this.state;
-    if(controlType === 'pos') {
-      const target = $(e.currentTarget);
-      const { page, type, number } = target.data();
-      this.setState({
-        e: target,
-        selectedBoxIndex: number,
-        selectedBoxPage: page,
-        selectedBoxType: type
-      });
-    } else {
-      const target = $(e.currentTarget).parent();
-      const { page, number } = target.data();
-      this.setState({
-        e: $(e.currentTarget),
-        selectedBoxIndex: number,
-        selectedBoxPage: page
-      });
-    }
-  }
+  // private updateEventObject(e) {
+  //   const { type: controlType } = this.state;
+  //   if(controlType === 'pos') {
+  //     const target = $(e.currentTarget);
+  //     const { page, type, number } = target.data();
+  //     this.setState({
+  //       e: target,
+  //       selectedBoxIndex: number,
+  //       selectedBoxPage: page,
+  //       selectedBoxType: type
+  //     });
+  //   } else {
+  //     const target = $(e.currentTarget).parent();
+  //     const { page, number } = target.data();
+  //     this.setState({
+  //       e: $(e.currentTarget),
+  //       selectedBoxIndex: number,
+  //       selectedBoxPage: page
+  //     });
+  //   }
+  // }
 
-  private updateEventObjectToNull() {
-    this.setState({
-      e: null,
-      selectedBoxIndex: -1
-    });
-  }
+  // private updateEventObjectToNull() {
+  //   this.setState({
+  //     e: null,
+  //     selectedBoxIndex: -1
+  //   });
+  // }
 
-  private updateType(type) {
-    const { pageX, pageY } = this.state;
-    this.setState({
-      initPageX: pageX,
-      initPageY: pageY,
-      type
-    });
-  }
+  // private updateType(type) {
+  //   const { pageX, pageY } = this.state;
+  //   this.setState({
+  //     initPageX: pageX,
+  //     initPageY: pageY,
+  //     type
+  //   });
+  // }
 
-  updateMarkerPos = (markerid, left, top) => {
-    const {boxDataList} = this.state;
-    this.setState({
-      ...this.state,
-      boxDataList: boxDataList.map(marker => {
-        if(marker.boxIndex === markerid) {
-          marker.left = left;
-          marker.top = top;
-        }
-        return marker;
-      })
-    })
-  }
+  // updateMarkerPos = (markerid, left, top) => {
+  //   const {boxDataList} = this.state;
+  //   this.setState({
+  //     ...this.state,
+  //     boxDataList: boxDataList.map(marker => {
+  //       if(marker.boxIndex === markerid) {
+  //         marker.left = left;
+  //         marker.top = top;
+  //       }
+  //       return marker;
+  //     })
+  //   })
+  // }
 
   onThumbnailRenderSuccess = (page) => {
     if(page.pageNumber == 1) {
-      $('li.thumbnailList').find('canvas').first().css('opacity', 1.0);
+      // $('li.thumbnailList').find('canvas').first().css('opacity', 1.0);
     }
+  }
+
+  onSelectionChange = (e) => {
+    const index = e.target.value;
+    this.setSelectedIndex({index});
   }
 
 
@@ -707,182 +708,119 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       // boxDataList,
       signerList,
       zoom,
-      type,
-      boxPageY,
-      boxPageX,
-      e,
       selectSignerIndex
     } = this.state;
 
-    console.log('==================== boxDataList : ' + this.props.inputs);
-    console.log(this.props.inputs);
-    
-    const {inputs} = this.props;
-    console.log("Document.tsx => inputs : " + inputs.length);
-    console.log(inputs);
-    const boxDataList = inputs.map((input, index) => {
-      return getInitBoxData(input.page, 0, input.inputType, index);
-    });
-
-
-    const pdfItem = [];
-    for (let i = 1; i <= numPages; i++) {
-      pdfItem.push(i);
-    }
+    const curPageInputBox = boxDataList.filter(box => box.page === pageNumber);
 
     return (
-      <div>
-        <div className={styled.rightSidebar}>
-          <div>
-            <div style={{fontSize: '15px'}}>{`${pageNumber} / ${numPages}`}</div>
+      <div className="container service">
+        <div className='editor'>
+          <div className='header'>
             <ZoomController updateRightContentZoom={this.updateRightContentZoom} zoom={zoom}/>
-            <SelectBox
-              width={'200px'}
-              option={signerList.map(user => user.signerNm)}
-              datas={signerList}
-              callback={this.setSelectedIndex}
-            />
           </div>
-          <div style={{padding: '2px', textAlign: 'center'}}>
-            <button
-              style={{
-                width: '140px',
-                height: '40px'
-              }}
-              onClick={this.addTextArea}>텍스트 영역
-            </button>
-          </div>
-          <div style={{padding: '2px', textAlign: 'center'}}>
-            <button
-              style={{
-                width: '140px',
-                height: '40px',
-                marginLeft: '-1px'
-              }}
-              onClick={this.addSignatureArea}>서명 영역
-            </button>
-          </div>
-          <div style={{padding: '100px 0'}}>
-            <button style={{
-              width: '140px',
-              height: '50px',
-              marginLeft: '15%',
-              position: 'relative',
-              zIndex: 30
-            }} onClick={this.updateDocumentInfo}
-            >저장
-            </button>
-          </div>
-        </div>
-        <div className={styled.wrapper}>
-          
-          {/* <ul className={styled.leftContents}>
-            {pdfItem.length > 0 && pdfItem.map((item, index) =>
-              <li key={index}>
-                <a href="#" data-index={index} onClick={this.getNewPdfItem}>
-                  <Document
-                    className={styled.listCanvas}
-                    file={this.props.documentUrl}
-                  >
-                    <Page pageNumber={item}/>
-                  </Document>
-                </a>
-              </li>
-            )}
-          </ul> */}
+          <div className="edit-body">
+            <div className="thumbnail">
 
-          <ul className={styled.leftContents}>
-                  <Document
-                    className={styled.listCanvas}
-                    file={this.props.documentUrl}
-                  >
-                    {Array.from(
-                      new Array(numPages),
-                      (el, index) => (
-                        <li key={index} style={{padding: '2px'}} className='thumbnailList'>
-                          <a href="#" data-index={index} onClick={this.getNewPdfItem}>
-                            <Page
-                              key={`page_${index + 1}`}
-                              pageNumber={index + 1}
-                              renderMode='canvas'
-                              renderTextLayer={false}
-                              renderAnnotationLayer={false}
-                              onLoadSuccess={page => console.log(`thumbnail page-${page.pageNumber} loaded`)}
-                              onRenderSuccess={this.onThumbnailRenderSuccess}
-                              scale={0.25}
-                            />
-                          </a>
-                        </li>
-                      ),
-                    )}
-                  </Document>
-          </ul>
-          <div
-            className={styled.rightContents}
-            // style={{zoom}}
-          >
-            <div
-              className="doc-area"
-              style={{
-                width: this.state.pageWidth,
-                height: '100%',
-                position: 'absolute',
-                zIndex: 10,
-                left: '50%',
-                transform: 'translateX(-50%)',
-              }}
-              onMouseMove={this.documentMouseMove}
-              onMouseUp={this.updateEventObjectToNull}
-            >
-                  <ContainerForBoxes
-                    updateCustomBoxSize={this.updateCustomBoxSize}
-                    updateEventObject={this.updateEventObject}
-                    updateEventObjectToNull={this.updateEventObjectToNull}
-                    updateType={this.updateType}
-                    type={type}
-                    boxPageY={boxPageY}
-                    boxPageX={boxPageX}
-                    e={e}
-                    boxDataList={boxDataList}
-                    users={signerList}
-                    page={pageNumber}
-                    selectSignerIndex={selectSignerIndex}
-                    setFontFamily={this.setFontFamily}
-                    setFontSize={this.setFontSize}
-                    deleteTextArea={this.deleteTextArea}
-                    deleteSignatureArea={this.deleteSignatureArea}
-                    updateMarkerPos={this.updateMarkerPos}
-                    scale={zoom}
-                  />
+              <ul>
+                      <Document
+                        file={this.props.documentUrl}
+                      >
+                        {Array.from(
+                          new Array(numPages),
+                          (el, index) => (
+                            <li 
+                              key={index}
+                              className={pageNumber === index+1  ? 'on' : undefined}
+                            >
+                              <a href="#" data-index={index} onClick={this.getNewPdfItem}>
+                                <Page
+                                  key={`page_${index + 1}`}
+                                  pageNumber={index + 1}
+                                  renderMode='canvas'
+                                  renderTextLayer={false}
+                                  renderAnnotationLayer={false}
+                                  onLoadSuccess={page => console.log(`thumbnail page-${page.pageNumber} loaded`)}
+                                  onRenderSuccess={this.onThumbnailRenderSuccess}
+                                  scale={0.22}
+                                />
+                              </a>
+                            </li>
+                          ),
+                        )}
+                      </Document>
+              </ul>
+
             </div>
-            <Document
-              className='viewerContainer'
-              file={this.props.documentUrl}
-              onLoadSuccess={this.onDocumentLoadSuccess}
-            >
-              <Page 
-                className={styled.page}
-                pageNumber={pageNumber}
-                renderTextLayer={false}
-                renderAnnotationLayer={false}
-                scale={zoom}
-                onLoadSuccess={this.onPageLoadSuccess}
-                onRenderSuccess={this.onPageRenderSuccess}
+            <div className="editor-view">
+              
+              <Document
+                className='documentContainer'
+                file={this.props.documentUrl}
+                onLoadSuccess={this.onDocumentLoadSuccess}
               >
-                
-              </Page>
-              {/* {Array.from(
-                new Array(numPages),
-                (el, index) => (
-                  <Page
-                    key={`page_${index + 1}`}
-                    pageNumber={index + 1}
-                    onLoadSuccess={page => console.log(`page-${page.pageNumber} loaded`)}
-                  />
-                ),
-              )} */}
-            </Document>
-            
+                <Page 
+                  className='pageContainer'
+                  pageNumber={pageNumber}
+                  renderTextLayer={false}
+                  renderAnnotationLayer={false}
+                  scale={zoom}
+                  onLoadSuccess={this.onPageLoadSuccess}
+                  onRenderSuccess={this.onPageRenderSuccess}
+                >
+                  <div
+                    className="inputbox-area"
+                    style={{
+                      width: this.state.pageWidth,
+                      height: this.state.pageHeight,
+                      position: 'absolute',
+                      paddingTop: '10px',
+                      paddingBottom: '10px',
+                      zIndex: 10,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                    }}
+                    // onMouseMove={this.documentMouseMove}
+                    // onMouseUp={this.updateEventObjectToNull}
+                  >
+                        <ContainerForBoxes
+                          updateInputBox={this.updateInputBox}
+                          boxDataList={curPageInputBox}
+                          users={signerList}
+                          page={pageNumber}
+                          deleteInputBox={this.deleteInputBox}
+                          scale={zoom}
+                        />
+                  </div>
+                </Page>
+              </Document>
+
+            </div>
+            <div className="edit-pallet">
+              <div className="input-select secondary">
+                <select
+                  onChange={this.onSelectionChange}
+                  style={selectSignerIndex >= 0 && signerList[selectSignerIndex] ? {color: signerList[selectSignerIndex].backgroundColor} : undefined}
+                >
+                  <option value="">참여자 지정</option>
+                  {signerList.map((signer, index) => 
+                    <option 
+                      value={index}
+                      style={{color: signer.backgroundColor}}
+                    >{signer.signerNm}</option>  
+                  )}
+                </select>
+              </div>
+              <ul>
+                <li><a href="#" onClick={this.addTextArea}><span className="icon-insert-txt"></span>텍스트 입력</a></li>
+                <li><a href="#" onClick={this.addSignatureArea}><span className="icon-stamp"></span>서명 (Stamp)</a></li>
+                <li><a href="#"><span className="icon-checklist"></span>체크항목</a></li>
+                <li><a href="#"><span className="icon-selected-list"></span>선택항목</a></li>
+                <li><a href="#"><span className="icon-memo"></span>메모 입력</a></li>
+                <li><a onClick={this.updateDocumentInfo}>저장</a></li>
+              </ul>
+
+            </div>
           </div>
         </div>
       </div>

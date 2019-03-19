@@ -3,69 +3,74 @@ import Popup from "./Popup";
 import PopupForSignature from "./PopupForSignature";
 import {IoMdCloseCircle} from 'react-icons/io';
 import { IconContext } from "react-icons";
+import { SignBox } from 'src/interface/InputBox';
+import { ISigner } from 'src/interface/ISigner';
+import {Rnd} from 'react-rnd'
 
-class BoxWithSignature extends Component<any, any> {
+interface Props {
+  boxData: SignBox;
+  users: Array<ISigner>;
+  updateInputBox: (boxIndex: number, update: object) => void;
+  deleteInputBox: (index: number) => void;
+  scale: number;
+}
 
-  constructor(props) {
+class BoxWithSignature extends Component<Props, any> {
+
+  constructor(props: Props) {
     super(props);
 
-    this.state = {
-      width: 200,
-      height: 100,
-      isShowPopup: false
-    };
-
-    this.keyPositionMouseDown = this.keyPositionMouseDown.bind(this);
-    this.keyMouseDown = this.keyMouseDown.bind(this);
-    this.updateType = this.updateType.bind(this);
-    this.resetType = this.resetType.bind(this);
-    this.updateTypePos = this.updateTypePos.bind(this);
-    this.closePopup = this.closePopup.bind(this);
-    this.showPopup = this.showPopup.bind(this);
+    // this.keyPositionMouseDown = this.keyPositionMouseDown.bind(this);
+    // this.keyMouseDown = this.keyMouseDown.bind(this);
+    // this.updateType = this.updateType.bind(this);
+    // this.resetType = this.resetType.bind(this);
+    // this.updateTypePos = this.updateTypePos.bind(this);
+    // this.closePopup = this.closePopup.bind(this);
+    // this.showPopup = this.showPopup.bind(this);
   }
 
-  keyMouseDown(e) {
-    if (e !== this.props.e) {
-      this.props.updateEventObject(e);
-      e.stopPropagation();
-    }
-  }
+  // keyMouseDown(e) {
+  //   if (e !== this.props.e) {
+  //     this.props.updateEventObject(e);
+  //     e.stopPropagation();
+  //   }
+  // }
 
-  keyPositionMouseDown(e) {
-    if(e !== this.props.e) {
-      this.props.updateEventObject(e);
-      this.props.updateType('pos');
-    }
-  }
+  // keyPositionMouseDown(e) {
+  //   if(e !== this.props.e) {
+  //     this.props.updateEventObject(e);
+  //     this.props.updateType('pos');
+  //   }
+  // }
 
-  updateType(e) {
-    this.props.updateType('size');
-    e.stopPropagation();
-  }
+  // updateType(e) {
+  //   this.props.updateType('size');
+  //   e.stopPropagation();
+  // }
 
-  resetType(e) {
-    this.props.updateEventObjectToNull();
-    e.stopPropagation();
-  }
+  // resetType(e) {
+  //   this.props.updateEventObjectToNull();
+  //   e.stopPropagation();
+  // }
 
-  updateTypePos() {
-    const controlType = this.props.type;
-    if(!controlType || controlType === 'size') return false;
+  // updateTypePos() {
+  //   const controlType = this.props.type;
+  //   if(!controlType || controlType === 'size') return false;
 
-    this.props.updateType('pos');
-  }
+  //   this.props.updateType('pos');
+  // }
 
-  closePopup() {
-    this.setState({ isShowPopup: false });
-  }
+  // closePopup() {
+  //   this.setState({ isShowPopup: false });
+  // }
 
-  showPopup() {
-    this.setState({ isShowPopup: true });
-  }
+  // showPopup() {
+  //   this.setState({ isShowPopup: true });
+  // }
 
   onCloseBtnClick = (e) => {
-    const {deleteSignatureArea, boxIndex} = this.props;
-    deleteSignatureArea(boxIndex);
+    const {deleteInputBox, boxData} = this.props;
+    deleteInputBox(boxData.boxIndex);
   }
 
   render() {
@@ -78,140 +83,93 @@ class BoxWithSignature extends Component<any, any> {
       type,
       boxIndex,
       signerIndex,
+    } = this.props.boxData;
+
+    console.log(width, height)
+    const {
       users,
-      deleteSignatureArea
+      deleteInputBox,
+      updateInputBox,
     } = this.props;
 
-    const { isShowPopup } = this.state;
     const { backgroundColor } = users[signerIndex];
 
     const closeicon = {
       color: "white", 
       className: "global-class-name", 
-      size: "2em",
+      size: "1.3em",
       style: {
         float: 'right'
       }
     }
 
-    const signMarker = (
-      <div 
+
+    return (
+      <Rnd
+        size={{ width: width,  height: height }}
+        position={{ x: left, y: top }}
+        onDragStop={(e, d) => { updateInputBox(boxIndex, {left: d.x, top: d.y}) }}
+        onResizeStop={(e, direction, ref, delta, position) => {
+            updateInputBox(boxIndex, {
+                width: width + delta.width,
+                height: height + delta.height,
+                ...position,
+            });
+        }}
+        enableResizing={{ top:false, right:false, bottom:false, left:false, topRight:false, bottomRight:true, bottomLeft:false, topLeft:false }}
+        enableUserSelectHack={true}
+        bounds='parent'
+        lockAspectRatio={true}
         style={{
-          position: 'absolute',
-          width: `${width}px`,
-          height: `${height}px`,
-          top,
-          left,
-          zIndex: 20,
           borderRadius: '10px',
           border: `1px solid ${backgroundColor}`,
           overflow: 'hidden',
         }}
-        data-number={boxIndex}
-        data-type={type}
-        data-page={page}
-        onMouseOver={this.updateTypePos}
-        onMouseDown={this.keyPositionMouseDown}
-        onMouseUp={this.resetType}
-        onDoubleClick={this.showPopup}
+        resizeHandleStyles={{
+          bottomRight: {
+              position: 'absolute',
+              width: '15px',
+              height: '15px',
+              background: `${backgroundColor}`,
+              borderRadius: '15px 0 0 0',
+              right: 0,
+              bottom: 0,
+              cursor: 'se-resize',
+          }
+        }}
       >
-        <div style={{
-          height: '20px',
-          position: 'relative',
-          backgroundColor: `${backgroundColor}`,
-          color: 'white',
-        }}>
-          <span
-            onClick={this.onCloseBtnClick}  
-          >
-            <IconContext.Provider value={closeicon}>
-              <IoMdCloseCircle  />
-            </IconContext.Provider>
-          </span>
-        </div>
-        <div style={{
-          position: 'relative',
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'white',
-          opacity: 0.7
-        }}/>
         <div 
           style={{
-            position: 'absolute',
-            width: '15px',
-            height: '15px',
-            background: `${backgroundColor}`,
-            borderRadius: '15px 0 0 0',
-            right: 0,
-            bottom: 0,
-            cursor: 'se-resize',
-            // -moz-border-radius: '20px 0 0 0',
-            // -webkit-border-radius: '20px 0 0 0',
+            width: '100%',
+            height: '100%',
           }}
-          onMouseOver={this.updateType}
-          onMouseDown={this.keyMouseDown}
-          onMouseUp={this.resetType}
-        />
-      </div>
-    )
-
-    return (
-      <div>{signMarker}</div>
-      // <div
-      //   data-number={boxIndex}
-      //   data-type={type}
-      //   data-page={page}
-      //   style={{
-      //     position: 'absolute',
-      //     width: `${width}px`,
-      //     height: `${height}px`,
-      //     top,
-      //     left,
-      //     zIndex: 20,
-      //     backgroundColor: `${backgroundColor}`
-      //   }}>
-      //   <Popup
-      //     isShowPopup={isShowPopup}
-      //     closePopup={this.closePopup}
-      //     customStyle={{
-      //       height: '50px',
-      //       top: '-70px'
-      //     }}
-      //   >
-      //     <PopupForSignature
-      //       boxIndex={boxIndex}
-      //       deleteSignatureArea={deleteSignatureArea}
-      //     />
-      //   </Popup>
-      //   <div
-      //     data-number={boxIndex}
-      //     data-type={type}
-      //     data-page={page}
-      //     style={{
-      //       position: 'relative',
-      //       width: `${width}px`,
-      //       height: `${height}px`,
-      //     }}
-      //     onMouseOver={this.updateTypePos}
-      //     onMouseDown={this.keyPositionMouseDown}
-      //     onMouseUp={this.resetType}
-      //     onDoubleClick={this.showPopup}
-      //   />
-      //   <div style={{
-      //     position: 'absolute',
-      //     bottom: 0,
-      //     right: 0,
-      //     width: '10px',
-      //     height: '10px',
-      //     backgroundColor: '#000',
-      //     zIndex: 30
-      //   }}
-      //        onMouseOver={this.updateType}
-      //        onMouseDown={this.keyMouseDown}
-      //        onMouseUp={this.resetType}
-      //   />
-      // </div>
+          data-number={boxIndex}
+          data-type={type}
+          data-page={page}
+        >
+          <div style={{
+            height: '20px',
+            position: 'relative',
+            backgroundColor: `${backgroundColor}`,
+            color: 'white',
+          }}>
+            <span
+              onClick={this.onCloseBtnClick}  
+            >
+              <IconContext.Provider value={closeicon}>
+                <IoMdCloseCircle  />
+              </IconContext.Provider>
+            </span>
+          </div>
+          <div style={{
+            position: 'relative',
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'white',
+            opacity: 0.7
+          }}/>
+        </div>
+      </Rnd>
     );
   }
 }

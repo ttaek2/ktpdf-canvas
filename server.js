@@ -10,7 +10,7 @@ app.prepare().then(() => {
     const server = express();
 
     
-    server.use(express.static('public'));
+    server.use(express.static('static'));
     // server.use(cors());
 
     // THIS IS THE DEFAULT ROUTE, DON'T EDIT THIS
