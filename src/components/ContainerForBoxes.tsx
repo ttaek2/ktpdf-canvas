@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import BoxWithTextArea from "./BoxWithTextArea";
 import BoxWithSignature from "./BoxWithSignature";
-import { InputBox, TextBox, SignBox } from 'src/interface/InputBox';
+import { InputBox, TextBox, SignBox, CheckBox } from 'src/interface/InputBox';
 import { ISigner } from 'src/interface/ISigner';
+import BoxWithCheckbox from './BoxWithCheckbox';
 
 interface Props {
   boxDataList: Array<InputBox>;
@@ -52,6 +53,19 @@ class ContainerForBoxes extends Component<Props, null> {
                 <BoxWithSignature
                   key={`${box.boxIndex}${box.type}`}
                   boxData={box as SignBox}
+                  users={users}
+                  updateInputBox={updateInputBox}
+                  deleteInputBox={deleteInputBox}
+                  scale={scale}
+                />
+              )
+            }
+
+            else if(box.type === 'checkbox') {
+              return (
+                <BoxWithCheckbox
+                  key={`${box.boxIndex}${box.type}`}
+                  boxData={box as CheckBox}
                   users={users}
                   updateInputBox={updateInputBox}
                   deleteInputBox={deleteInputBox}

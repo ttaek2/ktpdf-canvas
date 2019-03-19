@@ -7,6 +7,7 @@ import { IconContext } from "react-icons";
 import {Rnd} from 'react-rnd'
 import { TextBox } from 'src/interface/InputBox';
 import { ISigner } from 'src/interface/ISigner';
+import $ from 'jquery';
 
 const defaultZIndex = 20;
 const oo = 987654321;
@@ -143,17 +144,18 @@ class BoxWithTextArea extends Component<Props, any> {
     })
   }
 
-  onMouseLeave = (e) => {
-    console.log('mouse leave')
-    this.setState({
-      zIndex: defaultZIndex,
-      showCloseBtn: false,
-    })
-  }
 
   onCloseBtnClick = (e) => {
     const {deleteInputBox, boxData} = this.props;
     deleteInputBox(boxData.boxIndex);
+  }
+
+  onMouseOver = (e) => {
+    $(e.currentTarget).prev('.inputbox-header').show();
+  }
+
+  onMouseLeave = (e) => {
+    $(e.currentTarget).find('.inputbox-header').hide();
   }
 
   render() {
@@ -183,12 +185,14 @@ class BoxWithTextArea extends Component<Props, any> {
     const { backgroundColor } = users[signerIndex];
 
     const closeicon = {
-      color: backgroundColor, 
+      color: "white", 
       className: "global-class-name", 
-      size: "2em",
+      size: "1.1em",
       style: {
-        // position: 'absolute',
-
+        position: 'relative',
+        right: '0px',
+        // float: 'right'
+        cursor: 'default',
       }
     }
 
@@ -210,16 +214,17 @@ class BoxWithTextArea extends Component<Props, any> {
           dragHandleClassName={`textbox-${boxIndex}`}
           resizeHandleStyles={{
             bottomRight: {
-                position: 'absolute',
-                bottom: 0,
-                right: 0,
-                width: '10px',
-                height: '10px',
-                backgroundColor: '#000',
-                zIndex: 30,
-                cursor: 'se-resize',
+              position: 'absolute',
+              width: '10px',
+              height: '10px',
+              background: `${backgroundColor}`,
+              borderRadius: '10px 0 0 0',
+              right: 0,
+              bottom: 0,
+              cursor: 'se-resize',
             }
           }}
+          onMouseLeave={this.onMouseLeave}
         >
           <Popup
             isShowPopup={isShowPopup}
@@ -232,10 +237,35 @@ class BoxWithTextArea extends Component<Props, any> {
               fontSize={fontSize}
             />
           </Popup>
+
+          <div
+            className='inputbox-header' 
+            style={{
+              width: '100%',
+              height: '18px',
+              position: 'absolute',
+              top: '-17px',
+              border: `1px solid ${backgroundColor}`,
+              backgroundColor: `${backgroundColor}`,
+              color: 'white',
+              borderRadius: '10px 10px 0 0',
+              textAlign: 'right',
+              display: 'none',
+            }}
+          >
+            <span
+              onClick={this.onCloseBtnClick}  
+            >
+              <IconContext.Provider value={closeicon}>
+                <IoMdCloseCircle  />
+              </IconContext.Provider>
+            </span>
+          </div>
+
           <div
             className={`textbox-${boxIndex}`}
             style={{width: '100%', height: '100%'}}
-            // onMouseEnter={this.onMouseEnter}
+            onMouseOver={this.onMouseOver}
             // onMouseLeave={this.onMouseLeave}
           >
             <textarea
@@ -255,11 +285,11 @@ class BoxWithTextArea extends Component<Props, any> {
                 opacity: 0.7,
                 border: `1px solid ${backgroundColor}`,
               }}
-              placeholder="텍스트"
+              placeholder="텍스트 입력란"
               onDoubleClick={this.togglePopup}
               
             />
-            {showCloseBtn && 
+            {/* {showCloseBtn && 
             // {true && 
               <div 
                 style={{
@@ -273,7 +303,7 @@ class BoxWithTextArea extends Component<Props, any> {
                   <IoMdCloseCircle  />
                 </IconContext.Provider>
               </div>
-            }
+            } */}
           </div>
         </Rnd>
     );

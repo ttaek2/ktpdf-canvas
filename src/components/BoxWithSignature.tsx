@@ -5,7 +5,8 @@ import {IoMdCloseCircle} from 'react-icons/io';
 import { IconContext } from "react-icons";
 import { SignBox } from 'src/interface/InputBox';
 import { ISigner } from 'src/interface/ISigner';
-import {Rnd} from 'react-rnd'
+import {Rnd} from 'react-rnd';
+import $ from 'jquery';
 
 interface Props {
   boxData: SignBox;
@@ -73,6 +74,14 @@ class BoxWithSignature extends Component<Props, any> {
     deleteInputBox(boxData.boxIndex);
   }
 
+  onMouseOver = (e) => {
+    $(e.currentTarget).prev('.inputbox-header').show();
+  }
+
+  onMouseLeave = (e) => {
+    $(e.currentTarget).find('.inputbox-header').hide();
+  }
+
   render() {
     const {
       top,
@@ -97,9 +106,12 @@ class BoxWithSignature extends Component<Props, any> {
     const closeicon = {
       color: "white", 
       className: "global-class-name", 
-      size: "1.3em",
+      size: "1.1em",
       style: {
-        float: 'right'
+        position: 'relative',
+        right: '0px',
+        // float: 'right'
+        cursor: 'default',
       }
     }
 
@@ -120,55 +132,64 @@ class BoxWithSignature extends Component<Props, any> {
         enableUserSelectHack={true}
         bounds='parent'
         lockAspectRatio={true}
-        style={{
-          borderRadius: '10px',
-          border: `1px solid ${backgroundColor}`,
-          overflow: 'hidden',
-        }}
         resizeHandleStyles={{
           bottomRight: {
               position: 'absolute',
-              width: '15px',
-              height: '15px',
+              width: '10px',
+              height: '10px',
               background: `${backgroundColor}`,
-              borderRadius: '15px 0 0 0',
+              borderRadius: '10px 0 0 0',
               right: 0,
               bottom: 0,
               cursor: 'se-resize',
           }
         }}
+        onMouseLeave={this.onMouseLeave}
       >
+        
+        <div
+          className='inputbox-header' 
+          style={{
+            width: '100%',
+            height: '18px',
+            position: 'absolute',
+            top: '-17px',
+            border: `1px solid ${backgroundColor}`,
+            backgroundColor: `${backgroundColor}`,
+            color: 'white',
+            borderRadius: '10px 10px 0 0',
+            textAlign: 'right',
+            display: 'none',
+          }}
+        >
+          <span
+            onClick={this.onCloseBtnClick}  
+          >
+            <IconContext.Provider value={closeicon}>
+              <IoMdCloseCircle  />
+            </IconContext.Provider>
+          </span>
+        </div>
+
         <div 
           style={{
             width: '100%',
             height: '100%',
+            border: `1px solid ${backgroundColor}`,
+            overflow: 'hidden',
+            backgroundColor: 'white',
+            opacity: 0.7,
           }}
+          className='inputbox-body'
           data-number={boxIndex}
           data-type={type}
           data-page={page}
+          onMouseOver={this.onMouseOver}
         >
-          <div style={{
-            height: '20px',
-            position: 'relative',
-            backgroundColor: `${backgroundColor}`,
-            color: 'white',
-          }}>
-            <span
-              onClick={this.onCloseBtnClick}  
-            >
-              <IconContext.Provider value={closeicon}>
-                <IoMdCloseCircle  />
-              </IconContext.Provider>
-            </span>
-          </div>
-          <div style={{
-            position: 'relative',
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'white',
-            opacity: 0.7
-          }}/>
+          
         </div>
+
+        
       </Rnd>
     );
   }

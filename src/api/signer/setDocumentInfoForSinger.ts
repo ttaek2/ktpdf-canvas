@@ -7,6 +7,8 @@ export async function setDocumentInfoForSigner(documentNo: number, signerNo: str
   const config = {};
   // const config = { headers: {'Authorization': "Bearer " + cookies.get('token')}};
 
+  console.log(DOCUMENT_INFO_API_PATH)
+
   const fetch = new ApiFetch(DOCUMENT_INFO_API_PATH, data, config);
   return fetch.post().then((response : any)=>{
       return response.data;

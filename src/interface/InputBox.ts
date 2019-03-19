@@ -17,3 +17,7 @@ export interface TextBox extends InputBox {
 export interface SignBox extends InputBox {
 
 }
+
+export interface CheckBox extends InputBox {
+
+}

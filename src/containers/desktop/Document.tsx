@@ -9,7 +9,7 @@ import {setDocumentInfo} from "../../api/document/setDocumentInfo";
 import ZoomController from "../../components/ZoomController";
 import $ from 'jquery';
 import ContainerForBoxes from "../../components/ContainerForBoxes";
-import { InputBox, TextBox, SignBox } from "src/interface/InputBox";
+import { InputBox, TextBox, SignBox, CheckBox } from "src/interface/InputBox";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -69,6 +69,19 @@ const getInitSignBox = (page, signerIndex, boxIndex): SignBox => {
   }
 }
 
+const getInitCheckBox = (page, signerIndex, boxIndex): CheckBox => {
+  return {
+    type: 'checkbox',
+    top: defaultData.top,
+    left: defaultData.signLeft,
+    width: 50,
+    height: 50,
+    signerIndex,
+    page,
+    boxIndex
+  }
+}
+
 interface IDocumentProps {
   documentNo: string;
   documentUrl: string;
@@ -112,6 +125,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
     this.checkSelectedValue = this.checkSelectedValue.bind(this);
     this.addSignatureArea = this.addSignatureArea.bind(this);
+    this.addCheckbox = this.addCheckbox.bind(this);
     this.updateInputBox = this.updateInputBox.bind(this);
     this.deleteInputBox = this.deleteInputBox.bind(this);
     this.addTextArea = this.addTextArea.bind(this);
@@ -266,6 +280,28 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     this.setState({
       boxDataList: copyBoxDataList,
     });
+  }
+
+  private addCheckbox() {
+
+    const {
+      boxDataList,
+      pageNumber,
+      selectSignerIndex,
+    } = this.state;
+    const isSelected = this.checkSelectedValue();
+    if (!isSelected) {
+      return false;
+    }
+
+    const copyBoxDataList = [...boxDataList];
+    const initBoxData = getInitCheckBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
+    copyBoxDataList.push(initBoxData);
+
+    this.setState({
+      boxDataList: copyBoxDataList,
+    });
+    console.log(this.state.boxDataList)
   }
 
   private deleteInputBox(index: number): void {
@@ -529,7 +565,37 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       }
     });
 
-    return [].concat(textAreaListFormatted, signatureAreaListFormatted);
+    const checkboxList = boxDataList.filter(({ type }) => type === 'checkbox');
+    const checkboxListFormatted = checkboxList.map(data => {
+      const {
+        top,
+        left,
+        page,
+        signerIndex,
+        width,
+        height
+      } = data;
+
+      const {zoom: scale, pageWidth, pageHeight} = this.state;
+
+      // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
+      const x = left / scale;
+      const y = top / scale;
+      const w = width / scale;
+      const h = height / scale;
+
+      return {
+        inputType: 'checkbox',
+        page,
+        signerNo: signerList[signerIndex].signerNo,
+        x,
+        y,
+        w,
+        h
+      }
+    });
+
+    return [].concat(textAreaListFormatted, signatureAreaListFormatted, checkboxListFormatted);
   }
 
   private updateDocumentInfo() {
@@ -667,7 +733,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
   onThumbnailRenderSuccess = (page) => {
     if(page.pageNumber == 1) {
-      // $('li.thumbnailList').find('canvas').first().css('opacity', 1.0);
+      $('.thumbnail').find('canvas').css('width', '100%').css('height', '100%');
     }
   }
 
@@ -791,7 +857,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
               <ul>
                 <li><a href="#" onClick={this.addTextArea}><span className="icon-insert-txt"></span>텍스트 입력</a></li>
                 <li><a href="#" onClick={this.addSignatureArea}><span className="icon-stamp"></span>서명 (Stamp)</a></li>
-                <li><a href="#"><span className="icon-checklist"></span>체크항목</a></li>
+                <li><a href="#" onClick={this.addCheckbox}><span className="icon-checklist"></span>체크항목</a></li>
                 <li><a href="#"><span className="icon-selected-list"></span>선택항목</a></li>
                 <li><a href="#"><span className="icon-memo"></span>메모 입력</a></li>
                 <li><a onClick={this.updateDocumentInfo}>저장</a></li>

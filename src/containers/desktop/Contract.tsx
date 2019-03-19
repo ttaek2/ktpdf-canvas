@@ -191,9 +191,12 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
         if(!isNotEmpty) { alert('사인영역을 채워주세요.'); }
         return isNotEmpty;
     }
+    return true;
   }
 
   private saveContractInfo() {
+    console.log('saveContractInfo')
+    console.log(this.state.inputs)
     const { documentNo } = this.props;
     const { inputs, originInputs, signer } = this.state;
     const signerNo = signer.signerNo;
@@ -209,6 +212,16 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
         return {
           ...input,
           signUrl: newSignUrl,
+          x,
+          y,
+          w,
+          h
+        }
+      }
+      else if(input.inputType === 'checkbox') {
+        return {
+          ...input,
+          addText: input.addText ? 'Y' : 'N',
           x,
           y,
           w,
@@ -250,13 +263,12 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
   private scaleMarker(scale) {
     
     const {inputs} = this.state;
-    console.log('scaling start')
+    console.log('scaling start scale = ', scale)
     console.log(inputs);
 
-    const copyBoxDataList = deepCopy(inputs);
     // console.log('scale = ', scale)
     // console.log(inputs)
-    const newBoxDataList = copyBoxDataList.map((data, boxIndex) => {
+    const newBoxDataList = inputs.map((data, boxIndex) => {
         return {
           ...data,
           x: data.x * scale,
@@ -280,6 +292,12 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
 
   onPageLoadSuccess = (page) => {
     console.log('PageLoadSuccess')
+    console.log(page.width, page.height)
+    this.setState({
+      pageWidth: page.width,
+      pageHeight: page.height
+    })
+    this.initBoxData();
   }
 
   onPageRenderSuccess = (page) => {
@@ -289,7 +307,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       pageWidth: page.width,
       pageHeight: page.height
     })
-    this.initBoxData();
+    // this.initBoxData();
     // $('.viewerContainer').find('canvas').css('opacity', 1.0);
   }
 
@@ -304,6 +322,8 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       zoom
     } = this.state;
 
+    console.log('inputs!!!!!!!!!!!!!!!!!!!!!!')
+    console.log(inputs)
 
     return (
       <div className="container service">

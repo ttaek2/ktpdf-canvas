@@ -1926,7 +1926,7 @@ input::placehodler {
   }
 
   .container {
-    margin-top: 5.625rem;
+    /* margin-top: 5.625rem; */
   }
 
   .main-bg {
@@ -4002,7 +4002,7 @@ input::placehodler {
 }
 .service .editor .header {
   width: 100%;
-  height: 70px;
+  /* height: 70px; */
   padding: 1.125rem 0;
   background-color: #282a37;
   color: #ffffff;
@@ -4021,7 +4021,7 @@ input::placehodler {
 }
 .service .editor .edit-body {
   position: relative;
-  top: 70px;
+  top: 4.4rem;
   width: 100%;
   /* height: 36.875rem; */
   height: 100%;
@@ -4035,6 +4035,7 @@ input::placehodler {
   background-color: gray;
   overflow-y: scroll;
   padding-top: 0.875rem;
+  z-index: 500;
 }
 .service .editor .edit-body .thumbnail li {
   display: block;
@@ -4055,7 +4056,8 @@ input::placehodler {
   /* width: calc(100% - 26.25rem); */
   width: 100%;
   height: 100%;
-  float: left;
+  /* float: left; */
+  position: relative;
 }
 
 .service .editor .edit-body .editor-view .pageContainer {
@@ -4076,7 +4078,7 @@ input::placehodler {
   /* position: absolute; */
   position: fixed;
   right: 0.625rem;
-  top: 80px;
+  top: 5rem;
   bottom: 0.625rem;
   background-color: #ffffff;
   border: 0.0625rem solid #d5d5d5;
@@ -4199,3 +4201,16 @@ input::placehodler {
 
 /*# sourceMappingURL=style.css.map */
 
+.resize-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 10px 0 0 0;
+  right: 0;
+  bottom: 0;
+  cursor: se-resize;
+}
+
+.textbox-body:hover + .textbox-header {
+  display: block;
+}

@@ -2,6 +2,7 @@ import * as React from "react";
 import PlainBox from "./PlainBox";
 import PlainBoxForTextArea from "./PlainBoxForTextArea";
 import PlainBoxForSignature from "./PlainBoxForSignature";
+import PlainBoxForCheckbox from "./PlainBoxForCheckbox";
 
 const styles: React.CSSProperties = {
   width: '100%',
@@ -91,6 +92,18 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
                 h={h}
                 controlSignLayer={controlSignLayer}
                 signUrl={signUrl}
+                editable={editable}
+              />}
+              {inputType === 'checkbox'
+              && <PlainBoxForCheckbox
+                backgroundColor={''}
+                color={''}
+                name={userNm}
+                boxIndex={index}
+                w={w}
+                h={h}
+                updateTextArea={updateTextArea}
+                addText={addText}
                 editable={editable}
               />}
             </PlainBox>
