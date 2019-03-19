@@ -7,7 +7,7 @@ import DimmedLayer from "../../components/DimmedLayer";
 import SignatureLayer from "../../components/SignatureLayer";
 import {ISigner} from "../../interface/ISigner";
 import PlainBoxContainer from "../../components/PlainBoxContainer";
-import {setDocumentInfoForSigner} from "../../api/signer/setDocumentInfoForSinger";
+import {setCompleteInfo} from "../../api/complete/setCompleteInfo";
 import ZoomController from "../../components/ZoomController";
 import $ from 'jquery';
 import apiPath from "../../api/enum/apiPath";
@@ -53,7 +53,7 @@ const convertView = (view_w, view_h, left, top, width, height) => {
   }
 };
 
-class ContractContainer extends React.Component<IContractProps, React.ComponentState> {
+class CompleteContainer extends React.Component<IContractProps, React.ComponentState> {
 
   constructor(props) {
     super(props);
@@ -113,7 +113,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
 
   private initBoxData() {
     // const { view_w, view_h } = this.state;
-    const { pageWidth, pageHeight } = this.state;    
+    const { pageWidth, pageHeight } = this.state;
     const { signer, inputs } = this.props;
 
     // const restoreViewInfo = inputs.map(input => {
@@ -189,35 +189,41 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     const { inputs, originInputs, signer } = this.state;
     const signerNo = signer.signerNo;
     const domain = `${apiPath.DOMAIN.HOSTNAME}:${apiPath.DOMAIN.PORT}`;
-    const isValidInputs = inputs.every(input => this.isValidInput(input));
-    if(!isValidInputs) return false;
+    // const isValidInputs = inputs.every(input => this.isValidInput(input));
+    // if(!isValidInputs) return false;
 
-    const newInputs = inputs.map((input, index) => {
-      const { x, y, w, h } = originInputs[index];
+    // const newInputs = inputs.map((input, index) => {
+    //   const { x, y, w, h } = originInputs[index];
 
-      if(input.inputType === 'sign') {
-        const newSignUrl = input.signUrl && input.signUrl.replace(domain, '');
-        return {
-          ...input,
-          signUrl: newSignUrl,
-          x,
-          y,
-          w,
-          h
+    //   if(input.inputType === 'sign') {
+    //     const newSignUrl = input.signUrl && input.signUrl.replace(domain, '');
+    //     return {
+    //       ...input,
+    //       signUrl: newSignUrl,
+    //       x,
+    //       y,
+    //       w,
+    //       h
+    //     }
+    //   }
+
+    //   return {
+    //     ...input,
+    //     x,
+    //     y,
+    //     w,
+    //     h
+    //   }
+    // });
+
+    // setCompleteInfo(documentNo, signerNo, {inputs: newInputs}).then(_ => {
+      setCompleteInfo(documentNo, signerNo).then((data:any) => {
+        if(data.code == '200'){
+          alert('저장 완료');
+        }else{
+          alert('저장 처리중 에러 : ' + data.code);
         }
-      }
-
-      return {
-        ...input,
-        x,
-        y,
-        w,
-        h
-      }
-    });
-
-    setDocumentInfoForSigner(documentNo, signerNo, {inputs: newInputs}).then(_ => {
-      alert('저장 완료');
+        
     });
   }
 
@@ -412,4 +418,4 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     );
   }
 }
-export default ContractContainer;
+export default CompleteContainer;

@@ -87,7 +87,7 @@ interface IDocumentProps {
   signerList: Array<ISigner>;
   docName: string;
   fileName: string;
-  userId: string;
+  userId: string;  
   inputs: Array<IInput>;
 }
 
@@ -148,20 +148,10 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   }
 
   componentDidMount() {
-    this.initBoxData();
 
     console.log("============================== componentDidMount ");
-    const {inputs} = this.props;
-    console.log("Document.tsx => inputs : " + inputs.length);
-    console.log(inputs);
-    const restoreViewInfo = inputs.map((input, index) => {
-      console.log(" >>>>>>>>>>>>>>>>>>>>>>>>>> " + input.signerNo)
-      return getInitBoxData(input.page, 0, input.inputType, index);      
-    });
 
-    this.setState({
-      boxDataList: restoreViewInfo
-    });
+    this.initBoxData();
     
     // getInitBoxData(pageNumber, selectSignerIndex, 'text', copyBoxDataList.length);
 
@@ -191,6 +181,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   }
 
   componentDidUpdate(_, prevState): void {
+
     const $view = $('.doc-area');
     const view_w = $view.width();
     const view_h = $view.height();
@@ -219,12 +210,12 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
   private initBoxData() {    
     console.log("            initBoxData          ");
-    const {signerList} = this.props;
-    // const {signerList, inputs} = this.props;
+    // const {signerList} = this.props;
+    const {signerList, inputs} = this.props;
 
     this.setState({
       signerList
-      // ,inputs
+      ,inputs
     });
   }
 
@@ -243,7 +234,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
   private onDocumentLoadSuccess(pdf) {
     console.log('DocumentLoadSuccess')
-    console.log(pdf)
+    // console.log(pdf)
     this.setState({
       numPages: pdf.numPages
     });
@@ -713,7 +704,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     const {
       pageNumber,
       numPages,
-      boxDataList,
+      // boxDataList,
       signerList,
       zoom,
       type,
@@ -723,8 +714,16 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       selectSignerIndex
     } = this.state;
 
-    console.log('==================== boxDataList : ');
-    console.log(boxDataList);
+    console.log('==================== boxDataList : ' + this.props.inputs);
+    console.log(this.props.inputs);
+    
+    const {inputs} = this.props;
+    console.log("Document.tsx => inputs : " + inputs.length);
+    console.log(inputs);
+    const boxDataList = inputs.map((input, index) => {
+      return getInitBoxData(input.page, 0, input.inputType, index);
+    });    
+
 
     const pdfItem = [];
     for (let i = 1; i <= numPages; i++) {
