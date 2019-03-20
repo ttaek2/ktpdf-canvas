@@ -21,3 +21,7 @@ export interface SignBox extends InputBox {
 export interface CheckBox extends InputBox {
 
 }
+
+export interface RadioBox extends InputBox {
+
+}

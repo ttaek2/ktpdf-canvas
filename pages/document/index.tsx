@@ -65,6 +65,7 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
     // console.log("query 1 :: " + JSON.stringify(query));
 
     // //let docInfo = JSON.stringify(query);
+    console.log('query = ', query)
     let docInfo = JSON.parse(JSON.stringify(query));
     let params = JSON.parse(docInfo.params);
 

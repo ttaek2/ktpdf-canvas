@@ -9,7 +9,7 @@ import {setDocumentInfo} from "../../api/document/setDocumentInfo";
 import ZoomController from "../../components/ZoomController";
 import $ from 'jquery';
 import ContainerForBoxes from "../../components/ContainerForBoxes";
-import { InputBox, TextBox, SignBox, CheckBox } from "src/interface/InputBox";
+import { InputBox, TextBox, SignBox, CheckBox, RadioBox } from "src/interface/InputBox";
 
 import {getDocumentInfo} from "../../../src/api/document/getDocumentInfo";
 
@@ -125,6 +125,19 @@ const getInitCheckBox = (page, signerIndex, boxIndex): CheckBox => {
   }
 }
 
+const getInitRadioBox = (page, signerIndex, boxIndex): RadioBox => {
+  return {
+    type: 'radio',
+    top: defaultData.top,
+    left: defaultData.signLeft,
+    width: 50,
+    height: 50,
+    signerIndex,
+    page,
+    boxIndex
+  }
+}
+
 interface IDocumentProps {
   documentNo: string;
   documentUrl: string;
@@ -172,11 +185,9 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     };
 
     this.checkSelectedValue = this.checkSelectedValue.bind(this);
-    this.addSignatureArea = this.addSignatureArea.bind(this);
-    this.addCheckbox = this.addCheckbox.bind(this);
     this.updateInputBox = this.updateInputBox.bind(this);
     this.deleteInputBox = this.deleteInputBox.bind(this);
-    this.addTextArea = this.addTextArea.bind(this);
+    this.addInputBox = this.addInputBox.bind(this);
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
     this.onDocumentLoadSuccess = this.onDocumentLoadSuccess.bind(this);
     this.getNewPdfItem = this.getNewPdfItem.bind(this);
@@ -315,7 +326,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     return false;
   }
 
-  private addTextArea() {
+  private addInputBox(type) {
     const {
       boxDataList,
       pageNumber,
@@ -327,57 +338,27 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     }
 
     const copyBoxDataList = [...boxDataList];
-    const initBoxData = getInitTextBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
-    copyBoxDataList.push(initBoxData);
-
-    this.setState({
-      boxDataList: copyBoxDataList,
-    });
-  }
-
-  private addSignatureArea() {
-
-    const {
-      boxDataList,
-      pageNumber,
-      selectSignerIndex,
-    } = this.state;
-    const isSelected = this.checkSelectedValue();
-    if (!isSelected) {
-      return false;
+    let initBoxData;
+    if(type === 'text') {
+      initBoxData = getInitTextBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
     }
-
-    const copyBoxDataList = [...boxDataList];
-    const initBoxData = getInitSignBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
-    copyBoxDataList.push(initBoxData);
-
-    this.setState({
-      boxDataList: copyBoxDataList,
-    });
-  }
-
-  private addCheckbox() {
-
-    const {
-      boxDataList,
-      pageNumber,
-      selectSignerIndex,
-    } = this.state;
-    const isSelected = this.checkSelectedValue();
-    if (!isSelected) {
-      return false;
+    else if(type === 'sign') {
+      initBoxData = getInitSignBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
     }
-
-    const copyBoxDataList = [...boxDataList];
-    const initBoxData = getInitCheckBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
+    else if(type === 'checkbox') {
+      initBoxData = getInitCheckBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
+    }
+    else if(type === 'radio') {
+      initBoxData = getInitRadioBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
+    }
     copyBoxDataList.push(initBoxData);
 
     this.setState({
       boxDataList: copyBoxDataList,
     });
-    console.log(this.state.boxDataList)
   }
 
+  
   private deleteInputBox(index: number): void {
     const { boxDataList } = this.state;
     const newBoxDataList = boxDataList.filter((box) => {
@@ -984,10 +965,10 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
                 </select>
               </div>
               <ul>
-                <li><a href="#" onClick={this.addTextArea}><span className="icon-insert-txt"></span>텍스트 입력</a></li>
-                <li><a href="#" onClick={this.addSignatureArea}><span className="icon-stamp"></span>서명 (Stamp)</a></li>
-                <li><a href="#" onClick={this.addCheckbox}><span className="icon-checklist"></span>체크항목</a></li>
-                <li><a href="#"><span className="icon-selected-list"></span>선택항목</a></li>
+                <li><a href="#" onClick={e => this.addInputBox('text')}><span className="icon-insert-txt"></span>텍스트 입력</a></li>
+                <li><a href="#" onClick={e => this.addInputBox('sign')}><span className="icon-stamp"></span>서명 (Stamp)</a></li>
+                <li><a href="#" onClick={e => this.addInputBox('checkbox')}><span className="icon-checklist"></span>체크항목</a></li>
+                <li><a href="#" onClick={e => this.addInputBox('radio')}><span className="icon-selected-list"></span>선택항목</a></li>
                 <li><a href="#"><span className="icon-memo"></span>메모 입력</a></li>
                 <li><a onClick={this.updateDocumentInfo}>저장</a></li>
               </ul>

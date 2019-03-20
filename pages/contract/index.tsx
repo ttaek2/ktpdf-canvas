@@ -32,7 +32,7 @@ class Contract extends React.Component<any, React.ComponentState> {
     const { signerNo, documentNo } = this.props;
     getDocumentInfoForSigner(documentNo, signerNo)
       .then((data: any) => {
-        // console.log(data.inputs);
+        console.log(data.inputs);
         this.setState({
           signer: data.signer,
           inputs: data.inputs,
@@ -50,7 +50,7 @@ console.log("inputs.length : " + inputs.length);
     return(
       <div>
         <Head>
-          <title>kt - document</title>
+          <title>kt - contract</title>
           <link href="/assets/css/style.css" rel="stylesheet" />
         </Head>
         <DragDropContextProvider backend={HTML5Backend}>
