@@ -8,6 +8,7 @@ import SignatureLayer from "../../components/SignatureLayer";
 import {ISigner} from "../../interface/ISigner";
 import PlainBoxContainer from "../../components/PlainBoxContainer";
 import {setDocumentInfoForSigner} from "../../api/signer/setDocumentInfoForSinger";
+import {setCompleteInfo} from "../../api/complete/setCompleteInfo";
 import ZoomController from "../../components/ZoomController";
 import $ from 'jquery';
 import apiPath from "../../api/enum/apiPath";
@@ -32,6 +33,7 @@ interface IContractProps {
   documentNo: number;
   signer: ISigner;
   inputs: Array<IInput>;
+  completePage: boolean;
 }
 
 const convertView = (view_w, view_h, left, top, width, height) => {
@@ -78,6 +80,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     this.onDocumentLoadSuccess = this.onDocumentLoadSuccess.bind(this);
     this.getNewPdfItem = this.getNewPdfItem.bind(this);
     this.saveContractInfo = this.saveContractInfo.bind(this);
+    this.saveCompleteInfo = this.saveCompleteInfo.bind(this);
     this.updateRightContentZoom = this.updateRightContentZoom.bind(this);
   }
 
@@ -251,6 +254,21 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     });
   }
 
+  private saveCompleteInfo() {
+    const { documentNo } = this.props;
+    const { inputs, originInputs, signer } = this.state;
+    const signerNo = signer.signerNo;
+    const domain = `${apiPath.DOMAIN.HOSTNAME}:${apiPath.DOMAIN.PORT}`;
+    setCompleteInfo(documentNo, signerNo).then((data:any) => {
+      if(data.code == '200'){
+        alert('저장 완료');
+      }else{
+        alert('저장 처리중 에러 : ' + data.code);
+      }
+      
+    });
+  }
+
   convertToPDF = () => {
 
   }
@@ -416,7 +434,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
             
             <div className="edit-pallet">
               <ul>
-                <li><a onClick={this.saveContractInfo}>저장</a></li>
+                <li><a onClick={this.props.completePage ? this.saveCompleteInfo : this.saveContractInfo}>저장</a></li>
               </ul>
             </div>
           

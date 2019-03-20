@@ -8,6 +8,8 @@ import CompleteContainer from '../../src/containers/desktop/Complete';
 import HTML5Backend from "react-dnd-html5-backend";
 import {DragDropContextProvider} from "react-dnd";
 import {getCompleteInfo} from "../../src/api/complete/getCompleteInfo";
+import ContractContainer from '../../src/containers/desktop/Contract';
+import Head from 'next/head'
 
 class Complete extends React.Component<any, React.ComponentState> {
 
@@ -49,12 +51,17 @@ class Complete extends React.Component<any, React.ComponentState> {
 
     return(
       <div>
+        <Head>
+          <title>kt - contract</title>
+          <link href="/assets/css/style.css" rel="stylesheet" />
+        </Head>
         <DragDropContextProvider backend={HTML5Backend}>
-          <CompleteContainer
+          <ContractContainer
             signer={signer}
             inputs={inputs}
             documentUrl={documentUrl}
             documentNo={documentNo}
+            completePage={true}
           />
         </DragDropContextProvider>
       </div>
