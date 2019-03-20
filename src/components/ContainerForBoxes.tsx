@@ -74,18 +74,18 @@ class ContainerForBoxes extends Component<Props, null> {
               )
             }
 
-            else if(box.type === 'radio') {
-              return (
-                <BoxWithCheckbox
-                  key={`${box.boxIndex}${box.type}`}
-                  boxData={box as CheckBox}
-                  users={users}
-                  updateInputBox={updateInputBox}
-                  deleteInputBox={deleteInputBox}
-                  scale={scale}
-                />
-              )
-            }
+            // else if(box.type === 'radio') {
+            //   return (
+            //     <BoxWithCheckbox
+            //       key={`${box.boxIndex}${box.type}`}
+            //       boxData={box as CheckBox}
+            //       users={users}
+            //       updateInputBox={updateInputBox}
+            //       deleteInputBox={deleteInputBox}
+            //       scale={scale}
+            //     />
+            //   )
+            // }
           })
         }
       </div>

@@ -1361,7 +1361,7 @@ input::placehodler {
   }
 
   .container {
-    min-width: 1200px;
+    /* min-width: 1200px; */
     width: 100%;
     margin: 0;
   }
@@ -4036,6 +4036,7 @@ input::placehodler {
   overflow-y: scroll;
   padding-top: 0.875rem;
   z-index: 500;
+  left: 0;
 }
 .service .editor .edit-body .thumbnail li {
   display: block;
@@ -4051,25 +4052,27 @@ input::placehodler {
   border: 0.125rem solid #2cbbb6;
 }
 .service .editor .edit-body .editor-view {
-  padding-left: 10.625rem;
-  padding-right: 15.5rem;
   /* width: calc(100% - 26.25rem); */
   width: 100%;
   height: 100%;
+  padding-left: 10.625rem;
+  padding-right: 15.5rem;
   /* float: left; */
-  position: relative;
+  /* position: relative; */
 }
 
 .service .editor .edit-body .editor-view .pageContainer {
-  
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .service .editor .edit-body .editor-view .pageContainer canvas {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  padding-top: 10px;
-  padding-bottom: 10px;
+  /* position: absolute; */
+  /* left: 50%; */
+  /* transform: translateX(-50%); */
+  
+  margin: 0 auto;
+  box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .service .editor .edit-body .edit-pallet {
@@ -4083,6 +4086,7 @@ input::placehodler {
   background-color: #ffffff;
   border: 0.0625rem solid #d5d5d5;
   width: 15rem;
+  height: 100%;
   /* height: 35.625rem; */
   padding: 0.625rem 1.25rem;
 }

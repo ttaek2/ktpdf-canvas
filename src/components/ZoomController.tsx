@@ -39,15 +39,15 @@ class ZoomController extends React.Component<IZoomController, React.ComponentSta
   zoomIn(e) {
     let {zoom, updateRightContentZoom} = this.props;
     zoom *= 1.1;
-    if(zoom > 1.7)
-      return;
+    // if(zoom > 1.7)
+    //   return;
     updateRightContentZoom(zoom)
   }
   zoomOut(e) {
     let {zoom, updateRightContentZoom} = this.props;
     zoom /= 1.1;
-    if(zoom < 0.7)
-      return;
+    // if(zoom < 0.7)
+    //   return;
     updateRightContentZoom(zoom)
   }
 

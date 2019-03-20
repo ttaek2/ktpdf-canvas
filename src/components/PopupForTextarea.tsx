@@ -11,12 +11,12 @@ interface IPopup {
 const fontFamilyList = ['Times-Roman', 'Courier-Bold', 'Dotum', 'Gulim', 'Batang', 'Gungsuh'];
 const fontFamilyNmList = ['Times-Roman', 'Courier-Bold', '돋움', '굴림', '바탕', '궁서'];
 const fontList=[
-  {fontFamily: 'Times-Roman', fontName: 'Times-Roman'},
-  {fontFamily: 'Courier-Bold', fontName: 'Courier-Bold'},
+  // {fontFamily: 'Times-Roman', fontName: 'Times-Roman'},
+  // {fontFamily: 'Courier-Bold', fontName: 'Courier-Bold'},
   {fontFamily: 'Dotum', fontName: '돋움'},
   {fontFamily: 'Gulim', fontName: '굴림'},
-  {fontFamily: 'Batang', fontName: '바탕'},
-  {fontFamily: 'Gungsuh', fontName: '궁서'},
+  // {fontFamily: 'Batang', fontName: '바탕'},
+  // {fontFamily: 'Gungsuh', fontName: '궁서'},
 ]
 const fontSizeList = [12, 14, 16, 18, 20, 24];
 
