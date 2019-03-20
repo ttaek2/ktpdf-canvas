@@ -322,8 +322,9 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       zoom
     } = this.state;
 
-    console.log('inputs!!!!!!!!!!!!!!!!!!!!!!')
-    console.log(inputs)
+    // console.log('inputs!!!!!!!!!!!!!!!!!!!!!!')
+    // console.log(inputs)
+    // console.log(signer.signerNo)
 
     return (
       <div className="container service">
