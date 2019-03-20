@@ -100,17 +100,17 @@ const roadInitSignBox = (input, index): SignBox => {
   }
 }
 
-interface IInput {
-  inputType: string;
-  font: string;
-  charSize: string;
-  signerNo: string;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  page: number;
-}
+// interface IInput {
+//   inputType: string;
+//   font: string;
+//   charSize: string;
+//   signerNo: string;
+//   x: number;
+//   y: number;
+//   w: number;
+//   h: number;
+//   page: number;
+// }
 
 const getInitCheckBox = (page, signerIndex, boxIndex): CheckBox => {
   return {
@@ -645,7 +645,8 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       return {
         inputType: 'checkbox',
         page,
-        signerNo: signerList[signerIndex].signerNo,
+        // signerNo: signerList[signerIndex].signerNo,
+        signerNo: signerList[signerIndex].signerId,
         x,
         y,
         w,
@@ -660,10 +661,22 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     const {documentNo, docName, fileName, documentUrl, userId} = this.props;
     const {boxDataList} = this.state;
     const dataList = this.convertDataForAPI(boxDataList);
-
-    setDocumentInfo(documentNo, docName, fileName, documentUrl, userId, dataList).then(_ => {
-      alert('저장 완료');
+    
+    let result:[];
+    // setDocumentInfo(documentNo, docName, fileName, documentUrl, userId, dataList).then(_ => {
+    //   alert('저장 완료');
+    // });
+    setDocumentInfo(documentNo, docName, fileName, documentUrl, userId, dataList).then((result:any)  => {
+      
+      // if(data.code == '200'){
+      //   alert('저장 완료');
+      // }else{
+      //   alert('저장 처리중 에러 : ' + data.code);
+      // }
+      // return data;
     });
+
+    return result;
   }
 
   private updateRightContentZoom(zoom) {

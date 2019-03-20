@@ -121,7 +121,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
   private initBoxData() {
     console.log('initBoxData!')
     // const { view_w, view_h } = this.state;
-    const { pageWidth, pageHeight } = this.state;    
+    // const { pageWidth, pageHeight } = this.state;    
     const { signer, inputs } = this.props;
 
     // const restoreViewInfo = inputs.map(input => {
