@@ -66,7 +66,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       showSignLayer: false,
       signature: null,
       selectedIndex: -1,
-      zoom: 1,
+      zoom: 1.35,
       view_h: -1,
       view_w: -1,
       originInputs: []
@@ -123,24 +123,32 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     // const { view_w, view_h } = this.state;
     // const { pageWidth, pageHeight } = this.state;    
     const { signer, inputs } = this.props;
+    const { zoom } = this.state;
+    const restoreViewInfo = inputs.map(input => {
+      return {
+        ...input,
+        x: input.x * zoom,
+        y: input.y * zoom,
+        w: input.w * zoom,
+        h: input.h * zoom,
+      }
 
-    // const restoreViewInfo = inputs.map(input => {
-    //   const { x, y, w, h } = convertView(pageWidth, pageHeight, input.x, input.y, input.w, input.h);
-    //   return {
-    //     ...input,
-    //     x,
-    //     y,
-    //     w,
-    //     h
-    //   }
-    // });
-    const restoreViewInfo = inputs;
+      // const { x, y, w, h } = convertView(pageWidth, pageHeight, input.x, input.y, input.w, input.h);
+      // return {
+      //   ...input,
+      //   x,
+      //   y,
+      //   w,
+      //   h
+      // }
+    });
+    // const restoreViewInfo = inputs;
 
     this.setState({
       signer,
       originInputs: inputs,
-      inputs
-      // inputs: restoreViewInfo
+      // inputs
+      inputs: restoreViewInfo
     });
   }
 
@@ -384,9 +392,10 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
                       width: this.state.pageWidth,
                       height: this.state.pageHeight,
                       position: 'absolute',
-                      paddingTop: '10px',
-                      paddingBottom: '10px',
+                      marginTop: '10px',
+                      // paddingBottom: '10px',
                       zIndex: 10,
+                      top: 0,
                       left: '50%',
                       transform: 'translateX(-50%)',
                     }}

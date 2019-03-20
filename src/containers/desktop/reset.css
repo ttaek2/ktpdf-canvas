@@ -2,13 +2,13 @@ html {
     height: 100%;
     width: 100%;
     /* Font size is needed to make the activity bar the correct size. */
-    font-size: 10px;
+    font-size: 16px;
   }
   
   body {
     height: 100%;
     width: 100%;
-    background-color: gray;
+    background-color: #f9f9f9;
   }
 
 /* body {
