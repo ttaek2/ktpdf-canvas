@@ -3,6 +3,7 @@ import PlainBox from "./PlainBox";
 import PlainBoxForTextArea from "./PlainBoxForTextArea";
 import PlainBoxForSignature from "./PlainBoxForSignature";
 import PlainBoxForCheckbox from "./PlainBoxForCheckbox";
+import PlainBoxForRadio from "./PlainBoxForRadio";
 
 const styles: React.CSSProperties = {
   width: '100%',
@@ -96,6 +97,18 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
               />}
               {inputType === 'checkbox'
               && <PlainBoxForCheckbox
+                backgroundColor={''}
+                color={''}
+                name={userNm}
+                boxIndex={index}
+                w={w}
+                h={h}
+                updateTextArea={updateTextArea}
+                addText={addText}
+                editable={editable}
+              />}
+              {inputType === 'radio'
+              && <PlainBoxForRadio
                 backgroundColor={''}
                 color={''}
                 name={userNm}

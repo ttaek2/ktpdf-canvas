@@ -1,5 +1,6 @@
 import * as React from "react";
 import {Document, Page, pdfjs} from 'react-pdf';
+import ReactDOM from 'react-dom';
 import "./reset.css";
 
 import SelectBox from "../../components/SelectBox";
@@ -14,6 +15,7 @@ import { InputBox, TextBox, SignBox, CheckBox, RadioBox } from "src/interface/In
 import {getDocumentInfo} from "../../../src/api/document/getDocumentInfo";
 
 import Index from "./Index";
+import BoxWithTextArea from "src/components/BoxWithTextArea";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -143,8 +145,8 @@ const getInitRadioBox = (page, signerIndex, boxIndex): RadioBox => {
     type: 'radio',
     top: defaultData.top,
     left: defaultData.signLeft,
-    width: 50,
-    height: 50,
+    width: 130,
+    height: 30,
     signerIndex,
     page,
     boxIndex
@@ -194,7 +196,8 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       selectedBoxPage: 1,
       selectedBoxType: '',
       selectedBoxIndex: -1
-      ,tmpDocId:''
+      ,tmpDocId:'',
+      newInputBox: null,
     };
 
     this.checkSelectedValue = this.checkSelectedValue.bind(this);
@@ -230,30 +233,74 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
     // getInitBoxData(pageNumber, selectSignerIndex, 'text', copyBoxDataList.length);
 
-    $(window).scroll(() => {
-      // console.log($(window).scrollTop(), $(window).height(), $(document).height());
-      // if($(window).scrollTop() + $(window).height() == $(document).height()) {
-      //   console.log('Document.tsx bottom boom!')
-      //   let {pageNumber, numPages} = this.state;
-      //   pageNumber++;
-      //   if(pageNumber <= numPages) {
-      //     this.setState({
-      //       pageNumber
-      //     })
-      //   }
-      // }
-      // else if($(window).scrollTop() == 0) {
-      //   console.log('Document.tsx top boom!')
-      //   let {pageNumber, numPages} = this.state;
-      //   pageNumber--;
-      //   if(pageNumber >= 1) {
-      //     this.setState({
-      //       pageNumber
-      //     })
-      //   }
-      // }
-   });
+  //   $(window).scroll(() => {
+  //     // console.log($(window).scrollTop(), $(window).height(), $(document).height());
+  //     if($(window).scrollTop() + $(window).height() == $(document).height()) {
+  //       console.log('Document.tsx bottom boom!')
+  //       let {pageNumber, numPages} = this.state;
+  //       pageNumber++;
+  //       if(pageNumber <= numPages) {
+  //         console.log('setting page ', pageNumber)
+  //         this.setState({
+  //           pageNumber
+  //         })
+  //       }
+  //     }
+  //     else if($(window).scrollTop() == 0) {
+  //       console.log('Document.tsx top boom!')
+  //       let {pageNumber, numPages} = this.state;
+  //       pageNumber--;
+  //       if(pageNumber >= 1) {
+  //         console.log('setting page ', pageNumber)
+  //         this.setState({
+  //           pageNumber
+  //         })
+  //       }
+  //     }
+  //  });
+
+    $(window).on('mousewheel', this.handleMouseWheel);
   }
+
+  handleMouseWheel = e => {
+    console.log($(window).scrollTop(), $(window).height(), $(document).height())
+
+    if(e.originalEvent.wheelDelta /120 > 0) {
+        // console.log('scrolling up !');
+        
+        if($(window).scrollTop() == 0) {
+          console.log('Document.tsx top boom!')
+          let {pageNumber, numPages} = this.state;
+          pageNumber--;
+          if(pageNumber >= 1) {
+            console.log('setting page ', pageNumber)
+            e.preventDefault()
+            this.setState({
+              pageNumber
+            }, () => window.scrollTo(0,document.body.scrollHeight))
+            // }, () => window.scrollTo(0, 0))
+            
+          }
+        }
+    }
+    else{
+        // console.log('scrolling down !');
+        
+        if($(window).scrollTop() + $(window).height() >= $(document).height() - 1) {
+          console.log('Document.tsx bottom boom!')
+          let {pageNumber, numPages} = this.state;
+          pageNumber++;
+          if(pageNumber <= numPages) {
+            console.log('setting page ', pageNumber)
+            e.preventDefault();
+            this.setState({
+              pageNumber
+            }, () => window.scrollTo(0, 0))
+          }
+        }
+    }
+  };
+
 
   componentDidUpdate(_, prevState): void {
     // console.log('Document.tsx componentDidUpdate');
@@ -324,7 +371,18 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     return false;
   }
 
+  // private addInputBox(type, mouseX, mouseY) {
   private addInputBox(type) {
+    
+    // if(this.state.newInputBox) {
+    //   return;
+    // }
+
+    
+      
+
+
+    
     const {
       boxDataList,
       pageNumber,
@@ -335,7 +393,11 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       return false;
     }
 
+    
+
     const copyBoxDataList = [...boxDataList];
+
+    
     let initBoxData;
     if(type === 'text') {
       initBoxData = getInitTextBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
@@ -349,6 +411,19 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     else if(type === 'radio') {
       initBoxData = getInitRadioBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
     }
+
+    
+
+    // initBoxData.left = mouseX;
+    // initBoxData.top = mouseY;
+
+    // console.log(initBoxData)
+
+    // this.setState( {
+    //   newInputBox: initBoxData
+    // })
+
+
     copyBoxDataList.push(initBoxData);
 
     this.setState({
@@ -511,7 +586,41 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       }
     });
 
-    return [].concat(textAreaListFormatted, signatureAreaListFormatted, checkboxListFormatted);
+    const radioList = boxDataList.filter(({ type }) => type === 'radio');
+    const radioListFormatted = radioList.map(data => {
+      const {
+        top,
+        left,
+        page,
+        signerIndex,
+        width,
+        height
+      } = data;
+
+      const {zoom: scale, pageWidth, pageHeight} = this.state;
+
+      // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
+      const x = left / scale;
+      const y = top / scale;
+      const w = width / scale;
+      const h = height / scale;
+
+      return {
+        inputType: 'radio',
+        page,
+        // signerNo: signerList[signerIndex].signerNo,
+        signerNo: signerList[signerIndex].signerId,
+        x,
+        y,
+        w,
+        h
+      }
+    });
+
+    console.log('radioListFormatted ========================= ')
+    console.log(radioListFormatted)
+
+    return [].concat(textAreaListFormatted, signatureAreaListFormatted, checkboxListFormatted, radioListFormatted);
   }
 
   // 저장처리
@@ -591,6 +700,35 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     this.setSelectedIndex({index});
   }
 
+  handleMouseMove = (e: React.MouseEvent) => {
+    const {newInputBox} = this.state;
+    if(!newInputBox) {
+      return;
+    }
+    
+    this.setState({
+      newInputBox: {
+        ...newInputBox,
+        left: e.pageX,
+        top: e.pageY
+      }
+    })
+  }
+
+  handleMouseUp = e => {
+    const {newInputBox} = this.state;
+    if(!newInputBox) {
+      return;
+    }
+    
+    this.setState({
+      newInputBox: {
+        ...newInputBox,
+        left: e.pageX,
+        top: e.pageY
+      }
+    })
+  }
   
   
   private roadInputData(inputs:any) {
@@ -637,7 +775,31 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
     return (
       <div className="container service">
-        <div className='editor'>
+        <div className='editor'
+          // onMouseMove={this.handleMouseMove}
+        >
+          {/* {
+          this.state.newInputBox &&
+          // <div
+          //   style={{
+          //     width: '50px',
+          //     height: '50px',
+          //     left: this.state.newInputBox.left,
+          //     top: this.state.newInputBox.top,
+          //     backgroundColor: 'blue',
+          //     position: 'absolute',
+          //     zIndex: 1000
+          //   }}
+          // >
+          // </div>
+          <ContainerForBoxes
+            boxDataList={[].concat(this.state.newInputBox)}
+            users={signerList}
+            page={pageNumber}
+            scale={zoom}
+            style={{zIndex: 2000}}
+          />
+          } */}
           <div className='header'>
             <ZoomController updateRightContentZoom={this.updateRightContentZoom} zoom={zoom}/>
           </div>
@@ -705,6 +867,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
                     }}
                     // onMouseMove={this.documentMouseMove}
                     // onMouseUp={this.updateEventObjectToNull}
+                    onMouseUp={this.handleMouseUp}
                   >
                         <ContainerForBoxes
                           updateInputBox={this.updateInputBox}
@@ -735,11 +898,11 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
                 </select>
               </div>
               <ul>
-                <li><a href="#" onClick={e => this.addInputBox('text')}><span className="icon-insert-txt"></span>텍스트 입력</a></li>
-                <li><a href="#" onClick={e => this.addInputBox('sign')}><span className="icon-stamp"></span>서명 (Stamp)</a></li>
-                <li><a href="#" onClick={e => this.addInputBox('checkbox')}><span className="icon-checklist"></span>체크항목</a></li>
-                <li><a href="#" onClick={e => this.addInputBox('radio')}><span className="icon-selected-list"></span>선택항목</a></li>
-                <li><a href="#"><span className="icon-memo"></span>메모 입력</a></li>
+                <li><a onClick={e => this.addInputBox('text')}><span className="icon-insert-txt"></span>텍스트 입력</a></li>
+                <li><a onClick={e => this.addInputBox('sign')}><span className="icon-stamp"></span>서명 (Stamp)</a></li>
+                <li><a onClick={e => this.addInputBox('checkbox')}><span className="icon-checklist"></span>체크항목</a></li>
+                <li><a onClick={e => this.addInputBox('radio')}><span className="icon-selected-list"></span>선택항목</a></li>
+                <li><a><span className="icon-memo"></span>메모 입력</a></li>
                 <li><a onClick={this.updateDocumentInfo}>저장</a></li>
               </ul>
 
