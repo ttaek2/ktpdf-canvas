@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import BoxWithTextArea from "./BoxWithTextArea";
 import BoxWithSignature from "./BoxWithSignature";
-import { InputBox, TextBox, SignBox, CheckBox } from 'src/interface/InputBox';
+import { InputBox, TextBox, SignBox, CheckBox, RadioBox } from 'src/interface/InputBox';
 import { ISigner } from 'src/interface/ISigner';
 import BoxWithCheckbox from './BoxWithCheckbox';
+import BoxWithRadio from './BoxWithRadio';
 
 interface Props {
   boxDataList: Array<InputBox>;
@@ -74,18 +75,18 @@ class ContainerForBoxes extends Component<Props, null> {
               )
             }
 
-            // else if(box.type === 'radio') {
-            //   return (
-            //     <BoxWithCheckbox
-            //       key={`${box.boxIndex}${box.type}`}
-            //       boxData={box as CheckBox}
-            //       users={users}
-            //       updateInputBox={updateInputBox}
-            //       deleteInputBox={deleteInputBox}
-            //       scale={scale}
-            //     />
-            //   )
-            // }
+            else if(box.type === 'radio') {
+              return (
+                <BoxWithRadio
+                  key={`${box.boxIndex}${box.type}`}
+                  boxData={box as RadioBox}
+                  users={users}
+                  updateInputBox={updateInputBox}
+                  deleteInputBox={deleteInputBox}
+                  scale={scale}
+                />
+              )
+            }
           })
         }
       </div>

@@ -255,6 +255,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
   }
 
   private saveCompleteInfo() {
+    console.log('saveCompleteInfo')
     const { documentNo } = this.props;
     const { inputs, originInputs, signer } = this.state;
     const signerNo = signer.signerNo;
