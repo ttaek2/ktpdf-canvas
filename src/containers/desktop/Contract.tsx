@@ -26,6 +26,9 @@ interface IInput {
   y: number;
   w: number;
   h: number;
+  addText: string;
+  page: number;
+  boxIndex: number;
 }
 
 interface IContractProps {
@@ -209,17 +212,18 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     console.log('saveContractInfo')
     console.log(this.state.inputs)
     const { documentNo } = this.props;
-    const { inputs, originInputs, signer } = this.state;
+    const { inputs, originInputs, signer, zoom } = this.state;
     const signerNo = signer.signerNo;
     const domain = `${apiPath.DOMAIN.HOSTNAME}:${apiPath.DOMAIN.PORT}`;
     const isValidInputs = inputs.every(input => this.isValidInput(input));
     if(!isValidInputs) return false;
 
     const newInputs = inputs.map((input, index) => {
-      const { asdf, x, y, w, h } = originInputs[index];
+      
 
       if(input.inputType === 'sign') {
         const newSignUrl = input.signUrl && input.signUrl.replace(domain, '');
+        const { x, y, w, h } = originInputs[index];
         return {
           ...input,
           signUrl: newSignUrl,
@@ -230,6 +234,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
         }
       }
       else if(input.inputType === 'checkbox') {
+        const { x, y, w, h } = originInputs[index];
         return {
           ...input,
           addText: input.addText ? 'Y' : 'N',
@@ -239,7 +244,17 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
           h
         }
       }
-
+      else if(input.inputType === 'memo') {
+        return {
+          ...input,
+          x: input.x / zoom,
+          y: input.y / zoom,
+          w: input.w / zoom,
+          h: input.h / zoom,
+        }
+      }
+      
+      const { x, y, w, h } = originInputs[index];
       return {
         ...input,
         x,
@@ -248,6 +263,9 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
         h
       }
     });
+
+    console.log('newInputs ============================')
+    console.log(newInputs)
 
     setDocumentInfoForSigner(documentNo, signerNo, {inputs: newInputs}).then(_ => {
       alert('저장 완료');
@@ -336,6 +354,61 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     })
     // this.initBoxData();
     // $('.viewerContainer').find('canvas').css('opacity', 1.0);
+  }
+
+  getMemo = (page, signerNo): IInput => {
+    return {
+      inputType: 'memo',
+      font: 'Times-Roman',
+      charSize: '12',
+      signerNo,
+      x: 200,
+      y: 200,
+      w: 200,
+      h: 150,
+      addText: '',
+      page,
+      boxIndex: this.state.inputs.length,
+    }
+  }
+
+  addMemo = (e) => {
+    const { inputs, originInputs, signer, pageNumber } = this.state;
+    const memo = this.getMemo(pageNumber, signer.signerNo);
+    let newInputs = [...inputs];
+    newInputs.push(memo);
+    this.setState({
+      inputs: newInputs,
+    })
+  }
+
+  deleteInputBox = (boxIndex: number): void => {
+    const { inputs } = this.state;
+    const newInputs = inputs.filter((box, index) => {
+      return boxIndex !== index;
+    });
+
+    this.setState({inputs: newInputs});
+  }
+
+  updateInputBox = (boxIndex: number, update: object) => {
+    console.log('updateInputBox');
+    console.log(update, boxIndex)
+    const {inputs} = this.state;
+    console.log(inputs)
+    const newInputs = inputs.map((box, index) => {
+      if(boxIndex === index) {
+        return {
+          ...box,
+          ...update
+        }
+      }
+
+      return box;
+    });
+    console.log(newInputs)
+
+    this.setState({inputs: newInputs});
   }
 
   public render(): JSX.Element {
@@ -427,6 +500,8 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
                           updateTextArea={this.updateTextArea}
                           controlSignLayer={this.controlSignLayer}
                           pageNumber={pageNumber}
+                          updateInputBox={this.updateInputBox}
+                          deleteInputBox={this.deleteInputBox}
                         />
                   </div>
                 </Page>
@@ -435,6 +510,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
             
             <div className="edit-pallet">
               <ul>
+                <li><a onClick={this.addMemo}><span className="icon-memo"></span>메모 입력</a></li>
                 <li><a onClick={this.props.completePage ? this.saveCompleteInfo : this.saveContractInfo}>저장</a></li>
               </ul>
             </div>

@@ -638,10 +638,10 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       return item.inputType == "sign";
     });
 
-    if(signObj.length < 1){
-      alert('서명은 필수입니다.');
-      return;
-    } 
+    // if(signObj.length < 1){
+    //   alert('서명은 필수입니다.');
+    //   return;
+    // } 
 
     // 모든 사용자의 서명을 체크하는 로직 필요.
 
