@@ -102,6 +102,19 @@ const roadInitSignBox = (input, index): SignBox => {
   }
 }
 
+const roadInitCheckBox = (input, index): SignBox => {
+  return {
+    type: 'checkbox',
+    top: input.y,
+    left: input.x,    
+    width: input.w,
+    height: input.h,
+    signerIndex:0,  // 생성자꺼...
+    page: input.page,
+    boxIndex : index
+  }
+}
+
 // interface IInput {
 //   inputType: string;
 //   font: string;
@@ -202,18 +215,17 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   }
 
   componentDidMount() {
-
-    console.log("Document.tsx ============================== componentDidMount ");
+    // console.log("Document.tsx ============================== componentDidMount ");
     this.initBoxData();
 
     const {documentNo, tmpDocId, userId} = this.props;    
-    console.log("userId :: " + userId)
+    // console.log("userId :: " + userId)
     // 템플릿 아이디가 있다면 기존 객체를 조회해본다.
     if(tmpDocId != ''){
       getDocumentInfo(documentNo, tmpDocId, userId)
       .then((data: IDocumentProps) => {
         // alert("=====================================");
-        console.log(data.inputs);
+        // console.log(data.inputs);
         this.roadInputData(data.inputs);
       });
     }
@@ -291,7 +303,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
 
   componentDidUpdate(_, prevState): void {
-    console.log('Document.tsx componentDidUpdate');
+    // console.log('Document.tsx componentDidUpdate');
     const $view = $('.inputbox-area');
     const view_w = $view.width();
     const view_h = $view.height();
@@ -304,22 +316,8 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     }
   }
 
-  // private documentMouseMove(e: React.MouseEvent) {
-  //   e.preventDefault();
-  //   console.log('Document.tsx document mouse move!');
-  //   const pageX = e.pageX - $(e.currentTarget).offset().left;
-  //   const pageY = e.pageY - $(e.currentTarget).offset().top;
-
-  //   const { type } = this.state;
-  //   if(type === 'size') {
-  //     this.setState({ pageX, pageY }, this.updateCustomBoxSize);
-  //   } else if(type === 'pos') {
-  //     this.setState({ pageX, pageY }, this.updateCustomBoxPosition);
-  //   }
-  // }
-
   private initBoxData() {    
-    console.log("Document.tsx Document.tsx             initBoxData          ");
+    // console.log("Document.tsx Document.tsx             initBoxData          ");
     
     const {signerList} = this.props;
     // const {signerList, inputs} = this.props;
@@ -444,33 +442,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     this.setState({boxDataList: newBoxDataList});
   }
 
-  // private deleteSignatureArea(index: number): void {
-  //   const { boxDataList } = this.state;
-  //   const copyBoxDataList = deepCopy(boxDataList);
-  //   const newBoxDataList = copyBoxDataList.filter((box) => {
-  //     const boxIndex = box.boxIndex;
-  //     return boxIndex !== index;
-  //   });
-
-  //   this.setState({boxDataList: newBoxDataList});
-  // }
-
-  // private setFontSize(index: number, fontSize: string) {
-  //   const {boxDataList} = this.state;
-  //   const newBoxDataList = boxDataList.map((box, boxIndex) => {
-  //     if(index === boxIndex) {
-  //       return {
-  //         ...box,
-  //         fontSize
-  //       }
-  //     }
-
-  //     return box;
-  //   });
-
-  //   this.setState({boxDataList: newBoxDataList});
-  // }
-
   private updateInputBox(boxIndex: number, update: object) {
     console.log('Document.tsx updateInputBox');
     const {boxDataList} = this.state;
@@ -488,45 +459,9 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     this.setState({boxDataList: newBoxDataList});
   }
 
-  // private setFontFamily(index: number, fontFamily: string) {
-  //   const {boxDataList} = this.state;
-  //   const newBoxDataList = boxDataList.map((box, boxIndex) => {
-  //     if(index === boxIndex) {
-  //       return {
-  //         ...box,
-  //         fontFamily
-  //       }
-  //     }
-
-  //     return box;
-  //   });
-
-  //   this.setState({boxDataList: newBoxDataList});
-  // }
-
   private setSelectedIndex({index: selectSignerIndex}) {
     this.setState({selectSignerIndex});
   }
-
-  // private updateSize(size, number) {
-  //   const { width, height } = size;
-  //   const {boxDataList} = this.state;
-  //   const newBoxDataList = boxDataList.map((data, boxIndex) => {
-  //     if (boxIndex === number) {
-  //       return {
-  //         ...data,
-  //         width,
-  //         height
-  //       }
-  //     }
-
-  //     return {
-  //       ...data
-  //     }
-  //   });
-
-  //   return newBoxDataList;
-  // }
 
   private scaleMarker(scale) {
     const {boxDataList} = this.state;
@@ -544,84 +479,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
     return newBoxDataList;
   }
-
-  // private checkOffset(offset) {
-  //   const { view_w, view_h } = this.state;
-  //   const { top: topNotchecked, left: leftNotChecked } = offset;
-  //   let top;
-  //   let left;
-
-  //   top = topNotchecked;
-  //   left = leftNotChecked;
-
-  //   if(topNotchecked < 0) {
-  //     top = 0;
-  //   }
-
-  //   if(leftNotChecked < 0) {
-  //     left = 0;
-  //   }
-
-  //   if(topNotchecked > view_w) {
-  //     top = view_w;
-  //   }
-
-  //   if(leftNotChecked > view_h) {
-  //     left = view_h;
-  //   }
-
-  //   return {
-  //     top,
-  //     left
-  //   }
-  // }
-
-  // private updateOffset(offset, number) {
-  //   // const { top, left } = this.checkOffset(offset);
-  //   const { top, left } = offset;
-  //   const {boxDataList} = this.state;
-  //   const copyBoxDataList = deepCopy(boxDataList);
-  //   const newBoxDataList = copyBoxDataList.map((data, boxIndex) => {
-  //     if (boxIndex === number) {
-  //       return {
-  //         ...data,
-  //         top: top > -1 ? top : 0,
-  //         left: left > -1 ? left: 0
-  //       }
-  //     }
-
-  //     return {
-  //       ...data
-  //     }
-  //   });
-
-  //   return newBoxDataList;
-  // }
-
-  // private updateBoxSize(boxIndex, width, height, type) {
-  //   const isTextArea = type === 'text';
-  //   const {boxDataList, pageNumber} = this.state;
-  //   const copyBoxDataList = deepCopy(boxDataList);
-  //   const newBoxDataList = copyBoxDataList.map((data, index) => {
-  //     const isSelectedBox = data.page === Number(pageNumber) && index === Number(boxIndex);
-  //     if (!isSelectedBox) return {...data};
-  //     if (isTextArea) {
-  //       return {
-  //         ...data,
-  //         textWidth: width,
-  //         textHeight: height
-  //       }
-  //     } else {
-  //       return {
-  //         ...data,
-  //         signWidth: width,
-  //         signHeight: height
-  //       }
-  //     }
-  //   });
-
-  //   this.setState({boxDataList: newBoxDataList});
-  // }
 
   private convertDataForAPI(boxDataList) {
     const {
@@ -766,20 +623,48 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     return [].concat(textAreaListFormatted, signatureAreaListFormatted, checkboxListFormatted, radioListFormatted);
   }
 
+  // 저장처리
   private updateDocumentInfo() {
-    const {documentNo, docName, fileName, documentUrl, userId} = this.props;
+    const {documentNo, docName, fileName, documentUrl, userId, signerList} = this.props;
     const {boxDataList} = this.state;
+    const dataList = this.convertDataForAPI(boxDataList); 
+    
+    // 유저리스트의 싸인박스가 있는지 체크
+    console.log(signerList);
+    console.log(dataList);
+    
+    // 싸인 객체만 추출
+    const signObj = dataList.filter(function(item){
+      return item.inputType == "sign";
+    });
 
-    console.log('boxDataList ===============')
-    console.log(boxDataList)
-    const dataList = this.convertDataForAPI(boxDataList);
+    if(signObj.length < 1){
+      alert('서명은 필수입니다.');
+      return;
+    } 
+
+    // 모든 사용자의 서명을 체크하는 로직 필요.
+
+    // signerList.forEach((signer, index) => {
+    //   // console.log(signObj.indexOf('signer1'));
+
+    //   const chkSign = signObj.filter(function(item){
+    //     return item.signerNo == signer.signerId;
+    //   });
+
+    //   if(chkSign.length < 1){
+    //     alert(signer.signerNm + ' 의 서명이 없습니다.');
+    //     return;
+    //   }
+    // });
+
     
     let result:[];
     // setDocumentInfo(documentNo, docName, fileName, documentUrl, userId, dataList).then(_ => {
     //   alert('저장 완료');
     // });
-    setDocumentInfo(documentNo, docName, fileName, documentUrl, userId, dataList).then((result:any)  => {
-      
+    setDocumentInfo(documentNo, docName, fileName, documentUrl, userId, dataList).then((result:any)  => {    
+      console.log(result);  
       // if(data.code == '200'){
       //   alert('저장 완료');
       // }else{
@@ -803,116 +688,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     });
   }
 
-  // private updateCustomBoxSize() {
-  //   const { pageX, pageY, e, type, selectedBoxIndex } = this.state;
-  //   if(!e || type !== 'size') return false;
-
-  //   const parentBox = e.parent()[0];
-  //   const top = parentBox.offsetTop;
-  //   const left = parentBox.offsetLeft;
-
-  //   const newHeight = pageY - top;
-  //   const newWidth = pageX - left;
-
-  //   const newBoxDataList = this.updateSize({width: newWidth, height: newHeight}, selectedBoxIndex);
-
-  //   this.setState({
-  //     boxWidth: newWidth,
-  //     boxHeight: newHeight,
-  //     boxDataList: newBoxDataList
-  //   });
-  // }
-
-  // private updateCustomBoxPosition() {
-  //   const {
-  //     pageX,
-  //     pageY,
-  //     initPageX,
-  //     initPageY,
-  //     e,
-  //     type,
-  //     selectedBoxIndex,
-  //     boxDataList,
-  //     pageWidth,
-  //     pageHeight
-  //   } = this.state;
-
-  //   const isNotStable = (!e || type !== 'pos' || selectedBoxIndex < 0 || !boxDataList[selectedBoxIndex]);
-  //   if(isNotStable) return false;
-
-  //   const moveX = pageX - initPageX;
-  //   const moveY = pageY - initPageY;
-
-  //   const { top:prevBoxPageY , left:prevBoxPageX, width, height } = boxDataList[selectedBoxIndex];
-  //   let boxPageX = prevBoxPageX + moveX;
-  //   if(boxPageX + width > pageWidth)
-  //     boxPageX = prevBoxPageX;
-  //   let boxPageY = prevBoxPageY + moveY;
-  //   if(boxPageY + height > pageHeight)
-  //     boxPageY = prevBoxPageY;
-
-  //   const newBoxDataList = this.updateOffset({top: boxPageY, left: boxPageX}, selectedBoxIndex);
-
-  //   this.setState({
-  //     boxPageX,
-  //     boxPageY,
-  //     initPageX: pageX,
-  //     initPageY: pageY,
-  //     boxDataList: newBoxDataList
-  //   });
-  // }
-
-  // private updateEventObject(e) {
-  //   const { type: controlType } = this.state;
-  //   if(controlType === 'pos') {
-  //     const target = $(e.currentTarget);
-  //     const { page, type, number } = target.data();
-  //     this.setState({
-  //       e: target,
-  //       selectedBoxIndex: number,
-  //       selectedBoxPage: page,
-  //       selectedBoxType: type
-  //     });
-  //   } else {
-  //     const target = $(e.currentTarget).parent();
-  //     const { page, number } = target.data();
-  //     this.setState({
-  //       e: $(e.currentTarget),
-  //       selectedBoxIndex: number,
-  //       selectedBoxPage: page
-  //     });
-  //   }
-  // }
-
-  // private updateEventObjectToNull() {
-  //   this.setState({
-  //     e: null,
-  //     selectedBoxIndex: -1
-  //   });
-  // }
-
-  // private updateType(type) {
-  //   const { pageX, pageY } = this.state;
-  //   this.setState({
-  //     initPageX: pageX,
-  //     initPageY: pageY,
-  //     type
-  //   });
-  // }
-
-  // updateMarkerPos = (markerid, left, top) => {
-  //   const {boxDataList} = this.state;
-  //   this.setState({
-  //     ...this.state,
-  //     boxDataList: boxDataList.map(marker => {
-  //       if(marker.boxIndex === markerid) {
-  //         marker.left = left;
-  //         marker.top = top;
-  //       }
-  //       return marker;
-  //     })
-  //   })
-  // }
 
   onThumbnailRenderSuccess = (page) => {
     if(page.pageNumber == 1) {
@@ -957,8 +732,8 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   
   
   private roadInputData(inputs:any) {
-    console.log(" ================= ");
-    console.log(inputs);
+    // console.log(" ================= ");
+    // console.log(inputs);
     const {boxDataList} = this.state;
 
     
@@ -971,42 +746,20 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       }else if(input.inputType == 'sign'){
         const initBoxData = roadInitSignBox(input, index);
         copyBoxDataList.push(initBoxData);
+      }else if(input.inputType == 'checkbox'){
+        const initBoxData = roadInitCheckBox(input, index);
+        copyBoxDataList.push(initBoxData);
       }
     });
-
-    // inputs.forEach(element => {
-    //   console.log(element.page);
-    //   // const initBoxData = roadInitTextBox(element.page, selectSignerIndex, element.index);
-    //   // copyBoxDataList.push(initBoxData);  
-    // });
-    
 
     this.setState({
       boxDataList: copyBoxDataList,
     });
-
-    // const {
-    //   boxDataList,
-    //   pageNumber,
-    //   selectSignerIndex,
-    // } = this.state;
-    // const isSelected = this.checkSelectedValue();
-    // if (!isSelected) {
-    //   return false;
-    // }
-
-    // const copyBoxDataList = [...boxDataList];
-    // const initBoxData = roadInitTextBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
-    // copyBoxDataList.push(initBoxData);
-
-    // this.setState({
-    //   boxDataList: copyBoxDataList,
-    // });
   }
 
 
   public render(): JSX.Element {
-    console.log('Document.tsx rendering document');
+    // console.log('Document.tsx rendering document');
 
     const {
       pageNumber,

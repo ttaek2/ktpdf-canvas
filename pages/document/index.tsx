@@ -20,20 +20,20 @@ interface IDocumentProps {
   inputs:[];
 }
 
-interface IDocumentInfoAPIResponse {
-  doc: string;
+// interface IDocumentInfoAPIResponse {
+//   doc: string;
 
-  docId: string;
-  docName: string;
-  fileName: string;
-  filePath: string;
-  userId: string; 
-  signers: Array<ISigner>;  
-  inputs:[];
-}
+//   docId: string;
+//   docName: string;
+//   fileName: string;
+//   filePath: string;
+//   userId: string; 
+//   signers: Array<ISigner>;  
+//   inputs:[];
+// }
 
 const backgroundColorList = [
-  '#2CBBB6', // 'red',
+  '#F15F5F', // 'red',
   '#6799FF', //'green',
   'blue',
   'yellow',
