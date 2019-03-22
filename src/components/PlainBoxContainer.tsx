@@ -4,6 +4,7 @@ import PlainBoxForTextArea from "./PlainBoxForTextArea";
 import PlainBoxForSignature from "./PlainBoxForSignature";
 import PlainBoxForCheckbox from "./PlainBoxForCheckbox";
 import PlainBoxForRadio from "./PlainBoxForRadio";
+import PlainBoxForMemo from "./PlainBoxForMemo";
 
 const styles: React.CSSProperties = {
   width: '100%',
@@ -17,6 +18,8 @@ interface IBoxContainerProps {
   updateTextArea: (...args) => void;
   controlSignLayer: (...args) => void;
   pageNumber: number;
+  updateInputBox: (boxIndex: number, update: object) => void;
+  deleteInputBox: (index: number) => void;
 }
 
 class PlainBoxContainer extends React.Component<IBoxContainerProps, React.ComponentState> {
@@ -64,6 +67,26 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
 
 
           return (
+            <React.Fragment>
+              {inputType === 'memo'
+              ? <PlainBoxForMemo
+                boxIndex={index}
+                backgroundColor={''}
+                color={''}
+                name={userNm}
+                x={x}
+                y={y}
+                w={w}
+                h={h}
+                font={font}
+                charSize={charSize}
+                updateTextArea={updateTextArea}
+                addText={addText}
+                editable={editable}
+                updateInputBox={this.props.updateInputBox}
+                deleteInputBox={this.props.deleteInputBox}
+              />
+            :
             <PlainBox
               left={x}
               top={y}
@@ -120,6 +143,9 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
                 editable={editable}
               />}
             </PlainBox>
+            }
+
+            </React.Fragment>
           )
         })}
       </div>
