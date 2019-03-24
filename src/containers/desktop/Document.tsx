@@ -387,10 +387,10 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       const {zoom: scale, pageWidth, pageHeight} = this.state;
 
       // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
-      const x = left / scale;
-      const y = top / scale;
-      const w = width / scale;
-      const h = height / scale;
+      const x = left;
+      const y = top;
+      const w = width;
+      const h = height;
 
 
       return {
@@ -421,10 +421,10 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       const {zoom: scale, pageWidth, pageHeight} = this.state;
 
       // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
-      const x = left / scale;
-      const y = top / scale;
-      const w = width / scale;
-      const h = height / scale;
+      const x = left;
+      const y = top;
+      const w = width;
+      const h = height;
 
       return {
         inputType: 'sign',
@@ -452,10 +452,10 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       const {zoom: scale, pageWidth, pageHeight} = this.state;
 
       // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
-      const x = left / scale;
-      const y = top / scale;
-      const w = width / scale;
-      const h = height / scale;
+      const x = left;
+      const y = top;
+      const w = width;
+      const h = height;
 
       return {
         inputType: 'checkbox',
@@ -483,10 +483,10 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       const {zoom: scale, pageWidth, pageHeight} = this.state;
 
       // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
-      const x = left / scale;
-      const y = top / scale;
-      const w = width / scale;
-      const h = height / scale;
+      const x = left;
+      const y = top;
+      const w = width;
+      const h = height;
 
       return {
         inputType: 'radio',
@@ -510,11 +510,13 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   private updateDocumentInfo() {
     const {documentNo, docName, fileName, documentUrl, userId, signerList} = this.props;
     const {boxDataList} = this.state;
+
+    // console.log('boaDataList', boxDataList)
     const dataList = this.convertDataForAPI(boxDataList); 
     
     // 유저리스트의 싸인박스가 있는지 체크
-    console.log(signerList);
-    console.log(dataList);
+    // console.log(signerList);
+    console.log('dataList', dataList);
     
     // 싸인 객체만 추출
     const signObj = dataList.filter(function(item){

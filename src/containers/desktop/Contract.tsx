@@ -465,12 +465,12 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
             </div>
             <div className="editor-view">
               <Document
-                className='documentContainer'
+                className='document-wrapper'
                 file={this.props.documentUrl}
                 onLoadSuccess={this.onDocumentLoadSuccess}
               >
                 <Page 
-                  className='pageContainer'
+                  className='page-wrapper'
                   pageNumber={pageNumber}
                   renderTextLayer={false}
                   renderAnnotationLayer={false}
@@ -480,17 +480,17 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
                 >
                   <div
                     className="inputbox-area"
-                    style={{
-                      width: this.state.pageWidth,
-                      height: this.state.pageHeight,
-                      position: 'absolute',
-                      marginTop: '10px',
-                      // paddingBottom: '10px',
-                      zIndex: 10,
-                      top: 0,
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                    }}
+                    // style={{
+                    //   width: this.state.pageWidth,
+                    //   height: this.state.pageHeight,
+                    //   position: 'absolute',
+                    //   marginTop: '10px',
+                    //   // paddingBottom: '10px',
+                    //   zIndex: 10,
+                    //   top: 0,
+                    //   left: '50%',
+                    //   transform: 'translateX(-50%)',
+                    // }}
                     // onMouseMove={this.documentMouseMove}
                     // onMouseUp={this.updateEventObjectToNull}
                   >
