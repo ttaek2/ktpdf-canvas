@@ -4061,17 +4061,24 @@ input::placehodler {
   /* position: relative; */
 }
 
-.service .editor .edit-body .editor-view .pageContainer {
-  padding-top: 10px;
-  padding-bottom: 10px;
+.service .editor .edit-body .editor-view .document-wrapper {
+  text-align: center;
 }
 
-.service .editor .edit-body .editor-view .pageContainer canvas {
+.service .editor .edit-body .editor-view .page-wrapper {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  
+  display: inline-block;
+}
+
+.service .editor .edit-body .editor-view .page-wrapper canvas {
   /* position: absolute; */
   /* left: 50%; */
   /* transform: translateX(-50%); */
-  margin: 0 auto;
+  /* margin: 0 auto; */
   box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  
 }
 
 .service .editor .edit-body .edit-pallet {
@@ -4218,6 +4225,10 @@ input::placehodler {
   display: block;
 }
 
-/* .memo:hover {
-  opacity: 1;
-} */
+.inputbox-area {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  z-index: 10;
+}

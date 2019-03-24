@@ -26,13 +26,12 @@ class ContainerForBoxes extends Component<Props, null> {
       boxDataList,
       updateInputBox,
       deleteInputBox,
-      page,
       users,
       scale
     } = this.props;
 
     return (
-      <div style={{width: '100%', height: '100%'}}>
+      <div className="inputbox-area">
         {
           boxDataList.map(box => {
             

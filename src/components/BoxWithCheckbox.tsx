@@ -67,7 +67,7 @@ class BoxWithCheckbox extends Component<Props, any> {
   }
 
   render() {
-    const {
+    let {
       top,
       left,
       width,
@@ -85,7 +85,15 @@ class BoxWithCheckbox extends Component<Props, any> {
       users,
       deleteInputBox,
       updateInputBox,
+      scale,
     } = this.props;
+
+    top *= scale;
+    left *= scale;
+    width *= scale;
+    height *= scale;
+
+
 
     const { isShowPopup, showCloseBtn } = this.state;
     const { backgroundColor } = users[signerIndex];
@@ -119,12 +127,12 @@ class BoxWithCheckbox extends Component<Props, any> {
         <Rnd
           size={{ width: width,  height: height }}
           position={{ x: left, y: top }}
-          onDragStop={(e, d) => { updateInputBox(boxIndex, {left: d.x, top: d.y}) }}
+          onDragStop={(e, d) => { updateInputBox(boxIndex, {left: d.x / scale, top: d.y / scale}) }}
           onResizeStop={(e, direction, ref, delta, position) => {
               updateInputBox(boxIndex, {
-                  width: width + delta.width,
-                  height: height + delta.height,
-                  ...position,
+                width: (width + delta.width) / scale,
+                height: (height + delta.height) / scale,
+                  // ...position,
               });
           }}
           enableResizing={{ top:false, right:false, bottom:false, left:false, topRight:false, bottomRight:true, bottomLeft:false, topLeft:false }}
