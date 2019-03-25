@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Popup from "./Popup";
 import PopupForSignature from "./PopupForSignature";
 import {IoMdCloseCircle} from 'react-icons/io';
+import { FaStamp } from "react-icons/fa";
 import { IconContext } from "react-icons";
 import { SignBox } from 'src/interface/InputBox';
 import { ISigner } from 'src/interface/ISigner';
@@ -83,7 +84,7 @@ class BoxWithSignature extends Component<Props, any> {
   }
 
   render() {
-    const {
+    let {
       top,
       left,
       width,
@@ -94,12 +95,17 @@ class BoxWithSignature extends Component<Props, any> {
       signerIndex,
     } = this.props.boxData;
 
-    console.log(width, height)
     const {
       users,
       deleteInputBox,
       updateInputBox,
+      scale,
     } = this.props;
+
+    top *= scale;
+    left *= scale;
+    width *= scale;
+    height *= scale;
 
     const { backgroundColor } = users[signerIndex];
 
@@ -115,17 +121,30 @@ class BoxWithSignature extends Component<Props, any> {
       }
     }
 
+    const stampicon = {
+      color: backgroundColor, 
+      className: "global-class-name", 
+      size: "80%",
+      padding: 0,
+      margin: 0,
+      
+      // width: '100%',
+      // height: '100%',
+      style: {
+        // position: 'absolute',
+      },
+    }
 
     return (
       <Rnd
         size={{ width: width,  height: height }}
         position={{ x: left, y: top }}
-        onDragStop={(e, d) => { updateInputBox(boxIndex, {left: d.x, top: d.y}) }}
+        onDragStop={(e, d) => { updateInputBox(boxIndex, {left: d.x / scale, top: d.y / scale}) }}
         onResizeStop={(e, direction, ref, delta, position) => {
             updateInputBox(boxIndex, {
-                width: width + delta.width,
-                height: height + delta.height,
-                ...position,
+              width: (width + delta.width) / scale,
+              height: (height + delta.height) / scale,
+                // ...position,
             });
         }}
         enableResizing={{ top:false, right:false, bottom:false, left:false, topRight:false, bottomRight:true, bottomLeft:false, topLeft:false }}
@@ -179,6 +198,8 @@ class BoxWithSignature extends Component<Props, any> {
             overflow: 'hidden',
             backgroundColor: 'white',
             opacity: 0.7,
+            textAlign: 'center',
+            verticalAlign: 'middle'
           }}
           className='inputbox-body'
           data-number={boxIndex}
@@ -186,7 +207,9 @@ class BoxWithSignature extends Component<Props, any> {
           data-page={page}
           onMouseOver={this.onMouseOver}
         >
-          
+          <IconContext.Provider value={stampicon}>
+            <FaStamp />
+          </IconContext.Provider>
         </div>
 
         

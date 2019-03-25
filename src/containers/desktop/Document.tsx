@@ -1,41 +1,20 @@
+import $ from 'jquery';
 import * as React from "react";
-import {Document, Page, pdfjs} from 'react-pdf';
-import ReactDOM from 'react-dom';
+import { pdfjs } from 'react-pdf';
+import { CheckBox, RadioBox, SignBox, TextBox } from "src/interface/InputBox";
+import { getDocumentInfo } from "../../../src/api/document/getDocumentInfo";
+import { setDocumentInfo } from "../../api/document/setDocumentInfo";
+import ContainerForBoxes from "../../components/ContainerForBoxes";
+import { ISigner } from "../../interface/ISigner";
+import { deepCopy } from "../../util/deepCopy";
+import PdfViewer from "./PdfViewer";
 import "./reset.css";
 
-import SelectBox from "../../components/SelectBox";
-import {deepCopy} from "../../util/deepCopy";
-import {ISigner} from "../../interface/ISigner";
-import {setDocumentInfo} from "../../api/document/setDocumentInfo";
-import ZoomController from "../../components/ZoomController";
-import $ from 'jquery';
-import ContainerForBoxes from "../../components/ContainerForBoxes";
-import { InputBox, TextBox, SignBox, CheckBox, RadioBox } from "src/interface/InputBox";
 
-import {getDocumentInfo} from "../../../src/api/document/getDocumentInfo";
 
-import Index from "./Index";
-import BoxWithTextArea from "src/components/BoxWithTextArea";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-const styled = require('./common.css');
-
-const convertView = (view_w, view_h, left, top, width, height) => {
-  // console.log(view_w, view_h, left, top, width, height);
-  const x = (left / view_w);
-  const y = ((view_h - top - height) / view_h);
-
-  const w = (width / view_w);
-  const h = (height / view_h);
-
-  return {
-    x,
-    y,
-    w,
-    h
-  }
-};
 
 const defaultData = {
   width: 200,
@@ -115,18 +94,6 @@ const roadInitCheckBox = (input, index): SignBox => {
   }
 }
 
-// interface IInput {
-//   inputType: string;
-//   font: string;
-//   charSize: string;
-//   signerNo: string;
-//   x: number;
-//   y: number;
-//   w: number;
-//   h: number;
-//   page: number;
-// }
-
 const getInitCheckBox = (page, signerIndex, boxIndex): CheckBox => {
   return {
     type: 'checkbox',
@@ -179,24 +146,9 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       numPages: null,
       pageNumber: 1,
       boxDataList: [],
-      view_w: -1,
-      view_h: -1,
-      zoom: 1.35,
-      pageX: -1,
-      pageY: -1,
-      boxPageX: 0,
-      boxPageY: 0,
-      e: null,
-      boxWidth: 200,
-      boxHeight: 100,
-      type: '',
-      initPageX: 0,
-      initPageY: 0,
+      scale: 1.5,
       selectSignerIndex: -1,
-      selectedBoxPage: 1,
-      selectedBoxType: '',
-      selectedBoxIndex: -1
-      ,tmpDocId:'',
+      tmpDocId:'',
       newInputBox: null,
     };
 
@@ -231,75 +183,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     }
     
 
-    // getInitBoxData(pageNumber, selectSignerIndex, 'text', copyBoxDataList.length);
-
-  //   $(window).scroll(() => {
-  //     // console.log($(window).scrollTop(), $(window).height(), $(document).height());
-  //     if($(window).scrollTop() + $(window).height() == $(document).height()) {
-  //       console.log('Document.tsx bottom boom!')
-  //       let {pageNumber, numPages} = this.state;
-  //       pageNumber++;
-  //       if(pageNumber <= numPages) {
-  //         console.log('setting page ', pageNumber)
-  //         this.setState({
-  //           pageNumber
-  //         })
-  //       }
-  //     }
-  //     else if($(window).scrollTop() == 0) {
-  //       console.log('Document.tsx top boom!')
-  //       let {pageNumber, numPages} = this.state;
-  //       pageNumber--;
-  //       if(pageNumber >= 1) {
-  //         console.log('setting page ', pageNumber)
-  //         this.setState({
-  //           pageNumber
-  //         })
-  //       }
-  //     }
-  //  });
-
-    $(window).on('mousewheel', this.handleMouseWheel);
   }
-
-  handleMouseWheel = e => {
-    console.log($(window).scrollTop(), $(window).height(), $(document).height())
-
-    if(e.originalEvent.wheelDelta /120 > 0) {
-        // console.log('scrolling up !');
-        
-        if($(window).scrollTop() == 0) {
-          console.log('Document.tsx top boom!')
-          let {pageNumber, numPages} = this.state;
-          pageNumber--;
-          if(pageNumber >= 1) {
-            console.log('setting page ', pageNumber)
-            e.preventDefault()
-            this.setState({
-              pageNumber
-            }, () => window.scrollTo(0,document.body.scrollHeight))
-            // }, () => window.scrollTo(0, 0))
-            
-          }
-        }
-    }
-    else{
-        // console.log('scrolling down !');
-        
-        if($(window).scrollTop() + $(window).height() >= $(document).height() - 1) {
-          console.log('Document.tsx bottom boom!')
-          let {pageNumber, numPages} = this.state;
-          pageNumber++;
-          if(pageNumber <= numPages) {
-            console.log('setting page ', pageNumber)
-            e.preventDefault();
-            this.setState({
-              pageNumber
-            }, () => window.scrollTo(0, 0))
-          }
-        }
-    }
-  };
 
 
   componentDidUpdate(_, prevState): void {
@@ -353,14 +237,13 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     // console.log('Document.tsx PageLoadSuccess')
   }
 
-  onPageRenderSuccess = (page) => {
+  onPageRenderSuccess = (page, second) => {
     console.log('Document.tsx PageRenderSuccess')
     // console.log(page.width, page.height)
     this.setState({
       pageWidth: page.width,
       pageHeight: page.height
     })
-    // $('.documentContainer').find('canvas').css('opacity', 1.0);
   }
 
   private checkSelectedValue(): boolean {
@@ -504,10 +387,10 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       const {zoom: scale, pageWidth, pageHeight} = this.state;
 
       // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
-      const x = left / scale;
-      const y = top / scale;
-      const w = width / scale;
-      const h = height / scale;
+      const x = left;
+      const y = top;
+      const w = width;
+      const h = height;
 
 
       return {
@@ -538,10 +421,10 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       const {zoom: scale, pageWidth, pageHeight} = this.state;
 
       // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
-      const x = left / scale;
-      const y = top / scale;
-      const w = width / scale;
-      const h = height / scale;
+      const x = left;
+      const y = top;
+      const w = width;
+      const h = height;
 
       return {
         inputType: 'sign',
@@ -569,10 +452,10 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       const {zoom: scale, pageWidth, pageHeight} = this.state;
 
       // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
-      const x = left / scale;
-      const y = top / scale;
-      const w = width / scale;
-      const h = height / scale;
+      const x = left;
+      const y = top;
+      const w = width;
+      const h = height;
 
       return {
         inputType: 'checkbox',
@@ -600,10 +483,10 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       const {zoom: scale, pageWidth, pageHeight} = this.state;
 
       // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
-      const x = left / scale;
-      const y = top / scale;
-      const w = width / scale;
-      const h = height / scale;
+      const x = left;
+      const y = top;
+      const w = width;
+      const h = height;
 
       return {
         inputType: 'radio',
@@ -627,11 +510,13 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   private updateDocumentInfo() {
     const {documentNo, docName, fileName, documentUrl, userId, signerList} = this.props;
     const {boxDataList} = this.state;
+
+    // console.log('boaDataList', boxDataList)
     const dataList = this.convertDataForAPI(boxDataList); 
     
     // 유저리스트의 싸인박스가 있는지 체크
-    console.log(signerList);
-    console.log(dataList);
+    // console.log(signerList);
+    console.log('dataList', dataList);
     
     // 싸인 객체만 추출
     const signObj = dataList.filter(function(item){
@@ -757,6 +642,17 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     });
   }
 
+  zoomIn = (e) => {
+    this.setState({
+      scale: this.state.scale * 1.1,
+    }, () => console.log(this.state.scale))
+  }
+  zoomOut = (e) => {
+    this.setState({
+      scale: this.state.scale / 1.1,
+    })
+  }
+
 
   public render(): JSX.Element {
     // console.log('Document.tsx rendering document');
@@ -766,7 +662,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       numPages,
       boxDataList,
       signerList,
-      zoom,
+      scale,
       selectSignerIndex
     } = this.state;
 
@@ -801,10 +697,25 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
           />
           } */}
           <div className='header'>
-            <ZoomController updateRightContentZoom={this.updateRightContentZoom} zoom={zoom}/>
+            <ul className="zoom">
+              <li><a onClick={(e) => this.zoomIn(e)}><span className="icon-zoomin"></span></a></li>
+              <li><a onClick={(e) => this.zoomOut(e)}><span className="icon-zoomout"></span></a></li>
+            </ul>
+            {/* <ZoomController updateRightContentZoom={this.updateRightContentZoom} zoom={scale}/> */}
           </div>
           <div className="edit-body">
-            <div className="thumbnail">
+            <PdfViewer documentUrl={this.props.documentUrl} scale={scale} >
+                        <ContainerForBoxes
+                          updateInputBox={this.updateInputBox}
+                          deleteInputBox={this.deleteInputBox}
+                          boxDataList={curPageInputBox}
+                          users={signerList}
+                          page={pageNumber}
+                          scale={scale}
+                        />
+            </PdfViewer>
+
+            {/* <div className="thumbnail">
 
               <ul>
                       <Document
@@ -839,31 +750,33 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
             <div className="editor-view">
               
               <Document
-                className='documentContainer'
+                className='document-wrapper'
                 file={this.props.documentUrl}
                 onLoadSuccess={this.onDocumentLoadSuccess}
               >
                 <Page 
-                  className='pageContainer'
+                  className='page-wrapper'
                   pageNumber={pageNumber}
                   renderTextLayer={false}
                   renderAnnotationLayer={false}
-                  scale={zoom}
+                  scale={scale}
                   onLoadSuccess={this.onPageLoadSuccess}
                   onRenderSuccess={this.onPageRenderSuccess}
                 >
                   <div
                     className="inputbox-area"
                     style={{
-                      width: this.state.pageWidth,
-                      height: this.state.pageHeight,
+                      // width: this.state.pageWidth,
+                      // height: this.state.pageHeight,
+                      width: '100%',
+                      height: '100%',
                       position: 'absolute',
-                      marginTop: '10px',
+                      // marginTop: '10px',
                       // paddingBottom: '10px',
                       zIndex: 10,
                       top: 0,
-                      left: '50%',
-                      transform: 'translateX(-50%)',
+                      // left: '50%',
+                      // transform: 'translateX(-50%)',
                     }}
                     // onMouseMove={this.documentMouseMove}
                     // onMouseUp={this.updateEventObjectToNull}
@@ -875,13 +788,13 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
                           users={signerList}
                           page={pageNumber}
                           deleteInputBox={this.deleteInputBox}
-                          scale={zoom}
+                          scale={scale}
                         />
                   </div>
                 </Page>
               </Document>
 
-            </div>
+            </div> */}
             <div className="edit-pallet">
               <div className="input-select secondary">
                 <select
@@ -902,7 +815,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
                 <li><a onClick={e => this.addInputBox('sign')}><span className="icon-stamp"></span>서명 (Stamp)</a></li>
                 <li><a onClick={e => this.addInputBox('checkbox')}><span className="icon-checklist"></span>체크항목</a></li>
                 <li><a onClick={e => this.addInputBox('radio')}><span className="icon-selected-list"></span>선택항목</a></li>
-                <li><a><span className="icon-memo"></span>메모 입력</a></li>
+                {/* <li><a><span className="icon-memo"></span>메모 입력</a></li> */}
                 <li><a onClick={this.updateDocumentInfo}>저장</a></li>
               </ul>
 

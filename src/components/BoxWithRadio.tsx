@@ -31,6 +31,7 @@ class BoxWithRadio extends Component<Props, any> {
       isShowPopup: false,
       zIndex: defaultZIndex,
       showCloseBtn: false,
+      mode: 'horizontal',
     };
 
     this.closePopup = this.closePopup.bind(this);
@@ -67,7 +68,7 @@ class BoxWithRadio extends Component<Props, any> {
   }
 
   render() {
-    const {
+    let {
       top,
       left,
       width,
@@ -78,14 +79,18 @@ class BoxWithRadio extends Component<Props, any> {
       signerIndex,
     } = this.props.boxData;
 
-    console.log('rendering textbox')
-    console.log(width, height);
 
     const {
       users,
       deleteInputBox,
       updateInputBox,
+      scale,
     } = this.props;
+
+    top *= scale;
+    left *= scale;
+    width *= scale;
+    height *= scale;
 
     const { isShowPopup, showCloseBtn } = this.state;
     const { backgroundColor } = users[signerIndex];
@@ -97,10 +102,11 @@ class BoxWithRadio extends Component<Props, any> {
       padding: 0,
       margin: 0,
       style: {
-        position: 'absolute',
+        // position: 'absolute',
         top: '0px',
         height: '100%',
         width: height,
+        
       }
     }
 
@@ -108,7 +114,8 @@ class BoxWithRadio extends Component<Props, any> {
         ...radioicon,
         style: {
             ...radioicon.style,
-            left: '0px',
+            // left: '0px',
+            // marginLeft: '-50%',
         }
     }
 
@@ -116,7 +123,8 @@ class BoxWithRadio extends Component<Props, any> {
         ...radioicon,
         style: {
             ...radioicon.style,
-            right: '0px',
+            // right: '0px',
+            float: 'right',
         }
     }
 
@@ -137,13 +145,38 @@ class BoxWithRadio extends Component<Props, any> {
         <Rnd
           size={{ width: width,  height: height }}
           position={{ x: left, y: top }}
-          onDragStop={(e, d) => { updateInputBox(boxIndex, {left: d.x, top: d.y}) }}
-          onResizeStop={(e, direction, ref, delta, position) => {
-              updateInputBox(boxIndex, {
-                  width: width + delta.width,
-                  height: height + delta.height,
-                  ...position,
-              });
+          onDragStop={(e, d) => { updateInputBox(boxIndex, {left: d.x / scale, top: d.y / scale}) }}
+          // onResizeStop={(e, direction, ref, delta, position) => {
+          //     console.log({
+          //       width: (width + delta.width) / scale,
+          //       height: (height + delta.height) / scale,
+          //         // ...position,
+          //     })
+          //     updateInputBox(boxIndex, {
+          //       width: (width + delta.width) / scale,
+          //       height: (height + delta.height) / scale,
+          //         // ...position,
+          //     });
+          // }}
+          onResize={(e, direction, ref, delta, position) => {
+            let boxWidth = Number(ref.style.width.replace('px', '')) / scale;
+            let boxHeight = Number(ref.style.height.replace('px', '')) / scale;
+            
+            if(boxWidth < 2 * boxHeight) {
+              this.setState({mode: 'vertical'})
+            }
+            else {
+              this.setState({mode: 'horizontal'})
+            }
+
+
+
+            
+            updateInputBox(boxIndex, {
+              width: Number(ref.style.width.replace('px', '')) / scale,
+              height: Number(ref.style.height.replace('px', '')) / scale,
+            });
+            
           }}
           enableResizing={{ top:false, right:false, bottom:false, left:false, topRight:false, bottomRight:true, bottomLeft:false, topLeft:false }}
           enableUserSelectHack={true}
@@ -161,7 +194,8 @@ class BoxWithRadio extends Component<Props, any> {
                 cursor: 'se-resize',
             }
           }}
-          minWidth={height * 2}
+          // minWidth={this.state.mode === 'horizontal' ? height * 2 : 0}
+          minWidth={height * 2.2}
           onMouseLeave={this.onMouseLeave}
         >
           
