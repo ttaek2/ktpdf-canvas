@@ -902,7 +902,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
                 <li><a onClick={e => this.addInputBox('sign')}><span className="icon-stamp"></span>서명 (Stamp)</a></li>
                 <li><a onClick={e => this.addInputBox('checkbox')}><span className="icon-checklist"></span>체크항목</a></li>
                 <li><a onClick={e => this.addInputBox('radio')}><span className="icon-selected-list"></span>선택항목</a></li>
-                <li><a><span className="icon-memo"></span>메모 입력</a></li>
+                {/* <li><a><span className="icon-memo"></span>메모 입력</a></li> */}
                 <li><a onClick={this.updateDocumentInfo}>저장</a></li>
               </ul>
 
