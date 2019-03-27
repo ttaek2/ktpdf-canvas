@@ -50,8 +50,6 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
       charSize,
       editable
     } = this.props;
-    console.log('rendering memo!')
-    console.log(x, y, w, h)
 
     const editableStyle = {
       width: '100%',

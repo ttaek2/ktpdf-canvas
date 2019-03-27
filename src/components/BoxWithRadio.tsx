@@ -1,18 +1,9 @@
-import React, {Component, Fragment} from 'react';
-import PopupForTextarea from "./PopupForTextarea";
-import Popup from "./Popup";
-// import Popup from 'reactjs-popup';
-import {IoMdCloseCircle} from 'react-icons/io';
-import {IoMdRadioButtonOn, IoMdRadioButtonOff} from 'react-icons/io';
-import { IconContext } from "react-icons";
-
-import {Rnd} from 'react-rnd'
-import { TextBox, CheckBox, RadioBox } from 'src/interface/InputBox';
+import React, { Component } from 'react';
+import { Rnd } from 'react-rnd';
+import { RadioBox } from 'src/interface/InputBox';
 import { ISigner } from 'src/interface/ISigner';
-import $ from 'jquery';
+import RadioMarker from './RadioMarker';
 
-const defaultZIndex = 20;
-const oo = 987654321;
 
 interface Props {
   boxData: RadioBox;
@@ -26,46 +17,11 @@ class BoxWithRadio extends Component<Props, any> {
 
   constructor(props) {
     super(props);
-
-    this.state = {
-      isShowPopup: false,
-      zIndex: defaultZIndex,
-      showCloseBtn: false,
-      mode: 'horizontal',
-    };
-
-    this.closePopup = this.closePopup.bind(this);
-    this.showPopup = this.showPopup.bind(this);
   }
 
-
-  closePopup() {
-    this.setState({ isShowPopup: false });
-  }
-
-  showPopup() {
-    this.setState({ isShowPopup: true });
-  }
-
-  togglePopup = (e) => {
-    this.setState({
-      isShowPopup: !this.state.isShowPopup
-    })
-  }
+  radioMarker = null;
 
 
-  onCloseBtnClick = (e) => {
-    const {deleteInputBox, boxData} = this.props;
-    deleteInputBox(boxData.boxIndex);
-  }
-
-  onMouseOver = (e) => {
-    $(e.currentTarget).prev('.inputbox-header').show();
-  }
-
-  onMouseLeave = (e) => {
-    $(e.currentTarget).find('.inputbox-header').hide();
-  }
 
   render() {
     let {
@@ -92,54 +48,11 @@ class BoxWithRadio extends Component<Props, any> {
     width *= scale;
     height *= scale;
 
-    const { isShowPopup, showCloseBtn } = this.state;
     const { backgroundColor } = users[signerIndex];
 
-    const radioicon = {
-      color: backgroundColor, 
-      className: "global-class-name", 
-    //   size: "100%",
-      padding: 0,
-      margin: 0,
-      style: {
-        // position: 'absolute',
-        top: '0px',
-        height: '100%',
-        width: height,
-        
-      }
-    }
 
-    const radioiconLeft = {
-        ...radioicon,
-        style: {
-            ...radioicon.style,
-            // left: '0px',
-            // marginLeft: '-50%',
-        }
-    }
 
-    const radioiconRight = {
-        ...radioicon,
-        style: {
-            ...radioicon.style,
-            // right: '0px',
-            float: 'right',
-        }
-    }
-
-    const closeicon = {
-      color: "white", 
-      className: "global-class-name", 
-      size: "1.1em",
-      style: {
-        position: 'relative',
-        right: '0px',
-        // float: 'right'
-        cursor: 'default',
-      }
-    }
-
+    // console.log(this.radioMarker.state.mode)
 
     return (
         <Rnd
@@ -147,36 +60,42 @@ class BoxWithRadio extends Component<Props, any> {
           position={{ x: left, y: top }}
           onDragStop={(e, d) => { updateInputBox(boxIndex, {left: d.x / scale, top: d.y / scale}) }}
           // onResizeStop={(e, direction, ref, delta, position) => {
-          //     console.log({
-          //       width: (width + delta.width) / scale,
-          //       height: (height + delta.height) / scale,
-          //         // ...position,
-          //     })
+          //     const w = (width + delta.width) / scale;
+          //     const h = (height + delta.height) / scale;
+
           //     updateInputBox(boxIndex, {
-          //       width: (width + delta.width) / scale,
-          //       height: (height + delta.height) / scale,
+          //       width: w,
+          //       height: h,
           //         // ...position,
           //     });
+
+          //     if(w > h) {
+          //       this.setState({mode: 'horizontal'})
+          //     } else {
+          //       this.setState({mode: 'vertical'})
+          //     }
           // }}
           onResize={(e, direction, ref, delta, position) => {
-            let boxWidth = Number(ref.style.width.replace('px', '')) / scale;
-            let boxHeight = Number(ref.style.height.replace('px', '')) / scale;
-            
-            if(boxWidth < 2 * boxHeight) {
-              this.setState({mode: 'vertical'})
-            }
-            else {
-              this.setState({mode: 'horizontal'})
-            }
-
-
-
+            let width = Number(ref.style.width.replace('px', '')) / scale;
+            let height = Number(ref.style.height.replace('px', '')) / scale;
             
             updateInputBox(boxIndex, {
-              width: Number(ref.style.width.replace('px', '')) / scale,
-              height: Number(ref.style.height.replace('px', '')) / scale,
+              width, 
+              height
             });
-            
+
+            // if(this.state.mode === 'horizontal' && width < 2 * height) {
+            //   this.setState({mode: 'vertical'})
+            // }
+            // else if(this.state.mode === 'vertical' && height < 2 * width) {
+            //   this.setState({mode: 'horizontal'})
+            // }
+
+            // if(width > height) {
+            //   this.setState({mode: 'horizontal'})
+            // } else {
+            //   this.setState({mode: 'vertical'})
+            // }
           }}
           enableResizing={{ top:false, right:false, bottom:false, left:false, topRight:false, bottomRight:true, bottomLeft:false, topLeft:false }}
           enableUserSelectHack={true}
@@ -194,12 +113,22 @@ class BoxWithRadio extends Component<Props, any> {
                 cursor: 'se-resize',
             }
           }}
-          // minWidth={this.state.mode === 'horizontal' ? height * 2 : 0}
-          minWidth={height * 2.2}
-          onMouseLeave={this.onMouseLeave}
+          minWidth={this.radioMarker && this.radioMarker.state.mode === 'horizontal' ? height * 1 : undefined}
+          minHeight={this.radioMarker && this.radioMarker.state.mode === 'vertical' ? width * 1 : undefined}
         >
           
-          <div
+          <RadioMarker
+            boxData={this.props.boxData}
+            users={this.props.users}
+            updateInputBox={this.props.updateInputBox}
+            deleteInputBox={this.props.deleteInputBox}
+            className={`radioMarker-${boxIndex}`}
+            ref={ref => this.radioMarker = ref}
+            width={width}
+            height={height}
+          />
+
+          {/* <div
             className='inputbox-header' 
             style={{
               width: '100%',
@@ -240,14 +169,14 @@ class BoxWithRadio extends Component<Props, any> {
             data-page={page}
             onMouseOver={this.onMouseOver}
           >
-            <IconContext.Provider value={radioiconLeft}>
+            <IconContext.Provider value={this.state.mode === 'horizontal' ? radioiconLeft : radioiconTop}>
               <IoMdRadioButtonOn />
             </IconContext.Provider>
 
-            <IconContext.Provider value={radioiconRight}>
+            <IconContext.Provider value={this.state.mode === 'horizontal' ? radioiconRight : radioiconBottom}>
               <IoMdRadioButtonOn />
             </IconContext.Provider>
-          </div>
+          </div> */}
 
           
         </Rnd>

@@ -14,6 +14,8 @@ import { Document, Page, pdfjs } from 'react-pdf';
 interface Props {
   documentUrl: string;
   scale: number;
+  onPageChange: (pageNumber: number) => void;
+  pageNumber: number;
 }
 
 export default class PdfViewer extends React.Component<Props, React.ComponentState> {
@@ -30,6 +32,17 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
 
   componentDidMount() {
     $(window).on('mousewheel', this.handleMouseWheel);
+  }
+
+  componentWillUnmount() {
+    $(window).off('mousewheel', this.handleMouseWheel);
+  }
+  
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if(nextProps.pageNumber !== prevState.pageNumber) {
+      return {pageNumber: nextProps.pageNumber};
+    }
+    return null;
   }
 
   handleMouseWheel = e => {
@@ -77,12 +90,9 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
   }
 
   private getNewPdfItem(e: React.MouseEvent) {
-    // console.log('Document.tsx getNewPdfItem called')
     e.preventDefault();
-    const {pageNumber} = this.state;
-    const idx = Number(e.currentTarget.getAttribute('data-index')) + 1;
-    
-    this.setState({pageNumber: idx});
+    const pageNumber = Number(e.currentTarget.getAttribute('data-index')) + 1;
+    this.props.onPageChange(pageNumber);
   }
 
 
@@ -114,7 +124,6 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
   
 
   public render(): JSX.Element {
-    // console.log('Document.tsx rendering document');
 
     const {
       pageNumber,

@@ -1,18 +1,20 @@
+import $ from 'jquery';
 import React, { Component } from 'react';
-import { Rnd } from 'react-rnd';
+import { IconContext } from "react-icons";
+import { FaStamp } from "react-icons/fa";
+import { IoMdCloseCircle } from 'react-icons/io';
 import { SignBox } from 'src/interface/InputBox';
 import { ISigner } from 'src/interface/ISigner';
-import SignatureMarker from './SignatureMarker';
 
 interface Props {
   boxData: SignBox;
   users: Array<ISigner>;
   updateInputBox: (boxIndex: number, update: object) => void;
   deleteInputBox: (index: number) => void;
-  scale: number;
+  className: string;
 }
 
-class BoxWithSignature extends Component<Props, any> {
+export default class SignatureMarker extends Component<Props, any> {
 
   constructor(props: Props) {
     super(props);
@@ -20,12 +22,21 @@ class BoxWithSignature extends Component<Props, any> {
   }
 
 
+  onCloseBtnClick = (e) => {
+    const {deleteInputBox, boxData} = this.props;
+    deleteInputBox(boxData.boxIndex);
+  }
+
+  onMouseOver = (e) => {
+    $(e.currentTarget).prev('.inputbox-header').show();
+  }
+
+  onMouseLeave = (e) => {
+    $(e.currentTarget).find('.inputbox-header').hide();
+  }
+
   render() {
     let {
-      top,
-      left,
-      width,
-      height,
       page,
       type,
       boxIndex,
@@ -34,58 +45,41 @@ class BoxWithSignature extends Component<Props, any> {
 
     const {
       users,
-      deleteInputBox,
-      updateInputBox,
-      scale,
     } = this.props;
 
-    top *= scale;
-    left *= scale;
-    width *= scale;
-    height *= scale;
 
     const { backgroundColor } = users[signerIndex];
 
+    const closeicon = {
+      color: "white", 
+      className: "global-class-name", 
+      size: "1.1em",
+      style: {
+        position: 'relative',
+        right: '0px',
+        // float: 'right'
+        cursor: 'default',
+      }
+    }
+
+    const stampicon = {
+      color: backgroundColor, 
+      className: "global-class-name", 
+      size: "80%",
+      padding: 0,
+      margin: 0,
+      
+      // width: '100%',
+      // height: '100%',
+      style: {
+        // position: 'absolute',
+      },
+    }
 
     return (
-      <Rnd
-        size={{ width: width,  height: height }}
-        position={{ x: left, y: top }}
-        onDragStop={(e, d) => { updateInputBox(boxIndex, {left: d.x / scale, top: d.y / scale}) }}
-        onResizeStop={(e, direction, ref, delta, position) => {
-            updateInputBox(boxIndex, {
-              width: (width + delta.width) / scale,
-              height: (height + delta.height) / scale,
-                // ...position,
-            });
-        }}
-        enableResizing={{ top:false, right:false, bottom:false, left:false, topRight:false, bottomRight:true, bottomLeft:false, topLeft:false }}
-        enableUserSelectHack={true}
-        bounds='parent'
-        lockAspectRatio={true}
-        resizeHandleStyles={{
-          bottomRight: {
-              position: 'absolute',
-              width: '10px',
-              height: '10px',
-              background: `${backgroundColor}`,
-              borderRadius: '10px 0 0 0',
-              right: 0,
-              bottom: 0,
-              cursor: 'se-resize',
-          }
-        }}
-      >
+      <div style={{width: '100%', height: '100%'}} className={this.props.className} onMouseLeave={this.onMouseLeave}>
         
-        <SignatureMarker
-          boxData={this.props.boxData}
-          users={this.props.users}
-          updateInputBox={this.props.updateInputBox}
-          deleteInputBox={this.props.deleteInputBox}
-          className={`signatureMarker-${boxIndex}`}
-        />
-
-        {/* <div
+        <div
           className='inputbox-header' 
           style={{
             width: '100%',
@@ -129,12 +123,10 @@ class BoxWithSignature extends Component<Props, any> {
           <IconContext.Provider value={stampicon}>
             <FaStamp />
           </IconContext.Provider>
-        </div> */}
+        </div>
 
         
-      </Rnd>
+      </div>
     );
   }
 }
-
-export default BoxWithSignature;

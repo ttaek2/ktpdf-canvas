@@ -13,6 +13,7 @@ interface Props {
   users: Array<ISigner>;
   page: number;
   scale: number;
+  onInutboxAreaMouseUp: (e: React.MouseEvent) => void;
 }
 
 class ContainerForBoxes extends Component<Props, null> {
@@ -31,7 +32,9 @@ class ContainerForBoxes extends Component<Props, null> {
     } = this.props;
 
     return (
-      <div className="inputbox-area">
+      <div className="inputbox-area"
+        onMouseUp={this.props.onInutboxAreaMouseUp}
+      >
         {
           boxDataList.map(box => {
             

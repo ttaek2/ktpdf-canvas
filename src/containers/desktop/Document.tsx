@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import * as React from "react";
 import { pdfjs } from 'react-pdf';
-import { CheckBox, RadioBox, SignBox, TextBox } from "src/interface/InputBox";
+import { CheckBox, RadioBox, SignBox, TextBox, InputBox } from "src/interface/InputBox";
 import { getDocumentInfo } from "../../../src/api/document/getDocumentInfo";
 import { setDocumentInfo } from "../../api/document/setDocumentInfo";
 import ContainerForBoxes from "../../components/ContainerForBoxes";
@@ -9,6 +9,7 @@ import { ISigner } from "../../interface/ISigner";
 import { deepCopy } from "../../util/deepCopy";
 import PdfViewer from "./PdfViewer";
 import "./reset.css";
+import NewInputbox from '../../../src/components/NewInputBox';
 
 
 
@@ -155,7 +156,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     this.checkSelectedValue = this.checkSelectedValue.bind(this);
     this.updateInputBox = this.updateInputBox.bind(this);
     this.deleteInputBox = this.deleteInputBox.bind(this);
-    this.addInputBox = this.addInputBox.bind(this);
+    this.newInputBox = this.newInputBox.bind(this);
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
     this.onDocumentLoadSuccess = this.onDocumentLoadSuccess.bind(this);
     this.getNewPdfItem = this.getNewPdfItem.bind(this);
@@ -182,8 +183,13 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       });
     }
     
-
   }
+
+
+  componentWillUnmount() {
+  
+  }
+
 
 
   componentDidUpdate(_, prevState): void {
@@ -254,12 +260,12 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     return false;
   }
 
-  // private addInputBox(type, mouseX, mouseY) {
-  private addInputBox(type) {
+  private newInputBox(type, mouseX, mouseY) {
+  // private addInputBox(type) {
     
-    // if(this.state.newInputBox) {
-    //   return;
-    // }
+    if(this.state.newInputBox) {
+      return;
+    }
 
     
       
@@ -297,21 +303,30 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
     
 
-    // initBoxData.left = mouseX;
-    // initBoxData.top = mouseY;
+    initBoxData.left = mouseX;
+    initBoxData.top = mouseY;
 
-    // console.log(initBoxData)
+    console.log(initBoxData)
 
-    // this.setState( {
-    //   newInputBox: initBoxData
-    // })
+    this.setState( {
+      newInputBox: initBoxData
+    })
 
 
-    copyBoxDataList.push(initBoxData);
+    // copyBoxDataList.push(initBoxData);
 
+    // this.setState({
+    //   boxDataList: copyBoxDataList,
+    // });
+  }
+
+  addInputbox = (inputbox: InputBox) => {
+    const copy = [...this.state.boxDataList];
+    copy.push(inputbox);
     this.setState({
-      boxDataList: copyBoxDataList,
-    });
+      boxDataList: copy,
+      newInputBox: null,
+    })
   }
 
   
@@ -600,22 +615,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     })
   }
 
-  handleMouseUp = e => {
-    const {newInputBox} = this.state;
-    if(!newInputBox) {
-      return;
-    }
-    
-    this.setState({
-      newInputBox: {
-        ...newInputBox,
-        left: e.pageX,
-        top: e.pageY
-      }
-    })
-  }
-  
-  
   private roadInputData(inputs:any) {
     // console.log(" ================= ");
     // console.log(inputs);
@@ -653,6 +652,34 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     })
   }
 
+  onInutboxAreaMouseUp = (e: React.MouseEvent) => {
+    const {newInputBox, scale} = this.state;
+    if(!newInputBox) {
+      return;
+    }
+    console.log('drop the beat!!')
+    let left = e.pageX - $(e.currentTarget).offset().left;
+    let top = e.pageY - $(e.currentTarget).offset().top;
+    let width = newInputBox.width;
+    let height = newInputBox.height;
+    
+    left /= scale; 
+    top /= scale; 
+    width /= scale; 
+    height /= scale;
+    
+    newInputBox.left = left;
+    newInputBox.top = top;
+    newInputBox.width = width;
+    newInputBox.height = height;
+    
+    this.addInputbox(newInputBox);
+  }
+
+  onPageChange = (pageNumber: number) => {
+    this.setState({pageNumber});
+  }
+
 
   public render(): JSX.Element {
     // console.log('Document.tsx rendering document');
@@ -672,9 +699,9 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     return (
       <div className="container service">
         <div className='editor'
-          // onMouseMove={this.handleMouseMove}
+          onMouseMove={this.handleMouseMove}
         >
-          {/* {
+          {
           this.state.newInputBox &&
           // <div
           //   style={{
@@ -688,14 +715,11 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
           //   }}
           // >
           // </div>
-          <ContainerForBoxes
-            boxDataList={[].concat(this.state.newInputBox)}
+          <NewInputbox
+            inputbox={this.state.newInputBox}
             users={signerList}
-            page={pageNumber}
-            scale={zoom}
-            style={{zIndex: 2000}}
           />
-          } */}
+          }
           <div className='header'>
             <ul className="zoom">
               <li><a onClick={(e) => this.zoomIn(e)}><span className="icon-zoomin"></span></a></li>
@@ -704,7 +728,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
             {/* <ZoomController updateRightContentZoom={this.updateRightContentZoom} zoom={scale}/> */}
           </div>
           <div className="edit-body">
-            <PdfViewer documentUrl={this.props.documentUrl} scale={scale} >
+            <PdfViewer documentUrl={this.props.documentUrl} scale={scale} onPageChange={this.onPageChange} pageNumber={pageNumber}>
                         <ContainerForBoxes
                           updateInputBox={this.updateInputBox}
                           deleteInputBox={this.deleteInputBox}
@@ -712,6 +736,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
                           users={signerList}
                           page={pageNumber}
                           scale={scale}
+                          onInutboxAreaMouseUp={this.onInutboxAreaMouseUp}
                         />
             </PdfViewer>
 
@@ -811,10 +836,10 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
                 </select>
               </div>
               <ul>
-                <li><a onClick={e => this.addInputBox('text')}><span className="icon-insert-txt"></span>텍스트 입력</a></li>
-                <li><a onClick={e => this.addInputBox('sign')}><span className="icon-stamp"></span>서명 (Stamp)</a></li>
-                <li><a onClick={e => this.addInputBox('checkbox')}><span className="icon-checklist"></span>체크항목</a></li>
-                <li><a onClick={e => this.addInputBox('radio')}><span className="icon-selected-list"></span>선택항목</a></li>
+                <li><a onClick={e => this.newInputBox('text', e.pageX, e.pageY)}><span className="icon-insert-txt"></span>텍스트 입력</a></li>
+                <li><a onClick={e => this.newInputBox('sign', e.pageX, e.pageY)}><span className="icon-stamp"></span>서명 (Stamp)</a></li>
+                <li><a onClick={e => this.newInputBox('checkbox', e.pageX, e.pageY)}><span className="icon-checklist"></span>체크항목</a></li>
+                <li><a onClick={e => this.newInputBox('radio', e.pageX, e.pageY)}><span className="icon-selected-list"></span>선택항목</a></li>
                 {/* <li><a><span className="icon-memo"></span>메모 입력</a></li> */}
                 <li><a onClick={this.updateDocumentInfo}>저장</a></li>
               </ul>

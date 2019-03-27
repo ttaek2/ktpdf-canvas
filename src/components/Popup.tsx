@@ -16,7 +16,6 @@ let PopupStyle: React.CSSProperties = {
 
 interface IPopupProps {
   isShowPopup: boolean;
-  closePopup: (...args) => void;
   customStyle ?: object;
 }
 
@@ -30,7 +29,6 @@ class Popup extends React.Component<IPopupProps, React.ComponentState> {
     const {
       isShowPopup,
       children,
-      closePopup,
       customStyle
     } = this.props;
     const display = isShowPopup ? 'block' : 'none';
