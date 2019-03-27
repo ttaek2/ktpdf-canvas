@@ -12,6 +12,7 @@ import {setCompleteInfo} from "../../api/complete/setCompleteInfo";
 import ZoomController from "../../components/ZoomController";
 import $ from 'jquery';
 import apiPath from "../../api/enum/apiPath";
+import PdfViewer from "./PdfViewer";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -88,32 +89,50 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
   }
 
   componentDidMount() {
-    console.log('componentDidMount!');
-    const $view = $('.inputbox-area');
-    const view_w = $view.width();
-    const view_h = $view.height();
-    console.log(view_w, view_h)
-    // this.setState({
-    //   view_w,
-    //   view_h
-    // }, this.initBoxData);
+  
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+
+    if(prevState.inputs.length > 0) {
+      return null;
+    }
+
+    console.log('prevState', prevState)
+    console.log('nextProps', nextProps)
+
+   const { signer, inputs } = nextProps;
+   const { zoom } = prevState;
+   const restoreViewInfo = inputs.map(input => {
+     return {
+       ...input,
+       x: input.x * zoom,
+       y: input.y * zoom,
+       w: input.w * zoom,
+       h: input.h * zoom,
+     }
+
+     // const { x, y, w, h } = convertView(pageWidth, pageHeight, input.x, input.y, input.w, input.h);
+     // return {
+     //   ...input,
+     //   x,
+     //   y,
+     //   w,
+     //   h
+     // }
+   });
+   // const restoreViewInfo = inputs;
+
+   return {
+     signer,
+     originInputs: inputs,
+     // inputs
+     inputs: restoreViewInfo
+   };
   }
 
   componentDidUpdate(_, prevState) {
     
-    const $view = $('.inputbox-area');
-    const view_w = $view.width();
-    const view_h = $view.height();
-    console.log('componentDidUpdate')
-    console.log(view_w, view_h)
-    // if(view_h < 0 || prevState.view_h !== view_h){  
-    //   // console.log('view_h = ' + view_h);
-    //   this.setState({
-    //     view_w,
-
-    //     view_h
-    //   }, this.initBoxData);
-    // }
   }
 
   private updateTextArea(index, value) {
@@ -171,6 +190,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
 
   private onDocumentLoadSuccess({numPages}) {
     this.setState({numPages});
+    this.initBoxData();
   };
 
   private controlSignLayer(index) {
@@ -346,7 +366,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       pageWidth: page.width,
       pageHeight: page.height
     })
-    this.initBoxData();
+    
   }
 
   onPageRenderSuccess = (page) => {
@@ -356,7 +376,6 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       pageWidth: page.width,
       pageHeight: page.height
     })
-    // this.initBoxData();
     // $('.viewerContainer').find('canvas').css('opacity', 1.0);
   }
 
@@ -415,6 +434,14 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     this.setState({inputs: newInputs});
   }
 
+  onPageChange = (pageNumber: number, scrollTo: number) => {
+    this.setState({pageNumber}, () => {
+      if(scrollTo >= 0) {
+        window.scrollTo(0, scrollTo);
+      }
+    });
+  }
+
   public render(): JSX.Element {
     const {
       pageNumber,
@@ -426,9 +453,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       zoom
     } = this.state;
 
-    // console.log('inputs!!!!!!!!!!!!!!!!!!!!!!')
-    // console.log(inputs)
-    // console.log(signer.signerNo)
+    console.log('inputs!!!!!!!!!!!!!!!!!!!!!!', inputs)
 
     return (
       <div className="container service">
@@ -437,7 +462,20 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
             <ZoomController updateRightContentZoom={this.updateRightContentZoom} zoom={zoom}/>
           </div>
           <div className="edit-body">
-            <div className="thumbnail">
+
+            <PdfViewer documentUrl={this.props.documentUrl} scale={zoom} onPageChange={this.onPageChange} pageNumber={pageNumber}>
+                        <PlainBoxContainer
+                          users={[signer]}
+                          inputs={inputs}
+                          updateTextArea={this.updateTextArea}
+                          controlSignLayer={this.controlSignLayer}
+                          pageNumber={pageNumber}
+                          updateInputBox={this.updateInputBox}
+                          deleteInputBox={this.deleteInputBox}
+                        />
+              </PdfViewer>
+
+            {/* <div className="thumbnail">
               <ul>
                       <Document
                         file={this.props.documentUrl}
@@ -510,7 +548,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
                   </div>
                 </Page>
               </Document>
-            </div>
+            </div> */}
             
             <div className="edit-pallet">
               <ul>

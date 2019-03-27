@@ -14,7 +14,7 @@ import { Document, Page, pdfjs } from 'react-pdf';
 interface Props {
   documentUrl: string;
   scale: number;
-  onPageChange: (pageNumber: number) => void;
+  onPageChange: (pageNumber: number, scrollTo: number) => void;
   pageNumber: number;
 }
 
@@ -58,11 +58,8 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
           if(pageNumber >= 1) {
             console.log('setting page ', pageNumber)
             e.preventDefault()
-            this.setState({
-              pageNumber
-            }, () => window.scrollTo(0,document.body.scrollHeight))
-            // }, () => window.scrollTo(0, 0))
-            
+            this.props.onPageChange(pageNumber, document.body.scrollHeight);
+            // window.scrollTo(0,document.body.scrollHeight);
           }
         }
     }
@@ -76,9 +73,8 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
           if(pageNumber <= numPages) {
             console.log('setting page ', pageNumber)
             e.preventDefault();
-            this.setState({
-              pageNumber
-            }, () => window.scrollTo(0, 0))
+            this.props.onPageChange(pageNumber, 0);
+            // window.scrollTo(0, 0)
           }
         }
     }
@@ -92,7 +88,7 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
   private getNewPdfItem(e: React.MouseEvent) {
     e.preventDefault();
     const pageNumber = Number(e.currentTarget.getAttribute('data-index')) + 1;
-    this.props.onPageChange(pageNumber);
+    this.props.onPageChange(pageNumber, undefined);
   }
 
 

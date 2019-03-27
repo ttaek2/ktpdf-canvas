@@ -44,7 +44,7 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
     const currentSignerNo = users[0].signerNo;
 
     return(
-      <div style={styles}>
+      <div className="inputbox-area">
         {inputs.map((input, index) => {
           const {
             inputType,

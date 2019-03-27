@@ -33,6 +33,10 @@ class BoxWithRadio extends Component<Props, any> {
       type,
       boxIndex,
       signerIndex,
+      minHeight,
+      minWidth,
+      maxHeight,
+      maxWidth,
     } = this.props.boxData;
 
 
@@ -52,7 +56,7 @@ class BoxWithRadio extends Component<Props, any> {
 
 
 
-    // console.log(this.radioMarker.state.mode)
+    console.log(this.radioMarker && this.radioMarker.state.mode)
 
     return (
         <Rnd
@@ -113,8 +117,12 @@ class BoxWithRadio extends Component<Props, any> {
                 cursor: 'se-resize',
             }
           }}
-          minWidth={this.radioMarker && this.radioMarker.state.mode === 'horizontal' ? height * 1 : undefined}
-          minHeight={this.radioMarker && this.radioMarker.state.mode === 'vertical' ? width * 1 : undefined}
+          // minWidth={this.radioMarker && this.radioMarker.state.mode === 'horizontal' ? height * 1 : undefined}
+          // minHeight={this.radioMarker && this.radioMarker.state.mode === 'vertical' ? width * 1 : undefined}
+          // minWidth={this.radioMarker && this.radioMarker.state.mode === 'vertical' ? 20 * scale : undefined}
+          // minHeight={this.radioMarker && this.radioMarker.state.mode === 'horizontal' ? 20 * scale : undefined}
+          // maxWidth={maxWidth ? maxWidth * scale : undefined}
+          // maxHeight={maxHeight ? maxHeight * scale : undefined}
         >
           
           <RadioMarker

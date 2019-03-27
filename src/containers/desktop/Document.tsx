@@ -36,10 +36,14 @@ const getInitTextBox = (page, signerIndex, boxIndex): TextBox => {
     fontSize: defaultData.fontSize,
     fontFamily: defaultData.fontFamily,
     width: 300,
-    height: 30,
+    height: 40,
     signerIndex,
     page,
-    boxIndex
+    boxIndex,
+    minWidth: undefined,
+    minHeight: undefined,
+    maxWidth: undefined,
+    maxHeight: undefined,
   }
 }
 const getInitSignBox = (page, signerIndex, boxIndex): SignBox => {
@@ -51,7 +55,11 @@ const getInitSignBox = (page, signerIndex, boxIndex): SignBox => {
     height: 100,
     signerIndex,
     page,
-    boxIndex
+    boxIndex,
+    minWidth: undefined,
+    minHeight: undefined,
+    maxWidth: undefined,
+    maxHeight: undefined,
   }
 }
 const roadInitTextBox = (input, index): TextBox => {
@@ -65,7 +73,11 @@ const roadInitTextBox = (input, index): TextBox => {
     height: input.h,
     signerIndex:0,  // 생성자꺼...
     page: input.page,
-    boxIndex : index
+    boxIndex : index,
+    minWidth: undefined,
+    minHeight: undefined,
+    maxWidth: undefined,
+    maxHeight: undefined,
   }
 }
 
@@ -78,7 +90,11 @@ const roadInitSignBox = (input, index): SignBox => {
     height: input.h,
     signerIndex:0,  // 생성자꺼...
     page: input.page,
-    boxIndex : index
+    boxIndex : index,
+    minWidth: undefined,
+    minHeight: undefined,
+    maxWidth: undefined,
+    maxHeight: undefined,
   }
 }
 
@@ -91,7 +107,11 @@ const roadInitCheckBox = (input, index): SignBox => {
     height: input.h,
     signerIndex:0,  // 생성자꺼...
     page: input.page,
-    boxIndex : index
+    boxIndex : index,
+    minWidth: undefined,
+    minHeight: undefined,
+    maxWidth: undefined,
+    maxHeight: undefined,
   }
 }
 
@@ -100,11 +120,15 @@ const getInitCheckBox = (page, signerIndex, boxIndex): CheckBox => {
     type: 'checkbox',
     top: defaultData.top,
     left: defaultData.signLeft,
-    width: 50,
-    height: 50,
+    width: 25,
+    height: 25,
     signerIndex,
     page,
-    boxIndex
+    boxIndex,
+    minWidth: undefined,
+    minHeight: undefined,
+    maxWidth: undefined,
+    maxHeight: undefined,
   }
 }
 
@@ -117,7 +141,11 @@ const getInitRadioBox = (page, signerIndex, boxIndex): RadioBox => {
     height: 30,
     signerIndex,
     page,
-    boxIndex
+    boxIndex,
+    minWidth: undefined,
+    minHeight: undefined,
+    maxWidth: undefined,
+    maxHeight: undefined,
   }
 }
 
@@ -158,7 +186,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     this.deleteInputBox = this.deleteInputBox.bind(this);
     this.newInputBox = this.newInputBox.bind(this);
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
-    this.onDocumentLoadSuccess = this.onDocumentLoadSuccess.bind(this);
     this.getNewPdfItem = this.getNewPdfItem.bind(this);
     this.updateDocumentInfo = this.updateDocumentInfo.bind(this);
     this.updateRightContentZoom = this.updateRightContentZoom.bind(this);
@@ -231,26 +258,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   }
 
 
-  private onDocumentLoadSuccess(pdf) {
-    // console.log('Document.tsx DocumentLoadSuccess')
-    // console.log(pdf)
-    this.setState({
-      numPages: pdf.numPages
-    });
-  };
-
-  onPageLoadSuccess = (page) => {
-    // console.log('Document.tsx PageLoadSuccess')
-  }
-
-  onPageRenderSuccess = (page, second) => {
-    console.log('Document.tsx PageRenderSuccess')
-    // console.log(page.width, page.height)
-    this.setState({
-      pageWidth: page.width,
-      pageHeight: page.height
-    })
-  }
 
   private checkSelectedValue(): boolean {
     const {selectSignerIndex} = this.state;
@@ -589,12 +596,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   }
 
 
-  onThumbnailRenderSuccess = (page) => {
-    if(page.pageNumber == 1) {
-      $('.thumbnail').find('canvas').css('width', '100%').css('height', '100%');
-    }
-  }
-
   onSelectionChange = (e) => {
     const index = e.target.value;
     this.setSelectedIndex({index});
@@ -676,8 +677,12 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     this.addInputbox(newInputBox);
   }
 
-  onPageChange = (pageNumber: number) => {
-    this.setState({pageNumber});
+  onPageChange = (pageNumber: number, scrollTo: number) => {
+    this.setState({pageNumber}, () => {
+      if(scrollTo >= 0) {
+        window.scrollTo(0, scrollTo);
+      }
+    });
   }
 
 

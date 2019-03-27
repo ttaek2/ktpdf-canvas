@@ -3,6 +3,10 @@ export interface InputBox {
     page: number;
     width: number;
     height: number;
+    minWidth: number;
+    minHeight: number;
+    maxWidth: number;
+    maxHeight: number;
     top: number;
     left: number;
     boxIndex: number;
