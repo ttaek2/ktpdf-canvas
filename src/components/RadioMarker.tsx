@@ -101,7 +101,6 @@ export default class RadioMarker extends Component<Props, any> {
         style: {
             ...radioiconHorizontal.style,
             left: '0px',
-            // marginLeft: '-50%',
         }
     }
 
@@ -110,7 +109,6 @@ export default class RadioMarker extends Component<Props, any> {
         style: {
             ...radioiconHorizontal.style,
             right: '0px',
-            // float: 'right',
         }
     }
 

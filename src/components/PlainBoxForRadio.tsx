@@ -90,7 +90,7 @@ class PlainBoxForRadio extends React.Component<IBoxForCheckboxProps, React.Compo
       // border: 'dotted 2px black',
     }
 
-    const radioicon = {
+    const radioiconHorizontal = {
       color: backgroundColor, 
       className: "global-class-name", 
     //   size: "100%",
@@ -104,20 +104,59 @@ class PlainBoxForRadio extends React.Component<IBoxForCheckboxProps, React.Compo
       }
     }
 
-    const radioiconLeft = {
-      ...radioicon,
+    const radioiconVertical = {
+      color: backgroundColor, 
+      className: "global-class-name", 
+    //   size: "100%",
+      padding: 0,
+      margin: 0,
       style: {
-          ...radioicon.style,
-          left: '0px',
+        position: 'absolute',
+        left: '0px',
+        height: `${w}px`,
+        width: '100%',
       }
     }
 
-    const radioiconRight = {
-        ...radioicon,
+    const radioiconLeft = {
+        ...radioiconHorizontal,
         style: {
-            ...radioicon.style,
+            ...radioiconHorizontal.style,
+            left: '0px',
+        }
+    }
+
+    const radioiconRight = {
+        ...radioiconHorizontal,
+        style: {
+            ...radioiconHorizontal.style,
             right: '0px',
         }
+    }
+
+    const radioiconTop = {
+      ...radioiconVertical,
+      style: {
+          ...radioiconVertical.style,
+          top: '0px',
+      }
+    }
+
+    const radioiconBottom = {
+      ...radioiconVertical,
+      style: {
+          ...radioiconVertical.style,
+          bottom: '0px',
+      }
+    }
+
+    let radioiconFirst, radioiconSecond;
+    if(w > h) {
+      radioiconFirst = radioiconLeft;
+      radioiconSecond = radioiconRight;
+    } else {
+      radioiconFirst = radioiconTop;
+      radioiconSecond = radioiconBottom;
     }
 
     const {addText: radioSelection} = this.props;
@@ -130,14 +169,14 @@ class PlainBoxForRadio extends React.Component<IBoxForCheckboxProps, React.Compo
       >
         {radioSelection == '1' 
         ? (
-          <IconContext.Provider value={radioiconLeft}>
+          <IconContext.Provider value={radioiconFirst}>
             <IoMdRadioButtonOn 
               onClick={this.checkFirstRadioButton}
             />
           </IconContext.Provider>
         )
         : (
-          <IconContext.Provider value={radioiconLeft}>
+          <IconContext.Provider value={radioiconFirst}>
             <IoMdRadioButtonOff 
               onClick={this.checkFirstRadioButton}
             />
@@ -146,14 +185,14 @@ class PlainBoxForRadio extends React.Component<IBoxForCheckboxProps, React.Compo
         
         {radioSelection == '2' 
         ? (
-          <IconContext.Provider value={radioiconRight}>
+          <IconContext.Provider value={radioiconSecond}>
             <IoMdRadioButtonOn 
               onClick={this.checkSecondRadioButton}
             />
           </IconContext.Provider>         
         )
         : ( 
-          <IconContext.Provider value={radioiconRight}>
+          <IconContext.Provider value={radioiconSecond}>
             <IoMdRadioButtonOff 
               onClick={this.checkSecondRadioButton}
             />
