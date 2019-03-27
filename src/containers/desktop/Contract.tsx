@@ -267,8 +267,12 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     console.log('newInputs ============================')
     console.log(newInputs)
 
-    setDocumentInfoForSigner(documentNo, signerNo, {inputs: newInputs}).then(_ => {
-      alert('저장 완료');
+    setDocumentInfoForSigner(documentNo, signerNo, {inputs: newInputs}).then((data:any) => {      
+      if(data.code == '200'){
+        alert('저장 완료');
+      }else{
+        alert('저장 처리중 에러 : ' + data.code);
+      }
     });
   }
 

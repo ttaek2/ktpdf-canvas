@@ -62,21 +62,16 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
   static async getInitialProps({query}) {
 
     // 포탈에서 호출 시 시작
+    // 아이디(템플릿아이디) 를 받아 조회하는 방식으로 변경될 예정
     // console.log("query 1 :: " + JSON.stringify(query));
 
     // //let docInfo = JSON.stringify(query);
+    
     console.log('query = ', query)
     let docInfo = JSON.parse(JSON.stringify(query));
     let params = JSON.parse(docInfo.params);
 
-    // console.log("params.docId : " + params.docId);
-    // console.log("params.regId : " + params.regId);
-    // console.log("params.tmpDocId : " + params.tmpDocId);
-    // console.log("params.docPath : " + params.docPath);
-    // console.log("params.docName : " + params.docName);
-
     let signers = params.signers;
-    // console.log("signers : " + signers.length);    
     
     let documentNo = params.docId;    
     let documentUrl = params.docPath;
@@ -85,6 +80,7 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
     let regId = params.regId;
 
     return {documentNo, documentUrl, signerList, tmpDocId, regId};
+    
     // 포탈에서 호출 시 끝
 
     // let documentNo = query.docNo;
