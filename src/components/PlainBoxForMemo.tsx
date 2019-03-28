@@ -1,22 +1,19 @@
 import * as React from "react";
-import {Rnd} from 'react-rnd'
+import { IconContext } from "react-icons";
+import { IoMdCloseCircle } from 'react-icons/io';
+import { Rnd } from 'react-rnd';
+import { MemoInput } from "src/interface/Input";
+import $ from 'jquery';
+import MemoMarker from "./MemoMarker";
 
 interface IBoxForTextAreaProps {
-  backgroundColor: string;
-  name: string;
-  color: string;
+  input: MemoInput;
   boxIndex: number;
   updateTextArea: (...args) => void;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  addText: string;
-  charSize: string;
-  font: string;
   editable: boolean;
   updateInputBox: (boxIndex: number, update: object) => void;
   deleteInputBox: (index: number) => void;
+  scale: number;
 }
 
 class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.ComponentState> {
@@ -27,55 +24,23 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
     this.state = {
       text: ''
     };
-
-    this.handleOnChange = this.handleOnChange.bind(this);
   }
 
-  handleOnChange(e) {
-    const { updateTextArea, boxIndex } = this.props;
-    const val = e.target.value;
-    updateTextArea(boxIndex, val);
-  }
 
   render() {
-    const {
-      backgroundColor,
-      color,
-      addText,
+    let {
       x,
       y,
       w,
       h,
-      font,
-      charSize,
-      editable
-    } = this.props;
+    } = this.props.input;
 
-    const editableStyle = {
-      width: '100%',
-      height: '100%',
-      resize: 'none',
-      fontFamily: `${font}`,
-      fontSize: `${charSize}px`,
-      // boxSizing: 'border-box',
-      // backgroundColor: 'white',
-      // opacity: 0.7,
-      // border: 'dotted 2px orange',
-      textDecoration:'none',
-      color:'#000',
-      background:'#ffc',
-      padding: 0,
-      margin: 0,
-      border: 'none',
-      boxShadow: '5px 5px 7px rgba(33,33,33,.7)',
-      opacity: 0.9,
-    };
+    const {editable, scale} = this.props;
 
-    const nonEditableStyle = {
-      ...editableStyle,
-      // border: 'none',
-      // backgroundColor: 'rgba(0, 0, 0, 0.0)'
-    };
+    x *= scale;
+    y *= scale;
+    w *= scale;
+    h *= scale;
 
     const {updateInputBox, deleteInputBox, boxIndex} = this.props;
 
@@ -83,13 +48,12 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
       <Rnd
           size={{ width: w,  height: h }}
           position={{ x: x, y: y }}
-          onDragStop={(e, d) => { updateInputBox(boxIndex, {x: d.x, y: d.y}) }}
+          onDragStop={(e, d) => { updateInputBox(boxIndex, {x: d.x / scale, y: d.y / scale}) }}
           // onDragStop={(e, d) => { console.log(d.x, d.y) }}
           onResizeStop={(e, direction, ref, delta, position) => {
               updateInputBox(boxIndex, {
-                  w: w + delta.width,
-                  h: h + delta.height,
-                  ...position,
+                  w: (w + delta.width) / scale,
+                  h: (h + delta.height) / scale,
               });
               // console.log('resize stop')
           }}
@@ -101,7 +65,7 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
               position: 'absolute',
               width: '10px',
               height: '10px',
-              background: `${backgroundColor}`,
+              background: `orange`,
               borderRadius: '10px 0 0 0',
               right: 0,
               bottom: 0,
@@ -109,25 +73,65 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
             }
           }}
           disableDragging={!editable}
-          // onMouseLeave={this.onMouseLeave}
         >
+
+        <MemoMarker
+          boxIndex={this.props.boxIndex}
+          input={this.props.input as MemoInput}
+          updateTextArea={this.props.updateTextArea}
+          editable={editable}
+          updateInputBox={this.props.updateInputBox}
+          deleteInputBox={this.props.deleteInputBox}
+        />
+
+
+      {/* <div
+        className='memo-header' 
+        style={{
+          width: '100%',
+          height: '18px',
+          position: 'absolute',
+          top: '-17px',
+          border: `1px solid orange`,
+          backgroundColor: `orange`,
+          color: 'white',
+          borderRadius: '10px 10px 0 0',
+          textAlign: 'right',
+          display: 'none',
+        }}
+      >
+        <span
+          style={{
+            float: 'left',
+            fontSize: '0.9em',
+          }}
+        >{this.props.input.signerNo}님의 메모</span>
+        <span
+          onClick={this.onCloseBtnClick}  
+        >
+          <IconContext.Provider value={closeicon}>
+            <IoMdCloseCircle  />
+          </IconContext.Provider>
+        </span>
+      </div>
+      
       <div
         style={{
           width: '100%',
           height: '100%',
           // position: 'relative',
         }}
+        onMouseOver={this.onMouseOver}
       >
-        {/* <input type="text" */}
         <textarea
           className="memo"
           disabled={editable ? false : true}
           style={editable ? editableStyle : nonEditableStyle}
           onChange={this.handleOnChange}
-          defaultValue={`signer님의 메모입력 : \n${addText}`}
-          placeholder="메모 입력"
+          placeholder={editable ? "메모 입력" : undefined}
+          value={addText}
         />
-      </div>
+      </div> */}
       </Rnd>
     )
   }

@@ -2,17 +2,14 @@ import * as React from "react";
 import {IoMdCheckmark} from 'react-icons/io';
 import { IconContext } from "react-icons";
 import {IoMdRadioButtonOn, IoMdRadioButtonOff} from 'react-icons/io';
+import { RadioInput } from "src/interface/Input";
 
 interface IBoxForCheckboxProps {
-  backgroundColor: string;
-  name: string;
-  color: string;
+  input: RadioInput;
   updateTextArea: (...args) => void;
   boxIndex: number;
-  w: string;
-  h: string;
-  addText: string;
-  editable: boolean 
+  editable: boolean;
+  scale: number;
 }
 
 class PlainBoxForRadio extends React.Component<IBoxForCheckboxProps, React.ComponentState> {
@@ -27,7 +24,8 @@ class PlainBoxForRadio extends React.Component<IBoxForCheckboxProps, React.Compo
 
   toggleCheckbox = (e) => {
     
-    const {addText: checked, updateTextArea, boxIndex} = this.props;
+    const {input, updateTextArea, boxIndex} = this.props;
+    const {addText: checked} = input;
     console.log('toggleCheckbox')
     console.log(checked, boxIndex)
     updateTextArea(boxIndex, !checked);
@@ -50,18 +48,22 @@ class PlainBoxForRadio extends React.Component<IBoxForCheckboxProps, React.Compo
   }
 
   render() {
-    const {
-      backgroundColor,
-      name,
-      color,
+    let {
+      x,
+      y,
       w,
       h,
-      signUrl,
-      editable
-    } = this.props;
+    } = this.props.input;
+
+    const {editable, scale} = this.props;
+
+    x *= scale;
+    y *= scale;
+    w *= scale;
+    h *= scale;
 
     const checkicon = {
-      color: backgroundColor, 
+      // color: backgroundColor, 
       className: "global-class-name", 
       size: "100%",
       padding: 0,
@@ -74,12 +76,13 @@ class PlainBoxForRadio extends React.Component<IBoxForCheckboxProps, React.Compo
     }
 
     const nonEditableStyle = {
-      position: 'relative',
-      width: `${w}px`,
-      height: `${h}px`,
+      position: 'absolute',
+      left: x,
+      top: y,
+      width: w,
+      height: h,
       border: 'none',
       backgroundColor: 'rgba(0, 0, 0, 0.0)',
-      color
     };
 
     const editableStyle = {
@@ -91,7 +94,7 @@ class PlainBoxForRadio extends React.Component<IBoxForCheckboxProps, React.Compo
     }
 
     const radioiconHorizontal = {
-      color: backgroundColor, 
+      // color: backgroundColor, 
       className: "global-class-name", 
     //   size: "100%",
       padding: 0,
@@ -105,7 +108,7 @@ class PlainBoxForRadio extends React.Component<IBoxForCheckboxProps, React.Compo
     }
 
     const radioiconVertical = {
-      color: backgroundColor, 
+      // color: backgroundColor, 
       className: "global-class-name", 
     //   size: "100%",
       padding: 0,
@@ -159,7 +162,7 @@ class PlainBoxForRadio extends React.Component<IBoxForCheckboxProps, React.Compo
       radioiconSecond = radioiconBottom;
     }
 
-    const {addText: radioSelection} = this.props;
+    const {addText: radioSelection} = this.props.input;
     
     return (
       

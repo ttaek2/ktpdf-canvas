@@ -708,18 +708,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         >
           {
           this.state.newInputBox &&
-          // <div
-          //   style={{
-          //     width: '50px',
-          //     height: '50px',
-          //     left: this.state.newInputBox.left,
-          //     top: this.state.newInputBox.top,
-          //     backgroundColor: 'blue',
-          //     position: 'absolute',
-          //     zIndex: 1000
-          //   }}
-          // >
-          // </div>
           <NewInputbox
             inputbox={this.state.newInputBox}
             users={signerList}
@@ -834,6 +822,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
                   <option value="">참여자 지정</option>
                   {signerList.map((signer, index) => 
                     <option 
+                      key={`signer-option-${index}`}
                       value={index}
                       style={{color: signer.backgroundColor}}
                     >{signer.signerNm}</option>  

@@ -1,17 +1,14 @@
 import * as React from "react";
 import {IoMdCheckmark} from 'react-icons/io';
 import { IconContext } from "react-icons";
+import { CheckInput } from "src/interface/Input";
 
 interface IBoxForCheckboxProps {
-  backgroundColor: string;
-  name: string;
-  color: string;
+  input: CheckInput;
   updateTextArea: (...args) => void;
   boxIndex: number;
-  w: string;
-  h: string;
-  addText: string;
-  editable: boolean 
+  editable: boolean;
+  scale: number;
 }
 
 class PlainBoxForCheckbox extends React.Component<IBoxForCheckboxProps, React.ComponentState> {
@@ -26,7 +23,8 @@ class PlainBoxForCheckbox extends React.Component<IBoxForCheckboxProps, React.Co
 
   toggleCheckbox = (e) => {
     
-    const {addText: checked, updateTextArea, boxIndex} = this.props;
+    const {input, updateTextArea, boxIndex} = this.props;
+    const {addText: checked} = input;
     console.log('toggleCheckbox')
     console.log(checked, boxIndex)
     updateTextArea(boxIndex, !checked);
@@ -37,18 +35,22 @@ class PlainBoxForCheckbox extends React.Component<IBoxForCheckboxProps, React.Co
   }
 
   render() {
-    const {
-      backgroundColor,
-      name,
-      color,
+    let {
       w,
       h,
-      signUrl,
-      editable
-    } = this.props;
+      x,
+      y,
+      addText
+    } = this.props.input;
+
+    const {editable, scale} = this.props;
+    x *= scale;
+    y *= scale;
+    w *= scale;
+    h *= scale;
 
     const checkicon = {
-      color: backgroundColor, 
+      // color: backgroundColor, 
       className: "global-class-name", 
       size: "100%",
       padding: 0,
@@ -61,18 +63,19 @@ class PlainBoxForCheckbox extends React.Component<IBoxForCheckboxProps, React.Co
     }
 
     const nonEditableStyle = {
-      position: 'relative',
-      width: `${w}px`,
-      height: `${h}px`,
+      position: 'absolute',
+      left: x,
+      top: y,
+      width: w,
+      height: h,
       border: 'none',
       backgroundColor: 'rgba(0, 0, 0, 0.0)',
-      color
     };
 
     const editableStyle = {
       ...nonEditableStyle,
       // border: '1px solid #000',
-      backgroundColor: backgroundColor ? backgroundColor : '#fff',
+      backgroundColor: '#fff',
       opacity: 0.7,
       border: 'dotted 2px black',
     }
@@ -82,7 +85,7 @@ class PlainBoxForCheckbox extends React.Component<IBoxForCheckboxProps, React.Co
         style={editable ? editableStyle : nonEditableStyle}
         onClick={editable ? this.toggleCheckbox : this.doNothing}
       >
-        {this.props.addText && 
+        {addText && 
         <IconContext.Provider value={checkicon}>
           <IoMdCheckmark />
         </IconContext.Provider>

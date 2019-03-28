@@ -1,17 +1,12 @@
 import * as React from "react";
+import { TextInput } from "src/interface/Input";
 
 interface IBoxForTextAreaProps {
-  backgroundColor: string;
-  name: string;
-  color: string;
+  input: TextInput;
   boxIndex: number;
   updateTextArea: (...args) => void;
-  w: number;
-  h: number;
-  addText: string;
-  charSize: string;
-  font: string;
   editable: boolean
+  scale: number;
 }
 
 class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.ComponentState> {
@@ -33,21 +28,26 @@ class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.Co
   }
 
   render() {
-    const {
-      backgroundColor,
-      color,
+    
+    let {
       addText,
+      x,
+      y,
       w,
       h,
       font,
       charSize,
-      editable
-    } = this.props;
+    } = this.props.input;
+
+    const {editable, scale} = this.props;
+    x *= scale;
+    y *= scale;
+    w *= scale;
+    h *= scale;
 
     const editableStyle = {
-      width: `${w}px`,
-      height: `${h}px`,
-      color,
+      width: '100%',
+      height: '100%',
       resize: 'none',
       fontFamily: `${font}`,
       fontSize: `${charSize}px`,
@@ -66,7 +66,11 @@ class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.Co
     return (
       <div
         style={{
-          position: 'relative'
+          position: 'absolute',
+          left: x,
+          top: y,
+          width: w,
+          height: h,
         }}
       >
         {/* <input type="text" */}

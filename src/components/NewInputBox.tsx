@@ -5,9 +5,10 @@ import CheckboxMarker from './CheckboxMarker';
 import RadioMarker from './RadioMarker';
 import SignatureMarker from './SignatureMarker';
 import TextMarker from './TextMarker';
+import { Input } from 'src/interface/Input';
 
 interface Props {
-  inputbox: InputBox;
+  inputbox: Input;
   users: Array<ISigner>;
 }
 

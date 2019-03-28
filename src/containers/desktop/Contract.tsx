@@ -1,63 +1,63 @@
 import * as React from "react";
-import {Document, Page, pdfjs} from 'react-pdf';
-
-import "./reset.css";
-import {deepCopy} from "../../util/deepCopy";
-import DimmedLayer from "../../components/DimmedLayer";
-import SignatureLayer from "../../components/SignatureLayer";
-import {ISigner} from "../../interface/ISigner";
-import PlainBoxContainer from "../../components/PlainBoxContainer";
-import {setDocumentInfoForSigner} from "../../api/signer/setDocumentInfoForSinger";
-import {setCompleteInfo} from "../../api/complete/setCompleteInfo";
-import ZoomController from "../../components/ZoomController";
-import $ from 'jquery';
+import { pdfjs } from 'react-pdf';
+import MemoMarker from "../../../src/components/MemoMarker";
+import { Input, MemoInput } from "src/interface/Input";
+import { setCompleteInfo } from "../../api/complete/setCompleteInfo";
 import apiPath from "../../api/enum/apiPath";
+import { setDocumentInfoForSigner } from "../../api/signer/setDocumentInfoForSinger";
+import DimmedLayer from "../../components/DimmedLayer";
+import PlainBoxContainer from "../../components/PlainBoxContainer";
+import SignatureLayer from "../../components/SignatureLayer";
+import { ISigner } from "../../interface/ISigner";
+import { deepCopy } from "../../util/deepCopy";
 import PdfViewer from "./PdfViewer";
+import "./reset.css";
+import $ from 'jquery';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const styled = require('./common.css');
 
-interface IInput {
-  inputType: string;
-  font: string;
-  charSize: string;
-  signerNo: string;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  addText: string;
-  page: number;
-  boxIndex: number;
-}
+// interface IInput {
+//   inputType: string;
+//   font: string;
+//   charSize: string;
+//   signerNo: string;
+//   x: number;
+//   y: number;
+//   w: number;
+//   h: number;
+//   addText: string;
+//   page: number;
+//   boxIndex: number;
+// }
 
 interface IContractProps {
   documentUrl: string;
   documentNo: number;
   signer: ISigner;
-  inputs: Array<IInput>;
+  inputs: Array<Input>;
   completePage: boolean;
 }
 
-const convertView = (view_w, view_h, left, top, width, height) => {
-  console.log('convertView')
-  console.log(view_w, view_h, left, top, width, height);
+// const convertView = (view_w, view_h, left, top, width, height) => {
+//   console.log('convertView')
+//   console.log(view_w, view_h, left, top, width, height);
 
-  const x = Number(left) * view_w;
-  const w = Number(width) * Number(view_w);
-  const h = Number(height) * Number(view_h);
-  const y = (((Number(top) * view_h) - view_h) + Number(h)) * -1;
+//   const x = Number(left) * view_w;
+//   const w = Number(width) * Number(view_w);
+//   const h = Number(height) * Number(view_h);
+//   const y = (((Number(top) * view_h) - view_h) + Number(h)) * -1;
 
-  console.log(x, y, w, h)
+//   console.log(x, y, w, h)
 
-  return {
-    x,
-    y,
-    w,
-    h
-  }
-};
+//   return {
+//     x,
+//     y,
+//     w,
+//     h
+//   }
+// };
 
 class ContractContainer extends React.Component<IContractProps, React.ComponentState> {
 
@@ -70,22 +70,18 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       numPages: null,
       pageNumber: 1,
       showSignLayer: false,
-      signature: null,
-      selectedIndex: -1,
-      zoom: 1.35,
-      view_h: -1,
-      view_w: -1,
-      originInputs: []
+      scale: 1.5,
+      newInputBox: null,
     };
 
     this.updateSignUrl = this.updateSignUrl.bind(this);
     this.updateTextArea = this.updateTextArea.bind(this);
     this.controlSignLayer = this.controlSignLayer.bind(this);
-    this.onDocumentLoadSuccess = this.onDocumentLoadSuccess.bind(this);
-    this.getNewPdfItem = this.getNewPdfItem.bind(this);
+    // this.onDocumentLoadSuccess = this.onDocumentLoadSuccess.bind(this);
+    // this.getNewPdfItem = this.getNewPdfItem.bind(this);
     this.saveContractInfo = this.saveContractInfo.bind(this);
     this.saveCompleteInfo = this.saveCompleteInfo.bind(this);
-    this.updateRightContentZoom = this.updateRightContentZoom.bind(this);
+    // this.updateRightContentZoom = this.updateRightContentZoom.bind(this);
   }
 
   componentDidMount() {
@@ -102,32 +98,10 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     console.log('nextProps', nextProps)
 
    const { signer, inputs } = nextProps;
-   const { zoom } = prevState;
-   const restoreViewInfo = inputs.map(input => {
-     return {
-       ...input,
-       x: input.x * zoom,
-       y: input.y * zoom,
-       w: input.w * zoom,
-       h: input.h * zoom,
-     }
-
-     // const { x, y, w, h } = convertView(pageWidth, pageHeight, input.x, input.y, input.w, input.h);
-     // return {
-     //   ...input,
-     //   x,
-     //   y,
-     //   w,
-     //   h
-     // }
-   });
-   // const restoreViewInfo = inputs;
 
    return {
      signer,
-     originInputs: inputs,
-     // inputs
-     inputs: restoreViewInfo
+     inputs,
    };
   }
 
@@ -143,55 +117,40 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     this.setState({ inputs: newInputs });
   }
 
-  private initBoxData() {
-    console.log('initBoxData!')
-    // const { view_w, view_h } = this.state;
-    // const { pageWidth, pageHeight } = this.state;    
-    const { signer, inputs } = this.props;
-    const { zoom } = this.state;
-    const restoreViewInfo = inputs.map(input => {
-      return {
-        ...input,
-        x: input.x * zoom,
-        y: input.y * zoom,
-        w: input.w * zoom,
-        h: input.h * zoom,
-      }
+  // private initBoxData() {
+  //   console.log('initBoxData!')
+  //   // const { view_w, view_h } = this.state;
+  //   // const { pageWidth, pageHeight } = this.state;    
+  //   const { signer, inputs } = this.props;
+  //   const { zoom } = this.state;
+  //   const restoreViewInfo = inputs.map(input => {
+  //     return {
+  //       ...input,
+  //       x: input.x * zoom,
+  //       y: input.y * zoom,
+  //       w: input.w * zoom,
+  //       h: input.h * zoom,
+  //     }
 
-      // const { x, y, w, h } = convertView(pageWidth, pageHeight, input.x, input.y, input.w, input.h);
-      // return {
-      //   ...input,
-      //   x,
-      //   y,
-      //   w,
-      //   h
-      // }
-    });
-    // const restoreViewInfo = inputs;
+  //     // const { x, y, w, h } = convertView(pageWidth, pageHeight, input.x, input.y, input.w, input.h);
+  //     // return {
+  //     //   ...input,
+  //     //   x,
+  //     //   y,
+  //     //   w,
+  //     //   h
+  //     // }
+  //   });
+  //   // const restoreViewInfo = inputs;
 
-    this.setState({
-      signer,
-      originInputs: inputs,
-      // inputs
-      inputs: restoreViewInfo
-    });
-  }
+  //   this.setState({
+  //     signer,
+  //     originInputs: inputs,
+  //     // inputs
+  //     inputs: restoreViewInfo
+  //   });
+  // }
 
-  private getNewPdfItem(e: React.MouseEvent) {
-    e.preventDefault();
-    const {pageNumber} = this.state;
-    const idx = Number(e.currentTarget.getAttribute('data-index')) + 1;
-
-    // $('li.thumbnailList').find('canvas').css('opacity', 0.7);
-    // $(e.currentTarget).find('canvas').css('opacity', 1);
-    
-    this.setState({pageNumber: idx});
-  }
-
-  private onDocumentLoadSuccess({numPages}) {
-    this.setState({numPages});
-    this.initBoxData();
-  };
 
   private controlSignLayer(index) {
     const {showSignLayer} = this.state;
@@ -232,56 +191,19 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     console.log('saveContractInfo')
     console.log(this.state.inputs)
     const { documentNo } = this.props;
-    const { inputs, originInputs, signer, zoom } = this.state;
+    const { inputs, signer } = this.state;
     const signerNo = signer.signerNo;
-    const domain = `${apiPath.DOMAIN.HOSTNAME}:${apiPath.DOMAIN.PORT}`;
     const isValidInputs = inputs.every(input => this.isValidInput(input));
     if(!isValidInputs) return false;
 
     const newInputs = inputs.map((input, index) => {
-      
-
-      if(input.inputType === 'sign') {
-        const newSignUrl = input.signUrl && input.signUrl.replace(domain, '');
-        const { x, y, w, h } = originInputs[index];
-        return {
-          ...input,
-          signUrl: newSignUrl,
-          x,
-          y,
-          w,
-          h
-        }
-      }
-      else if(input.inputType === 'checkbox') {
-        const { x, y, w, h } = originInputs[index];
+      if(input.inputType === 'checkbox') {
         return {
           ...input,
           addText: input.addText ? 'Y' : 'N',
-          x,
-          y,
-          w,
-          h
         }
       }
-      else if(input.inputType === 'memo') {
-        return {
-          ...input,
-          x: input.x / zoom,
-          y: input.y / zoom,
-          w: input.w / zoom,
-          h: input.h / zoom,
-        }
-      }
-      
-      const { x, y, w, h } = originInputs[index];
-      return {
-        ...input,
-        x,
-        y,
-        w,
-        h
-      }
+      return input;
     });
 
     console.log('newInputs ============================')
@@ -312,74 +234,45 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     });
   }
 
-  convertToPDF = () => {
+  // updateRightContentZoom(zoom) {
+  //   const {zoom: prevScale} = this.state;
+  //   const nextScale = zoom;
+  //   const ratio = nextScale / prevScale;
+  //   console.log(prevScale, nextScale, ratio)
+  //   const newBoxDataList = this.scaleMarker(ratio);
+  //   console.log(newBoxDataList)
+  //   this.setState({
+  //     zoom,
+  //     inputs: newBoxDataList
+  //   }, () => { console.log(this.state.inputs) });
+  // }
 
-  }
-
-  updateRightContentZoom(zoom) {
-    const {zoom: prevScale} = this.state;
-    const nextScale = zoom;
-    const ratio = nextScale / prevScale;
-    console.log(prevScale, nextScale, ratio)
-    const newBoxDataList = this.scaleMarker(ratio);
-    console.log(newBoxDataList)
-    this.setState({
-      zoom,
-      inputs: newBoxDataList
-    }, () => { console.log(this.state.inputs) });
-  }
-
-  private scaleMarker(scale) {
+  // private scaleMarker(scale) {
     
-    const {inputs} = this.state;
-    console.log('scaling start scale = ', scale)
-    console.log(inputs);
+  //   const {inputs} = this.state;
+  //   console.log('scaling start scale = ', scale)
+  //   console.log(inputs);
 
-    // console.log('scale = ', scale)
-    // console.log(inputs)
-    const newBoxDataList = inputs.map((data, boxIndex) => {
-        return {
-          ...data,
-          x: data.x * scale,
-          y: data.y * scale,
-          w: data.w * scale,
-          h: data.h * scale
-        }
-      }
-    );
-    console.log('scaling done')
-    console.log(newBoxDataList)
+  //   // console.log('scale = ', scale)
+  //   // console.log(inputs)
+  //   const newBoxDataList = inputs.map((data, boxIndex) => {
+  //       return {
+  //         ...data,
+  //         x: data.x * scale,
+  //         y: data.y * scale,
+  //         w: data.w * scale,
+  //         h: data.h * scale
+  //       }
+  //     }
+  //   );
+  //   console.log('scaling done')
+  //   console.log(newBoxDataList)
 
-    return newBoxDataList;
-  }
+  //   return newBoxDataList;
+  // }
 
-  onThumbnailRenderSuccess = (page) => {
-    if(page.pageNumber == 1) {
-      // $('li.thumbnailList').find('canvas').first().css('opacity', 1.0);
-    }
-  }
 
-  onPageLoadSuccess = (page) => {
-    console.log('PageLoadSuccess')
-    console.log(page.width, page.height)
-    this.setState({
-      pageWidth: page.width,
-      pageHeight: page.height
-    })
-    
-  }
-
-  onPageRenderSuccess = (page) => {
-    console.log('PageRenderSuccess')
-    console.log(page.width, page.height)
-    this.setState({
-      pageWidth: page.width,
-      pageHeight: page.height
-    })
-    // $('.viewerContainer').find('canvas').css('opacity', 1.0);
-  }
-
-  getMemo = (page, signerNo): IInput => {
+  getInitMemo = (page, signerNo): MemoInput => {
     return {
       inputType: 'memo',
       font: 'Times-Roman',
@@ -395,21 +288,25 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     }
   }
 
-  addMemo = (e) => {
+  newMemo = (e) => {
     const { inputs, originInputs, signer, pageNumber } = this.state;
-    const memo = this.getMemo(pageNumber, signer.signerNo);
-    let newInputs = [...inputs];
-    newInputs.push(memo);
-    this.setState({
-      inputs: newInputs,
+    const memo = this.getInitMemo(pageNumber, signer.signerNo);
+    memo.x = e.pageX;
+    memo.y = e.pageY;
+
+    this.setState( {
+      newMemo: memo
     })
   }
 
   deleteInputBox = (boxIndex: number): void => {
+    
     const { inputs } = this.state;
     const newInputs = inputs.filter((box, index) => {
       return boxIndex !== index;
     });
+    
+    console.log(`deleted input box ${boxIndex}. newinputs = `, newInputs)
 
     this.setState({inputs: newInputs});
   }
@@ -442,6 +339,65 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     });
   }
 
+  zoomIn = (e) => {
+    this.setState({
+      scale: this.state.scale * 1.1,
+    }, () => console.log(this.state.scale))
+  }
+  zoomOut = (e) => {
+    this.setState({
+      scale: this.state.scale / 1.1,
+    })
+  }
+
+  handleMouseMove = (e: React.MouseEvent) => {
+    const {newMemo} = this.state;
+    if(!newMemo) {
+      return;
+    }
+    
+    this.setState({
+      newMemo: {
+        ...newMemo,
+        x: e.pageX,
+        y: e.pageY
+      }
+    })
+  }
+
+  onInputboxAreaMouseUp = (e: React.MouseEvent) => {
+    const {newMemo, scale} = this.state;
+    if(!newMemo) {
+      return;
+    }
+    console.log('drop the beat!!')
+    let x = e.pageX - $(e.currentTarget).offset().left;
+    let y = e.pageY - $(e.currentTarget).offset().top;
+    let w = newMemo.w;
+    let h = newMemo.h;
+    
+    x /= scale; 
+    y /= scale; 
+    w /= scale; 
+    h /= scale;
+    
+    newMemo.x = x;
+    newMemo.y = y;
+    newMemo.w = w;
+    newMemo.h = h;
+    
+    this.addMemo(newMemo);
+  }
+
+  addMemo = (memo: MemoInput) => {
+    const copy = [...this.state.inputs];
+    copy.push(memo);
+    this.setState({
+      inputs: copy,
+      newMemo: null,
+    })
+  }
+
   public render(): JSX.Element {
     const {
       pageNumber,
@@ -450,20 +406,51 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       signer,
       inputs,
       selectedIndex,
-      zoom
+      scale,
+      newMemo
     } = this.state;
 
     console.log('inputs!!!!!!!!!!!!!!!!!!!!!!', inputs)
 
     return (
       <div className="container service">
-        <div className='editor'>
+        <div className='editor'
+          onMouseMove={this.handleMouseMove}
+        >
+          {
+            newMemo &&
+            <div
+                style={{
+                    width: newMemo.w,
+                    height: newMemo.h,
+                    left: newMemo.x,
+                    top: newMemo.y,
+                    position: 'absolute',
+                    zIndex: 100000,
+                    pointerEvents: 'none',
+                }}
+            >
+              <MemoMarker
+                boxIndex={undefined}
+                input={newMemo as MemoInput}
+                updateTextArea={undefined}
+                editable={false}
+                updateInputBox={undefined}
+                deleteInputBox={undefined}
+              />
+            </div>
+          }
+
           <div className='header'>
-            <ZoomController updateRightContentZoom={this.updateRightContentZoom} zoom={zoom}/>
+            <ul className="zoom">
+              <li><a onClick={(e) => this.zoomIn(e)}><span className="icon-zoomin"></span></a></li>
+              <li><a onClick={(e) => this.zoomOut(e)}><span className="icon-zoomout"></span></a></li>
+            </ul>
+            {/* <ZoomController updateRightContentZoom={this.updateRightContentZoom} zoom={zoom}/> */}
           </div>
           <div className="edit-body">
 
-            <PdfViewer documentUrl={this.props.documentUrl} scale={zoom} onPageChange={this.onPageChange} pageNumber={pageNumber}>
+            <PdfViewer documentUrl={this.props.documentUrl} scale={scale} onPageChange={this.onPageChange} pageNumber={pageNumber}>
                         <PlainBoxContainer
                           users={[signer]}
                           inputs={inputs}
@@ -472,6 +459,8 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
                           pageNumber={pageNumber}
                           updateInputBox={this.updateInputBox}
                           deleteInputBox={this.deleteInputBox}
+                          scale={scale}
+                          onInputboxAreaMouseUp={this.onInputboxAreaMouseUp}
                         />
               </PdfViewer>
 
@@ -552,7 +541,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
             
             <div className="edit-pallet">
               <ul>
-                <li><a onClick={this.addMemo}><span className="icon-memo"></span>메모 입력</a></li>
+                <li><a onClick={this.newMemo}><span className="icon-memo"></span>메모 입력</a></li>
                 <li><a onClick={this.props.completePage ? this.saveCompleteInfo : this.saveContractInfo}>저장</a></li>
               </ul>
             </div>

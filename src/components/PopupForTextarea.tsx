@@ -97,8 +97,9 @@ class PopupForTextarea extends React.Component<IPopup, React.ComponentState> {
             onChange={this.handleFontSizeChange}
             defaultValue={this.props.fontSize + ''}
           >
-            {fontSizeList.map(fontSize => 
+            {fontSizeList.map((fontSize, index) => 
               <option 
+                key={`fontsize-option-${index}`}
                 value={fontSize}
               >{fontSize}</option>)}
           </select>
@@ -125,8 +126,9 @@ class PopupForTextarea extends React.Component<IPopup, React.ComponentState> {
             onChange={this.handleFontChange}
             defaultValue={this.props.fontFamily}
           >
-            {fontList.map(font => 
+            {fontList.map((font, index) => 
               <option 
+                key={`font-option-${index}`}
                 value={font.fontFamily}
               >{font.fontName}</option>)}
           </select>

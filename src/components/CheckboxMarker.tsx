@@ -1,7 +1,6 @@
 import $ from 'jquery';
 import React, { Component } from 'react';
 import { IconContext } from "react-icons";
-// import Popup from 'reactjs-popup';
 import { IoMdCheckmark, IoMdCloseCircle } from 'react-icons/io';
 import { CheckBox } from 'src/interface/InputBox';
 import { ISigner } from 'src/interface/ISigner';

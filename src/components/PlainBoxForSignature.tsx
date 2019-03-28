@@ -1,15 +1,12 @@
 import * as React from "react";
+import { SignInput } from "src/interface/Input";
 
 interface IBoxForSignatureProps {
-  backgroundColor: string;
-  name: string;
-  color: string;
+  input: SignInput;
   controlSignLayer: (...args) => void;
   boxIndex: number;
-  w: string;
-  h: string;
-  signUrl: string;
-  editable: boolean 
+  editable: boolean;
+  scale: number;
 }
 
 class PlainBoxForSignature extends React.Component<IBoxForSignatureProps, React.ComponentState> {
@@ -30,29 +27,36 @@ class PlainBoxForSignature extends React.Component<IBoxForSignatureProps, React.
   }
 
   render() {
-    const {
-      backgroundColor,
-      name,
-      color,
+    let {
       w,
       h,
+      x,
+      y,
       signUrl,
-      editable
-    } = this.props;
+    } = this.props.input;
+
+    const {editable, scale} = this.props;
+
+    x *= scale;
+    y *= scale;
+    w *= scale;
+    h *= scale;
 
     const nonEditableStyle = {
-      position: 'relative',
-      width: `${w}px`,
-      height: `${h}px`,
+      position: 'absolute',
+      left: x,
+      top: y,
+      width: w,
+      height: h,
+
       border: 'none',
       backgroundColor: 'rgba(0, 0, 0, 0.0)',
-      color
     };
 
     const editableStyle = {
       ...nonEditableStyle,
       // border: '1px solid #000',
-      backgroundColor: backgroundColor ? backgroundColor : '#fff',
+      backgroundColor: '#fff',
       opacity: 0.7,
       border: 'dotted 2px black',
     }
