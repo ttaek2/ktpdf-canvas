@@ -157,8 +157,7 @@ interface IDocumentProps {
   fileName: string;
   userId: string;  
   // inputs: Array<IInput>;
-  inputs: []
-  tmpDocId: string;
+  inputs: [];
 }
 
 class DocumentContainer extends React.Component<IDocumentProps, React.ComponentState> {
@@ -176,8 +175,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       pageNumber: 1,
       boxDataList: [],
       scale: 1.5,
-      selectSignerIndex: -1,
-      tmpDocId:'',
+      selectSignerIndex: -1,      
       newInputBox: null,
     };
 
@@ -195,21 +193,15 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   }
 
   componentDidMount() {
-    // console.log("Document.tsx ============================== componentDidMount ");
+    console.log("Document.tsx ============================== componentDidMount ");
     this.initBoxData();
 
-    const {documentNo, tmpDocId, userId} = this.props;    
-    // console.log("userId :: " + userId)
-    // 템플릿 아이디가 있다면 기존 객체를 조회해본다.
-    if(tmpDocId != ''){
-      getDocumentInfo(documentNo, tmpDocId, userId)
-      .then((data: IDocumentProps) => {
-        // alert("=====================================");
-        // console.log(data.inputs);
-        this.roadInputData(data.inputs);
-      });
-    }
+    // tmpDocId를 통해 조회한 객체가 있다면 표시
+    const {inputs} = this.props;
     
+    if(inputs.length>0){
+      this.roadInputData(inputs);
+    }
   }
 
 
@@ -274,11 +266,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       return;
     }
 
-    
-      
-
-
-    
     const {
       boxDataList,
       pageNumber,
@@ -571,13 +558,13 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     //   alert('저장 완료');
     // });
     setDocumentInfo(documentNo, docName, fileName, documentUrl, userId, dataList).then((result:any)  => {    
-      console.log(result);  
-      // if(data.code == '200'){
-      //   alert('저장 완료');
-      // }else{
-      //   alert('저장 처리중 에러 : ' + data.code);
-      // }
-      // return data;
+      // console.log(result);  
+      if(result.code == '200'){
+        alert('저장 완료');
+      }else{
+        alert('저장 처리중 에러 : ' + result.code);
+      }
+      return result;
     });
 
     return result;

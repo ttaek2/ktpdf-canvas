@@ -30,9 +30,11 @@ class Contract extends React.Component<any, React.ComponentState> {
 
   componentDidMount() {
     const { signerNo, documentNo } = this.props;
+    console.log('then data ==================================');
+    console.log(signerNo);
     getDocumentInfoForSigner(documentNo, signerNo)
       .then((data: any) => {
-        console.log('then data ==================================')
+        
         console.log(data);
         this.setState({
           signer: data.signer,
