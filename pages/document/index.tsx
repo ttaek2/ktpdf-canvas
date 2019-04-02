@@ -15,22 +15,20 @@ interface IDocumentProps {
   documentUrl: string;
   signerList: Array<ISigner>;
   
-  tmpDocId: string;
   regId: string;
   inputs:[];
 }
 
-// interface IDocumentInfoAPIResponse {
-//   doc: string;
-
-//   docId: string;
-//   docName: string;
-//   fileName: string;
-//   filePath: string;
-//   userId: string; 
-//   signers: Array<ISigner>;  
-//   inputs:[];
-// }
+interface IDocumentInfoAPIResponse {
+  doc: string;
+  docId: string;
+  docName: string;
+  fileName: string;
+  filePath: string;
+  userId: string; 
+  signers: Array<ISigner>;  
+  inputs:[];
+}
 
 const backgroundColorList = [
   '#F15F5F', // 'red',
@@ -59,6 +57,7 @@ const defaultBackgroundColor = '#fff';
 
 class Document extends React.Component<IDocumentProps, React.ComponentState> {
 
+  /*
   static async getInitialProps({query}) {
 
     // 포탈에서 호출 시 시작
@@ -87,8 +86,9 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
     // let {tmpDocId, regId } = query;
     // return {documentNo, tmpDocId, regId};
   }
+  */
 
-  constructor(props) {
+  constructor(props) {    
     super(props);
 
     this.state = {
@@ -104,8 +104,22 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
   }
 
   componentDidMount() {
+
+    // url 에서 파라메터 파싱
+    const urlParams = new URLSearchParams(window.location.search);
+    const documentNo = urlParams.get('docNo'); // 문서아이디
+    let tmpDocNo = urlParams.get('tmpDocNo'); // 템플릿 문서 아이디
+    const regId = urlParams.get('regId'); // 사용자아이디
+
+    if(tmpDocNo == null || tmpDocNo == ''){
+      console.log('tmpDocNo is null !!!');
+      tmpDocNo = "null";
+    }
+    console.log('documentNo = ', documentNo); 
+    console.log('tmpDocNo = ', tmpDocNo); 
+
     // console.log("componentDidMount>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    const documentNo = this.props.documentNo;    
+    // const documentNo = this.props.documentNo;    
     // const {tmpDocId, regId} = this.props;    
 
     // 템플릿 아이디가 있다면 기존 객체를 조회해본다.
@@ -123,34 +137,38 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
     //   });
     // }
 
-    // 템플릿 아이디가 있다면 기존 객체를 조회해본다.
+    // api 서버에서 각종 정보를 조회한다.  
     // getDocumentInfo(documentNo)
-    // getDocumentInfo(documentNo, tmpDocId, regId)
-    //   .then((data: IDocumentInfoAPIResponse) => {
-    //     // this.setState({
-    //     //   // documentUrl: data.doc,
-    //     //   // documentNo: data.docId // 문서아이디  
-    //     //   // ,docName: data.docName
-    //     //   // ,fileName: data.fileName   
-    //     //   // ,documentUrl: data.filePath // 문서경로
-    //     //   // ,userId: data.userId
-    //     //   // ,signerList: data.signers
-    //     //   inputs: data.inputs
-    //     // })
-    //   });      
+    getDocumentInfo(documentNo, tmpDocNo, regId)
+      .then((data: IDocumentInfoAPIResponse) => {
+        console.log(data);
+        this.setState({          
+          // documentUrl: data.doc,
+          documentNo: data.docId // 문서아이디  
+          // ,docName: data.docName
+          // ,fileName: data.fileName   
+          ,documentUrl: data.filePath // 문서경로
+          // ,userId: data.userId
+          ,signerList: data.signers
+          ,inputs: data.inputs
+        })
+      });      
   }
 
   render() {
+    console.log("render start");
+    
+    
     // const {documentNo} = this.props;
-    const {documentNo} = this.props;
-    // const {documentUrl, signerList} = this.state;
-    const {documentUrl, signerList} = this.props;
+    // const {documentNo} = this.props;
+    const {documentNo, documentUrl, signerList} = this.state;
+    // const {documentUrl, signerList} = this.props;
     const {docName, fileName} = this.state;
 
-    const {tmpDocId, regId} = this.props;
+    const {regId} = this.props;
     // console.log("regId : " + regId);
     const {inputs} = this.state;
-    console.log("====== index.tsx ->  render ");    
+    console.log(inputs);
 
     const users = signerList ? signerList.map((user, index) => ({
       ...user,
@@ -173,8 +191,7 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
           docName={docName}
           fileName={fileName}
           userId={regId}
-          inputs={inputs}
-          tmpDocId={tmpDocId}
+          inputs={inputs}          
         />
       </div>
     );
