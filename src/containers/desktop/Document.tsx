@@ -199,8 +199,10 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     // tmpDocId를 통해 조회한 객체가 있다면 표시
     const {inputs} = this.props;
     
-    if(inputs.length>0){
-      this.roadInputData(inputs);
+    if(inputs != undefined){
+      if(inputs.length>0){
+        this.roadInputData(inputs);
+      }
     }
   }
 
