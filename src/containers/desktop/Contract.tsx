@@ -366,7 +366,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
   }
 
   onInputboxAreaMouseUp = (e: React.MouseEvent) => {
-    const {newMemo, scale} = this.state;
+    const {newMemo, scale, pageNumber} = this.state;
     if(!newMemo) {
       return;
     }
@@ -385,6 +385,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     newMemo.y = y;
     newMemo.w = w;
     newMemo.h = h;
+    newMemo.page = pageNumber;
     
     this.addMemo(newMemo);
   }
