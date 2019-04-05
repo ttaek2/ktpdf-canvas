@@ -84,6 +84,15 @@ class BoxWithTextArea extends Component<Props, any> {
                   // ...position,
               });
           }}
+          // onResize={(e, direction, ref, delta, position) => {
+          //   let width = Number(ref.style.width.replace('px', '')) / scale;
+          //   let height = Number(ref.style.height.replace('px', '')) / scale;
+            
+          //   updateInputBox(boxIndex, {
+          //     width, 
+          //     height
+          //   });
+          // }}
           enableResizing={{ top:false, right:false, bottom:false, left:false, topRight:false, bottomRight:true, bottomLeft:false, topLeft:false }}
           enableUserSelectHack={false}
           bounds='parent'
@@ -120,6 +129,7 @@ class BoxWithTextArea extends Component<Props, any> {
             deleteInputBox={this.props.deleteInputBox}
             className={`textMarker-${boxIndex}`}
             onDoubleClick={this.togglePopup}
+            scale={scale}
           />
 
           {/* <div

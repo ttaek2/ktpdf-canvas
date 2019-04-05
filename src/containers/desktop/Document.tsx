@@ -1,27 +1,28 @@
 import $ from 'jquery';
 import * as React from "react";
 import { pdfjs } from 'react-pdf';
-import { CheckBox, RadioBox, SignBox, TextBox, InputBox } from "src/interface/InputBox";
-import { getDocumentInfo } from "../../../src/api/document/getDocumentInfo";
+import { CheckBox, InputBox, RadioBox, SignBox, TextBox } from "src/interface/InputBox";
+import NewInputbox from '../../../src/components/NewInputBox';
 import { setDocumentInfo } from "../../api/document/setDocumentInfo";
 import ContainerForBoxes from "../../components/ContainerForBoxes";
 import { ISigner } from "../../interface/ISigner";
 import { deepCopy } from "../../util/deepCopy";
+import { fontList, fontSizeList } from '../../util/fontCode';
 import PdfViewer from "./PdfViewer";
 import "./reset.css";
-import NewInputbox from '../../../src/components/NewInputBox';
 
 
 
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+// pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+// pdfjs.GlobalWorkerOptions.workerSrc = `../../pdf.worker.js`;
 
 
 const defaultData = {
   width: 200,
   height: 100,
-  fontSize: 12,
-  fontFamily: 'Times-Roman',
+  fontSize: fontSizeList[0],
+  fontFamily: fontList[0].fontFamily,
   top: 50,
   textLeft: 0,
   signLeft: 250,
@@ -377,8 +378,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   private convertDataForAPI(boxDataList) {
     const {
       signerList,
-      view_w,
-      view_h
     } = this.state;
 
 
@@ -394,8 +393,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         width,
         height
       } = data;
-
-      const {zoom: scale, pageWidth, pageHeight} = this.state;
 
       // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
       const x = left;
@@ -429,8 +426,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         height
       } = data;
 
-      const {zoom: scale, pageWidth, pageHeight} = this.state;
-
       // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
       const x = left;
       const y = top;
@@ -460,8 +455,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         height
       } = data;
 
-      const {zoom: scale, pageWidth, pageHeight} = this.state;
-
       // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
       const x = left;
       const y = top;
@@ -490,8 +483,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         width,
         height
       } = data;
-
-      const {zoom: scale, pageWidth, pageHeight} = this.state;
 
       // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
       const x = left;
@@ -643,7 +634,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   }
 
   onInutboxAreaMouseUp = (e: React.MouseEvent) => {
-    const {newInputBox, scale} = this.state;
+    const {newInputBox, scale, pageNumber} = this.state;
     if(!newInputBox) {
       return;
     }
@@ -662,6 +653,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     newInputBox.top = top;
     newInputBox.width = width;
     newInputBox.height = height;
+    newInputBox.page = pageNumber;
     
     this.addInputbox(newInputBox);
   }
@@ -700,6 +692,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
           <NewInputbox
             inputbox={this.state.newInputBox}
             users={signerList}
+            scale={scale}
           />
           }
           <div className='header'>

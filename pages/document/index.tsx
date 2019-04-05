@@ -8,7 +8,10 @@ import DocumentContainer from '../../src/containers/desktop/Document';
 import {getDocumentInfo} from "../../src/api/document/getDocumentInfo";
 import {getDocumentInfoForSigner} from "../../src/api/signer/getDocumentInfoForSinger";
 import {ISigner} from "../../src/interface/ISigner";
-import Head from 'next/head'
+import Head from 'next/head';
+import { pdfjs } from 'react-pdf';
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface IDocumentProps {
   documentNo: string;
@@ -54,6 +57,16 @@ const backgroundColorList = [
 ];
 
 const defaultBackgroundColor = '#fff';
+
+function getParameterByName(name, url) {
+  if (!url) url = window.location.href;
+  name = name.replace(/[\[\]]/g, '\\$&');
+  var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+      results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
 
 class Document extends React.Component<IDocumentProps, React.ComponentState> {
 
@@ -106,10 +119,14 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
   componentDidMount() {
 
     // url 에서 파라메터 파싱
-    const urlParams = new URLSearchParams(window.location.search);
-    const documentNo = urlParams.get('docNo'); // 문서아이디
-    let tmpDocNo = urlParams.get('tmpDocNo'); // 템플릿 문서 아이디
-    const regId = urlParams.get('regId'); // 사용자아이디
+    // const urlParams = new URLSearchParams(window.location.search);
+    // const documentNo = urlParams.get('docNo'); // 문서아이디
+    // let tmpDocNo = urlParams.get('tmpDocNo'); // 템플릿 문서 아이디
+    // const regId = urlParams.get('regId'); // 사용자아이디
+
+    const documentNo = getParameterByName('docNo', null); // 문서아이디
+    let tmpDocNo = getParameterByName('tmpDocNo', null); // 템플릿 문서 아이디
+    const regId = getParameterByName('regId', null); // 사용자아이디
 
     if(tmpDocNo == null || tmpDocNo == ''){
       console.log('tmpDocNo is null !!!');
