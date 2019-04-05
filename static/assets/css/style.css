@@ -4119,6 +4119,7 @@ input::placehodler {
   height: 100%;
   /* height: 35.625rem; */
   padding: 0.625rem 1.25rem;
+  z-index: 100000;
 }
 .service .editor .edit-body .edit-pallet .input-select {
   width: 100%;
