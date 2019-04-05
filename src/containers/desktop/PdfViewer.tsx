@@ -15,7 +15,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `pdf.worker.js`;
 interface Props {
   documentUrl: string;
   scale: number;
-  onPageChange: (pageNumber: number, scrollTo: number) => void;
+  onPageChange: (pageNumber: number) => void;
   pageNumber: number;
 }
 
@@ -30,6 +30,8 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
 
     this.getNewPdfItem = this.getNewPdfItem.bind(this);
   }
+
+  scrollTo = -1;
 
   pageRendering = false;
 
@@ -69,7 +71,8 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
             console.log('setting page ', pageNumber)
             e.preventDefault()
             this.pageRendering = true;
-            this.props.onPageChange(pageNumber, document.body.scrollHeight);
+            this.scrollTo = document.body.scrollHeight;
+            this.props.onPageChange(pageNumber);
             // window.scrollTo(0,document.body.scrollHeight);
           }
         }
@@ -85,7 +88,8 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
             console.log('setting page ', pageNumber)
             e.preventDefault();
             this.pageRendering = true;
-            this.props.onPageChange(pageNumber, 0);
+            this.scrollTo = 0;
+            this.props.onPageChange(pageNumber);
             // window.scrollTo(0, 0)
           }
         }
@@ -94,7 +98,7 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
 
 
   componentDidUpdate(_, prevState): void {
-  
+    
   }
 
   private getNewPdfItem(e: React.MouseEvent) {
@@ -113,6 +117,10 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
 
   onPageLoadSuccess = (page) => {
     // console.log('Document.tsx PageLoadSuccess')
+    if(this.scrollTo !== -1) {
+      window.scrollTo(0, this.scrollTo);
+      this.scrollTo = -1;
+    }
   }
 
   thumbnail = null;
@@ -121,7 +129,7 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
   onPageRenderSuccess = (page) => {
     console.log('Document.tsx PageRenderSuccess')
     this.pageRendering = false;
-
+    
     if( !this.isElementInViewport(this.curThumbnail) ) {
       console.log('ElementNotInViewport!')
 
@@ -131,6 +139,8 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
       // this.thumbnail.scrollTo(0, scrollTo)
       this.thumbnail.scrollTop = scrollTo;
     }
+
+    
   }
 
 

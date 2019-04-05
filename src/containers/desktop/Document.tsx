@@ -658,12 +658,8 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     this.addInputbox(newInputBox);
   }
 
-  onPageChange = (pageNumber: number, scrollTo: number) => {
-    this.setState({pageNumber}, () => {
-      if(scrollTo >= 0) {
-        window.scrollTo(0, scrollTo);
-      }
-    });
+  onPageChange = (pageNumber: number) => {
+    this.setState({pageNumber});
   }
 
 
