@@ -51,6 +51,7 @@ class BoxWithTextArea extends Component<Props, any> {
       signerIndex,
       fontFamily,
       fontSize,
+      minWidth
     } = this.props.boxData;
 
 
@@ -110,6 +111,9 @@ class BoxWithTextArea extends Component<Props, any> {
             }
           }}
           style={{zIndex: 10000}}
+          minHeight={fontSize * scale * 1.2}
+          minWidth={minWidth * scale}
+          // resizeGrid={[1, fontSize * scale * 1.2]}
         >
           <Popup
             isShowPopup={isShowPopup}

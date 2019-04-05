@@ -26,7 +26,11 @@ const defaultData = {
   top: 50,
   textLeft: 0,
   signLeft: 250,
-  boxIndex: -1
+  boxIndex: -1,
+  textboxMinWidth: 50,
+  signboxMinWidth: 50,
+  checkboxMinWidth: 20,
+  radioboxMinWidth: 20,
 };
 
 const getInitTextBox = (page, signerIndex, boxIndex): TextBox => {
@@ -41,7 +45,7 @@ const getInitTextBox = (page, signerIndex, boxIndex): TextBox => {
     signerIndex,
     page,
     boxIndex,
-    minWidth: undefined,
+    minWidth: defaultData.textboxMinWidth,
     minHeight: undefined,
     maxWidth: undefined,
     maxHeight: undefined,
@@ -57,7 +61,7 @@ const getInitSignBox = (page, signerIndex, boxIndex): SignBox => {
     signerIndex,
     page,
     boxIndex,
-    minWidth: undefined,
+    minWidth: defaultData.signboxMinWidth,
     minHeight: undefined,
     maxWidth: undefined,
     maxHeight: undefined,
@@ -75,7 +79,7 @@ const roadInitTextBox = (input, index): TextBox => {
     signerIndex:0,  // 생성자꺼...
     page: input.page,
     boxIndex : index,
-    minWidth: undefined,
+    minWidth: defaultData.textboxMinWidth,
     minHeight: undefined,
     maxWidth: undefined,
     maxHeight: undefined,
@@ -92,7 +96,7 @@ const roadInitSignBox = (input, index): SignBox => {
     signerIndex:0,  // 생성자꺼...
     page: input.page,
     boxIndex : index,
-    minWidth: undefined,
+    minWidth: defaultData.signboxMinWidth,
     minHeight: undefined,
     maxWidth: undefined,
     maxHeight: undefined,
@@ -109,7 +113,7 @@ const roadInitCheckBox = (input, index): SignBox => {
     signerIndex:0,  // 생성자꺼...
     page: input.page,
     boxIndex : index,
-    minWidth: undefined,
+    minWidth: defaultData.checkboxMinWidth,
     minHeight: undefined,
     maxWidth: undefined,
     maxHeight: undefined,
@@ -126,7 +130,7 @@ const getInitCheckBox = (page, signerIndex, boxIndex): CheckBox => {
     signerIndex,
     page,
     boxIndex,
-    minWidth: undefined,
+    minWidth: defaultData.checkboxMinWidth,
     minHeight: undefined,
     maxWidth: undefined,
     maxHeight: undefined,
@@ -143,7 +147,7 @@ const getInitRadioBox = (page, signerIndex, boxIndex): RadioBox => {
     signerIndex,
     page,
     boxIndex,
-    minWidth: undefined,
+    minWidth: defaultData.radioboxMinWidth,
     minHeight: undefined,
     maxWidth: undefined,
     maxHeight: undefined,
