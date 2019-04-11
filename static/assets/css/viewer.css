@@ -1,3 +1,7 @@
+body {
+    overflow: hidden;
+}
+
 .container {
     min-width: unset;
     min-height: unset;
@@ -6,12 +10,11 @@
 .service .editor {
     /* padding: 0 1.25rem; */
     padding: 0;
-    overflow: hidden;
 }
 
 .service .editor .edit-body {
     /* height: 36.875rem; */
-    height: calc(100vh - 4.4rem);
+    height: calc(100vh - 4.375rem);
 }
 
 .service .editor .edit-body .thumbnail li {
@@ -33,7 +36,6 @@
 }
 
 .service .editor .edit-body .editor-view {
-    width: calc(100% - 26.875rem);
     overflow: auto;
 }
 
@@ -48,6 +50,8 @@
 .service .editor .edit-body .editor-view .page-wrapper {		
     margin-top: 10px;		
     margin-bottom: 10px;		
+    margin-left: 10px;
+    margin-right: 10px;
     display: inline-block;		
 }
 
@@ -77,6 +81,3 @@
     z-index: 10;
 }
   
-body {
-    /* overflow: hidden; */
-}

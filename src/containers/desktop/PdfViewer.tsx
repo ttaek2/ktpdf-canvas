@@ -52,11 +52,11 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
 
   handleMouseWheel = e => {
     // console.log($(window).scrollTop(), $(window).height(), $(document).height())
-    // console.log($('.editor-view').scrollTop()
-    //           , $('.editor-view').height()
-    //           , $('.editor-view').scrollTop() + $('.editor-view').height()
-    //           , $('.document-wrapper').height())
-    console.log(document.body.scrollHeight)
+    console.log($('.editor-view').scrollTop()
+              , $('.editor-view').height()
+              , $('.editor-view').scrollTop() + $('.editor-view').height()
+              , $('.document-wrapper').height())
+    // console.log(document.body.scrollHeight)
     if(this.pageRendering) {
       console.log('page still rendering!')
       return;
@@ -78,7 +78,7 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
             e.preventDefault()
             this.pageRendering = true;
             // this.scrollTo = document.body.scrollHeight;
-            this.scrollTo = $('.document-wrapper').height() - $('.editor-view').height();
+            this.scrollTo = $('.document-wrapper').height();
             this.props.onPageChange(pageNumber);
             // window.scrollTo(0,document.body.scrollHeight);
           }
@@ -87,7 +87,7 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
     else{
         // console.log('scrolling down !');
         
-        if($('.editor-view').scrollTop() + $('.editor-view').height() >= $('.document-wrapper').height() - 1) {
+        if($('.editor-view').scrollTop() + $('.editor-view').height() > $('.document-wrapper').height()) {
           console.log('Document.tsx bottom boom!')
           let {pageNumber, numPages} = this.state;
           pageNumber++;
