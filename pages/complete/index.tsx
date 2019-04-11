@@ -54,6 +54,7 @@ class Complete extends React.Component<any, React.ComponentState> {
         <Head>
           <title>kt - contract</title>
           <link href="/assets/css/style.css" rel="stylesheet" />
+          <link href="/assets/css/viewer.css" rel="stylesheet" />
         </Head>
         <DragDropContextProvider backend={HTML5Backend}>
           <ContractContainer
