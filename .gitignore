@@ -3,4 +3,3 @@ node_modules/
 .next/
 out/
 package-lock.json
-static/assets_bak/*
