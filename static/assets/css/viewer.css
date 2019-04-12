@@ -41,6 +41,7 @@ body {
 
 .service .editor .edit-body .edit-pallet {
     height: calc(100% - 1.25rem);
+    overflow: hidden;
 }
 
 .service .editor .edit-body .editor-view .document-wrapper {		
