@@ -90,11 +90,10 @@ class PlainBoxForSignature extends React.Component<IBoxForSignatureProps, React.
             height={`${h}px`}
           />
           // : <span>{name} signature</span>
-          : <span></span>
+          : <IconContext.Provider value={stampicon}>
+            <FaStamp />
+          </IconContext.Provider>
         }
-        <IconContext.Provider value={stampicon}>
-          <FaStamp />
-        </IconContext.Provider>
       </div>
     );
   }
