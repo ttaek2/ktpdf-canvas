@@ -62,11 +62,12 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
       return;
     }
     if( this.thumbnail.contains(e.target) ) {
+      console.log('scroll on thumbnail!')
       return;
     }
 
     if(e.originalEvent.wheelDelta /120 > 0) {
-        // console.log('scrolling up !');
+        console.log('scrolling up !');
         
         // if($(window).scrollTop() == 0) {
         if($('.editor-view').scrollTop() == 0) {
@@ -85,7 +86,7 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
         }
     }
     else{
-        // console.log('scrolling down !');
+        console.log('scrolling down !');
         
         if($('.editor-view').scrollTop() + $('.editor-view').height() > $('.document-wrapper').height()) {
           console.log('Document.tsx bottom boom!')
@@ -135,6 +136,8 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
   curThumbnail = null;
 
   onPageRenderSuccess = (page) => {
+    $('.editor-view canvas').css('width', '').css('height', '')
+    
     console.log('Document.tsx PageRenderSuccess')
     this.pageRendering = false;
     
@@ -152,8 +155,8 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
   }
 
 
-  onThumbnailRenderSuccess = (page) => {
-  
+  onThumbnailRenderSuccess = () => {
+    $('.thumbnail canvas').css('width', '').css('height', '').css('display', '');
   }
 
   
@@ -183,10 +186,12 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
     return (
           <React.Fragment>
             <div className="thumbnail" ref={ref => this.thumbnail = ref}>
-              <ul>
+              
                       <Document
+                        className='thumbnail-document-wrapper'
                         file={this.props.documentUrl}
                       >
+                        <ul>
                         {Array.from(
                           new Array(numPages),
                           (el, index) => (
@@ -197,6 +202,7 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
                             >
                               <a data-index={index} onClick={this.getNewPdfItem}>
                                 <Page
+                                  className='thumbnail-page-wrapper'
                                   key={`page_${index + 1}`}
                                   pageNumber={index + 1}
                                   renderMode='canvas'
@@ -204,7 +210,8 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
                                   renderAnnotationLayer={false}
                                   // onLoadSuccess={page => console.log(`thumbnail page-${page.pageNumber} loaded`)}
                                   onRenderSuccess={this.onThumbnailRenderSuccess}
-                                  scale={0.22}
+                                  // scale={0.22}
+                                  width={130}
                                 >
                                   <span className="thumbnail-label">{index + 1}</span>
                                 </Page>
@@ -212,9 +219,16 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
                             </li>
                           ),
                         )}
+                        </ul>
                       </Document>
-              </ul>
-
+                  {/* <li><div><img src="/assets/images/sample.jpg" alt=""></img></div></li>
+                  <li><div><img src="/assets/images/sample.jpg" alt=""></img></div></li>
+                  <li><div><img src="/assets/images/sample.jpg" alt=""></img></div></li>
+                  <li><div><img src="/assets/images/sample.jpg" alt=""></img></div></li>
+                  <li><div><img src="/assets/images/sample.jpg" alt=""></img></div></li>
+                  <li><div><img src="/assets/images/sample.jpg" alt=""></img></div></li>
+                  <li><div><img src="/assets/images/sample.jpg" alt=""></img></div></li>
+                  <li><div><img src="/assets/images/sample.jpg" alt=""></img></div></li> */}
             </div>
             <div className="editor-view">
               <Document

@@ -21,6 +21,11 @@
     .service .editor .edit-body .thumbnail li {
         border: 0.125rem solid transparent;
     }
+
+    .service .editor .edit-body .thumbnail li canvas {
+        display: inline-block;
+        width: 100%;
+    }
     
     .service .editor .edit-body .thumbnail li:not(.on) canvas {
         opacity: 0.7;
@@ -28,7 +33,7 @@
     
     .service .editor .edit-body .thumbnail li .thumbnail-label {		
         color: #292929;		
-        font-size: 22px;		
+        font-size: 1.5rem;		
         font-weight: 700;		
         left: 10px;		
         top: 10px;		
@@ -38,6 +43,7 @@
     
     .service .editor .edit-body .editor-view {
         overflow: auto;
+        touch-action: none;
     }
     
     .service .editor .edit-body .edit-pallet {
@@ -62,7 +68,7 @@
     }
     
     .service .editor .edit-body .editor-view .page-wrapper canvas {		
-        box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);		
+        box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);	
     }
 }
 @media screen and (max-width: 1000px) {
@@ -75,20 +81,58 @@
     .service .editor .edit-body {
         /* height: 36.875rem; */
         height: calc(100vh - 4.375rem);
-        overflow: auto;
+        min-height: unset;
     }
     .service .editor .edit-body .editor-view {
-        
+        overflow: auto;
+        padding-top: 15.625rem;
+        height: calc(100% - 10.625rem);
+    }
+    .service .editor .edit-body .edit-pallet a {
+        cursor: pointer;
     }
     .service .editor .edit-body .editor-view .document-wrapper {		
         text-align: center;		
     }
     .service .editor .edit-body .editor-view .page-wrapper {		
-        margin-top: 18rem;		
-        margin-bottom: 11.875rem;		
         margin-left: 10px;
         margin-right: 10px;
         display: inline-block;		
+    }
+    .service .editor .edit-body .editor-view .page-wrapper canvas {		
+        /* width: 100%;
+        height: auto; */
+    }
+    .service .editor .edit-body .thumbnail {
+    
+    }
+    .service .editor .edit-body .thumbnail .thumbnail-document-wrapper {
+        height: 100%;
+    }
+    .service .editor .edit-body .thumbnail .thumbnail-page-wrapper {
+        height: 100%;
+    }
+    .service .editor .edit-body .thumbnail ul li canvas {
+        display: inline-block;
+        height: 100%;
+    }
+    .service .editor .edit-body .thumbnail li {
+        border: 0.125rem solid transparent;
+    }
+    .service .editor .edit-body .thumbnail li:not(.on) canvas {
+        opacity: 0.7;
+    }
+    .service .editor .edit-body .thumbnail li .thumbnail-label {		
+        color: #292929;		
+        font-size: 1.5rem;		
+        font-weight: 700;		
+        left: 10px;		
+        top: 10px;		
+        position: absolute;		
+        text-shadow: 0 0 15px hsla(0,0%,100%,.4);		
+    }
+    .service .editor .edit-body .editor-view .page-wrapper canvas {		
+        box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);		
     }
 }
 
