@@ -16,6 +16,7 @@ interface Props {
   documentUrl: string;
   scale: number;
   onPageChange: (pageNumber: number) => void;
+  setScale: (scale: number) => void;
   pageNumber: number;
 }
 
@@ -118,13 +119,20 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
 
 
   onDocumentLoadSuccess = (pdf) => {
+    console.log('DocumentLoadSuccess', screen.width, pdf)
     this.setState({
       numPages: pdf.numPages
     });
   };
 
   onPageLoadSuccess = (page) => {
-    // console.log('Document.tsx PageLoadSuccess')
+    console.log('Document.tsx PageLoadSuccess')
+    if(this.props.scale === undefined) {
+      const width = screen.width <= 1000 ? screen.width : $('.editor-view').width();
+      const scale = width / page.originalWidth / 1.1;
+      this.props.setScale(scale);
+    }
+    
     if(this.scrollTo !== -1) {
       document.querySelector('.editor-view').scrollTop = this.scrollTo;
       // window.scrollTo(0, this.scrollTo);
@@ -136,19 +144,26 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
   curThumbnail = null;
 
   onPageRenderSuccess = (page) => {
-    $('.editor-view canvas').css('width', '').css('height', '')
-    
-    console.log('Document.tsx PageRenderSuccess')
+    // $('.editor-view canvas').css('width', '').css('height', '')
+    console.log('Document.tsx PageRenderSuccess', page)
     this.pageRendering = false;
     
     if( !this.isElementInViewport(this.curThumbnail) ) {
       console.log('ElementNotInViewport!')
 
-      let scrollTo = this.curThumbnail.offsetTop;
-      let padding = Number($(this.thumbnail).css('padding-top').replace('px', '') - 1);
-      scrollTo -= padding;
-      // this.thumbnail.scrollTo(0, scrollTo)
-      this.thumbnail.scrollTop = scrollTo;
+      if(screen.width > 1000) {
+        let scrollTo = this.curThumbnail.offsetTop;
+        let padding = Number($(this.thumbnail).css('padding-top').replace('px', '') - 1);
+        scrollTo -= padding;
+        // this.thumbnail.scrollTo(0, scrollTo)
+        this.thumbnail.scrollTop = scrollTo;
+      }
+      else {
+        let scrollTo = this.curThumbnail.offsetLeft;
+        let padding = 10;
+        scrollTo -= padding;
+        this.thumbnail.scrollLeft = scrollTo;
+      }
     }
 
     
@@ -181,6 +196,7 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
     } = this.state;
 
     const { scale } = this.props;
+    console.log('scale = ', scale)
 
 
     return (

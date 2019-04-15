@@ -43,7 +43,6 @@
     
     .service .editor .edit-body .editor-view {
         overflow: auto;
-        touch-action: none;
     }
     
     .service .editor .edit-body .edit-pallet {
@@ -85,8 +84,11 @@
     }
     .service .editor .edit-body .editor-view {
         overflow: auto;
-        padding-top: 15.625rem;
+        padding-top: 17.625rem;
         height: calc(100% - 10.625rem);
+    }
+    .service .editor .edit-body .edit-pallet {
+        z-index: 987654321;
     }
     .service .editor .edit-body .edit-pallet a {
         cursor: pointer;
