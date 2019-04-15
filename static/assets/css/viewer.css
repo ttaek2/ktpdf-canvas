@@ -88,7 +88,7 @@
         height: calc(100% - 10.625rem);
     }
     .service .editor .edit-body .edit-pallet {
-        z-index: 987654321;
+        /* z-index: 987654321; */
     }
     .service .editor .edit-body .edit-pallet a {
         cursor: pointer;
@@ -130,7 +130,8 @@
         text-shadow: 0 0 15px hsla(0,0%,100%,.4);		
     }
     .service .editor .edit-body .editor-view .page-wrapper canvas {		
-        box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);		
+        box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);	
+        z-index: -2;	
     }
 }
 
@@ -155,6 +156,6 @@
     height: 100%;
     position: absolute;
     top: 0;
-    z-index: 10;
+    z-index: 1;
 }
   
