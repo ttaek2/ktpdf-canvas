@@ -79,7 +79,8 @@
     }
     .service .editor .edit-body {
         /* height: 36.875rem; */
-        height: calc(100vh - 4.375rem);
+        /* height: calc(100vh - 4.375rem); */
+        height: calc(100vh - 4.575rem);
         min-height: unset;
     }
     .service .editor .edit-body .editor-view {
@@ -102,7 +103,7 @@
         display: inline-block;		
     }
     .service .editor .edit-body .thumbnail {
-    
+        z-index: 1;
     }
     .service .editor .edit-body .thumbnail .thumbnail-document-wrapper {
         height: 100%;
