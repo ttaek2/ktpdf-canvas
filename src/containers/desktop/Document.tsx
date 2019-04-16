@@ -365,7 +365,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     let height = initBoxData.height;
     // let left = $('.page-wrapper').width() / scale - width - 20; // right
     let left = $('.page-wrapper').width() / 2 / scale - width / 2; // center
-    let top = $('.editor-view').scrollTop() / scale + 20;
+    let top = $('.editor-view').scrollTop() / scale + 150;
     
     console.log(left, top, width, height)
 
