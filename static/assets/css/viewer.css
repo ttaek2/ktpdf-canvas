@@ -44,6 +44,10 @@
     .service .editor .edit-body .editor-view {
         overflow: auto;
     }
+
+    .service .editor .edit-body .editor-view.disabled {
+        pointer-events: none;   
+    }
     
     .service .editor .edit-body .edit-pallet {
         height: calc(100% - 1.25rem);
