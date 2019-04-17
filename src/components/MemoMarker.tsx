@@ -131,7 +131,7 @@ export default class MemoMarker extends React.Component<IBoxForTextAreaProps, Re
         // onMouseLeave={this.onMouseLeave}
       >
         <span
-          style={ptrStyleRightDown}
+          style={ptrStyleLeftUp}
         />
 
 

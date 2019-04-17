@@ -44,7 +44,8 @@ class Popup extends React.Component<IPopupProps, React.ComponentState> {
         // top: '-110px',
         left: '50%',
         transform: 'translateX(-50%)',
-        bottom: boxHeight + 20,
+        bottom: boxHeight + 17,
+        display,
       }}>
         <div style={{
           padding: '10px',
