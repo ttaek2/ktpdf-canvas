@@ -33,4 +33,5 @@ export interface MemoInput extends Input {
     charSize: string;
     minW: number;
     minH: number;
+    gbnCd: string;
 }

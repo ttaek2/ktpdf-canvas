@@ -289,6 +289,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       boxIndex: this.state.inputs.length,
       minW: 100,
       minH: 50,
+      gbnCd: 'lt',
     }
   }
 

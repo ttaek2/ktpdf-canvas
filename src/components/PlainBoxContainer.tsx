@@ -43,6 +43,12 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
       scale,
     } = this.props;
 
+    if(scale === undefined) {
+      console.log('scale is undefined!')
+      return null;
+    }
+    
+
     const userNm = users[0].signerNm;
     const currentSignerNo = users[0].signerNo;
 
