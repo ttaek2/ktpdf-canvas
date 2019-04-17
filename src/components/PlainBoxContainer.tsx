@@ -48,9 +48,10 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
 
 
     return(
-      <div className="inputbox-area"
-        onMouseUp={this.props.onInputboxAreaMouseUp}
-      >
+      // <div className="inputbox-area"
+      //   onMouseUp={this.props.onInputboxAreaMouseUp}
+      // >
+      <React.Fragment>
         {inputs.map((input, index) => {
           const editable = currentSignerNo == input.signerNo;
           if(pageNumber !== input.page) return null;
@@ -123,7 +124,8 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
             )
           }
         })}
-      </div>
+      {/* </div> */}
+      </React.Fragment>
     )
   }
 }

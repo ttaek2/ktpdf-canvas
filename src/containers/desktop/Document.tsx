@@ -41,7 +41,7 @@ const getInitTextBox = (page, signerIndex, boxIndex): TextBox => {
     fontSize: defaultData.fontSize,
     fontFamily: defaultData.fontFamily,
     width: 150,
-    height: 20,
+    height: 16,
     signerIndex,
     page,
     boxIndex: boxCnt++,

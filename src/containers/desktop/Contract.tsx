@@ -70,7 +70,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       numPages: null,
       pageNumber: 1,
       showSignLayer: false,
-      scale: 1.5,
+      scale: undefined,
       newInputBox: null,
     };
 
@@ -277,16 +277,18 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
   getInitMemo = (page, signerNo): MemoInput => {
     return {
       inputType: 'memo',
-      font: 'Times-Roman',
-      charSize: '12',
+      font: 'Nanum Gothic',
+      charSize: '9',
       signerNo,
       x: 200,
       y: 200,
-      w: 200,
-      h: 150,
+      w: 150,
+      h: 75,
       addText: '',
       page,
       boxIndex: this.state.inputs.length,
+      minW: 100,
+      minH: 50,
     }
   }
 
@@ -299,6 +301,26 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     this.setState( {
       newMemo: memo
     })
+  }
+
+  newMemo2 = (e) => {
+    const { inputs, originInputs, signer, pageNumber, scale } = this.state;
+    const memo = this.getInitMemo(pageNumber, signer.signerNo);
+    // memo.x = e.pageX;
+    // memo.y = e.pageY;
+
+    let w = memo.w;
+    let h = memo.h;
+    // let left = $('.page-wrapper').width() / scale - width - 20; // right
+    let x = $('.page-wrapper').width() / 2 / scale - w / 2; // center
+    let y = $('.editor-view').scrollTop() / scale + 120;
+    memo.x = x;
+    memo.y = y;
+
+    this.addMemo(memo);
+    // this.setState( {
+    //   newMemo: memo
+    // })
   }
 
   deleteInputBox = (boxIndex: number): void => {
@@ -350,6 +372,9 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     this.setState({
       scale: this.state.scale / 1.1,
     })
+  }
+  setScale = (scale) => {
+    this.setState({scale})
   }
 
   handleMouseMove = (e: React.MouseEvent) => {
@@ -453,7 +478,9 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
           </div>
           <div className="edit-body">
 
-            <PdfViewer documentUrl={this.props.documentUrl} scale={scale} onPageChange={this.onPageChange} pageNumber={pageNumber}>
+            <PdfViewer documentUrl={this.props.documentUrl} scale={scale} onPageChange={this.onPageChange} pageNumber={pageNumber}
+                       setScale={this.setScale}
+            >
                         <PlainBoxContainer
                           users={[signer]}
                           inputs={inputs}
@@ -544,7 +571,8 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
             
             <div className="edit-pallet">
               <ul>
-                <li><a onClick={this.newMemo}><span className="icon-memo"></span>메모 입력</a></li>
+                {/* <li><a onClick={this.newMemo}><span className="icon-memo"></span>메모 입력</a></li> */}
+                <li><a onClick={this.newMemo2}><span className="icon-memo"></span>메모 입력</a></li>
                 <li><a onClick={this.props.completePage ? this.saveCompleteInfo : this.saveContractInfo}>저장</a></li>
               </ul>
             </div>

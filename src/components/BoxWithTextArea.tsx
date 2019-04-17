@@ -117,6 +117,7 @@ class BoxWithTextArea extends Component<Props, any> {
         >
           <Popup
             isShowPopup={isShowPopup}
+            boxHeight={height}
           >
             <PopupForTextarea
               updateInputBox={updateInputBox}

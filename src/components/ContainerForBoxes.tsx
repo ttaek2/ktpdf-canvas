@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import BoxWithTextArea from "./BoxWithTextArea";
 import BoxWithSignature from "./BoxWithSignature";
 import { InputBox, TextBox, SignBox, CheckBox, RadioBox } from 'src/interface/InputBox';
@@ -32,9 +32,10 @@ class ContainerForBoxes extends Component<Props, null> {
     } = this.props;
 
     return (
-      <div className="inputbox-area"
-        onMouseUp={this.props.onInutboxAreaMouseUp}
-      >
+      // <div className="inputbox-area"
+      //   onMouseUp={this.props.onInutboxAreaMouseUp}
+      // >
+      <Fragment>
         {
           boxDataList.map(box => {
             
@@ -91,7 +92,8 @@ class ContainerForBoxes extends Component<Props, null> {
             }
           })
         }
-      </div>
+      {/* </div> */}
+      </Fragment>
     );
   }
 }

@@ -80,15 +80,7 @@ class PopupForTextarea extends React.Component<IPopup, React.ComponentState> {
       padding: 0,
     }
     return (
-      <div style={{
-        padding: '10px',
-        margin: '0px',
-        backgroundColor: '#eee',
-        border: 'solid 1px',
-        borderRadius: '10px',
-        width: '200px',
-        fontSize: '15px', 
-      }}>
+      <React.Fragment>
         <div style={{
           position: 'relative',
           zIndex: 11,
@@ -108,14 +100,6 @@ class PopupForTextarea extends React.Component<IPopup, React.ComponentState> {
                 value={fontSize}
               >{fontSize}</option>)}
           </select>
-
-          {/* <SelectBox
-            width={'90px'}
-            option={fontFamilyNmList}
-            datas={fontFamilyList}
-            callback={this.updateFontFamily}
-            defaultText={'글자체를 선택해주세요.'}
-          /> */}
         </div>
         <hr style={hrStyle} />
         <div style={{
@@ -137,20 +121,8 @@ class PopupForTextarea extends React.Component<IPopup, React.ComponentState> {
                 value={font.fontFamily}
               >{font.fontName}</option>)}
           </select>
-
-          {/* <SelectBox
-            width={'90px'}
-            option={fontSizeList}
-            datas={fontSizeList}
-            callback={this.updateFontSize}
-            defaultText={'글자 크기를 선택해주세요.'}
-          /> */}
         </div>
-        {/* <div style={{textAlign: 'center'}}>
-          <button style={{width: '80%'}} onClick={this.deleteThisTextArea}>삭제</button>
-        </div> */}
-        {/* {children} */}
-      </div>
+      </React.Fragment>
     );
   }
 }

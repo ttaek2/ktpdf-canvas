@@ -11,6 +11,7 @@ interface IBoxForTextAreaProps {
   editable: boolean;
   updateInputBox: (boxIndex: number, update: object) => void;
   deleteInputBox: (index: number) => void;
+  scale: number;
 }
 
 export default class MemoMarker extends React.Component<IBoxForTextAreaProps, React.ComponentState> {
@@ -51,26 +52,11 @@ export default class MemoMarker extends React.Component<IBoxForTextAreaProps, Re
       charSize,
     } = this.props.input;
 
-    const {editable} = this.props;
+    const {editable, scale} = this.props;
 
     const editableStyle = {
-      width: '100%',
-      height: '100%',
-      resize: 'none',
-      fontFamily: `${font}`,
-      fontSize: `${charSize}px`,
-      // boxSizing: 'border-box',
-      // backgroundColor: 'white',
-      // opacity: 0.7,
-      // border: 'dotted 2px orange',
-      textDecoration:'none',
-      color:'#000',
-      background:'#ffc',
-      padding: 0,
-      margin: 0,
-      border: 'none',
-      boxShadow: '5px 5px 7px rgba(33,33,33,.7)',
-      opacity: 0.9,
+      // fontFamily: `${font}`,
+      // fontSize: `${Number(charSize) * scale}px`,
     };
 
     const nonEditableStyle = {
@@ -91,46 +77,64 @@ export default class MemoMarker extends React.Component<IBoxForTextAreaProps, Re
       }
     }
 
+    const ptrHeight = 0.6; //rem
+    const ptrWidth = 0.9; //rem
+    const ptrTop = 0.8; //rem
+    const ptrBottom = 0.5; //rem
+
+    const ptrStyle: React.CSSProperties = {
+      width: 0, 
+      height: 0, 
+      boxSizing: 'border-box',
+      position: 'absolute',
+      opacity: 0.9,
+    }
+
+    const ptrStyleLeftUp = {
+      ...ptrStyle,
+      borderTop: `${ptrHeight * 0.5 * scale}rem solid transparent`,
+      borderBottom: `${ptrHeight * 0.5 * scale}rem solid transparent`,
+      borderRight: `${ptrWidth * scale}rem solid #FFF2AB`,
+      top: `${ptrTop * scale}rem`,
+      left: `${(-ptrWidth + 0.05) * scale}rem`,
+    }
+
+    const ptrStyleLeftDown = {
+      ...ptrStyle,
+      borderTop: `${ptrHeight * 0.5 * scale}rem solid transparent`,
+      borderBottom: `${ptrHeight * 0.5 * scale}rem solid transparent`,
+      borderRight: `${ptrWidth * scale}rem solid #FFF2AB`,
+      bottom: `${ptrBottom * scale}rem`,
+      left: `${(-ptrWidth + 0.05) * scale}rem`,
+    }
+
+    const ptrStyleRightUp = {
+      ...ptrStyle,
+      borderTop: `${ptrHeight * 0.5 * scale}rem solid transparent`,
+      borderBottom: `${ptrHeight * 0.5 * scale}rem solid transparent`,
+      borderLeft: `${ptrWidth * scale}rem solid #FFF2AB`,
+      top: `${ptrTop * scale}rem`,
+      right: `${(-ptrWidth + 0.05) * scale}rem`,
+    }
+
+    const ptrStyleRightDown = {
+      ...ptrStyle,
+      borderTop: `${ptrHeight * 0.5 * scale}rem solid transparent`,
+      borderBottom: `${ptrHeight * 0.5 * scale}rem solid transparent`,
+      borderLeft: `${ptrWidth * scale}rem solid #FFF2AB`,
+      bottom: `${ptrBottom * scale}rem`,
+      right: `${(-ptrWidth + 0.05) * scale}rem`,
+    }
+
     return (
       <div style={{width: '100%', height: '100%'}} 
         // onMouseLeave={this.onMouseLeave}
       >
-        <div
-          className='memo-header' 
-          style={{
-            width: '100%',
-            height: '18px',
-            position: 'absolute',
-            top: '-17px',
-            // border: `1px solid #ffc`,
-            // borderBottom: `2px solid orange`,
-            backgroundColor: `#ffc`,
-            color: 'black',
-            // borderRadius: '10px 10px 0 0',
-            textAlign: 'right',
-            // display: 'none',
-          }}
-        >
-          <span
-            style={{
-              float: 'left',
-              fontSize: '0.9em',
-              textDecoration: 'underline',
-            }}
-          >{this.props.input.signerNo}님의 메모</span>
-          
-          {editable &&
-            <span
-              onClick={this.onCloseBtnClick}  
-            >
-              <IconContext.Provider value={closeicon}>
-                <IoMdCloseCircle  />
-              </IconContext.Provider>
-            </span>
-          }
-          
-        </div>
-        
+        <span
+          style={ptrStyleRightDown}
+        />
+
+
         <div
           style={{
             width: '100%',
@@ -148,6 +152,42 @@ export default class MemoMarker extends React.Component<IBoxForTextAreaProps, Re
             placeholder={editable ? "메모 입력" : undefined}
             value={addText}
           />
+        </div>
+
+        <div
+          className='memo-header' 
+          style={{
+            // width: '100%',
+            // height: '18px',
+            // position: 'absolute',
+            // top: '-17px',
+            // // border: `1px solid #ffc`,
+            // // borderBottom: `2px solid orange`,
+            // backgroundColor: `#ffc`,
+            // color: 'black',
+            // // borderRadius: '10px 10px 0 0',
+            // textAlign: 'right',
+            // // display: 'none',
+          }}
+        >
+          <span
+            style={{
+              float: 'left',
+              fontSize: '0.9em',
+              // textDecoration: 'underline',
+            }}
+          >{this.props.input.signerNo}님의 메모</span>
+          
+          {editable &&
+            <span
+              onClick={this.onCloseBtnClick}  
+            >
+              <IconContext.Provider value={closeicon}>
+                <IoMdCloseCircle  />
+              </IconContext.Provider>
+            </span>
+          }
+          
         </div>
       </div>
     )

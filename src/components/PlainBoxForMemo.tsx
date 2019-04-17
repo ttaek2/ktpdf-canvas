@@ -5,6 +5,8 @@ import { Rnd } from 'react-rnd';
 import { MemoInput } from "src/interface/Input";
 import $ from 'jquery';
 import MemoMarker from "./MemoMarker";
+import Popup from "./Popup";
+import PopupForMemo from "./PopupForMemo";
 
 interface IBoxForTextAreaProps {
   input: MemoInput;
@@ -33,6 +35,8 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
       y,
       w,
       h,
+      minW,
+      minH
     } = this.props.input;
 
     const {editable, scale} = this.props;
@@ -59,7 +63,7 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
           }}
           enableResizing={{ top:false, right:false, bottom:false, left:false, topRight:false, bottomRight:editable, bottomLeft:false, topLeft:false }}
           enableUserSelectHack={false}
-          bounds='parent'
+          bounds='.document-wrapper'
           resizeHandleStyles={{
             bottomRight: {
               position: 'absolute',
@@ -73,7 +77,19 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
             }
           }}
           disableDragging={!editable}
+          minWidth={minW * scale}
+          minHeight={minH * scale}
         >
+
+          <Popup
+            isShowPopup={true}
+            boxHeight={h}
+          >
+            <PopupForMemo
+              updateInputBox={updateInputBox}
+              boxIndex={boxIndex}
+            />
+          </Popup>
 
         <MemoMarker
           boxIndex={this.props.boxIndex}
@@ -82,6 +98,7 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
           editable={editable}
           updateInputBox={this.props.updateInputBox}
           deleteInputBox={this.props.deleteInputBox}
+          scale={scale}
         />
 
 

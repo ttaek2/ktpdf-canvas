@@ -17,6 +17,7 @@ let PopupStyle: React.CSSProperties = {
 interface IPopupProps {
   isShowPopup: boolean;
   customStyle ?: object;
+  boxHeight: number; // 팝업 아래 박스의 높이
 }
 
 class Popup extends React.Component<IPopupProps, React.ComponentState> {
@@ -29,7 +30,8 @@ class Popup extends React.Component<IPopupProps, React.ComponentState> {
     const {
       isShowPopup,
       children,
-      customStyle
+      customStyle,
+      boxHeight,
     } = this.props;
     const display = isShowPopup ? 'block' : 'none';
     const style = customStyle ? customStyle : null;
@@ -37,13 +39,24 @@ class Popup extends React.Component<IPopupProps, React.ComponentState> {
     PopupStyle = Object.assign({}, PopupStyle, style, { display });
 
     return (
-      <div style={PopupStyle}>
-        {/* <div style={{
-          textAlign: 'right'
+      <div style={{
+        position: 'absolute',
+        // top: '-110px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        bottom: boxHeight + 20,
+      }}>
+        <div style={{
+          padding: '10px',
+          margin: '0px',
+          backgroundColor: '#eee',
+          border: 'solid 1px',
+          borderRadius: '10px',
+          width: '200px',
+          fontSize: '15px', 
         }}>
-          <button onClick={closePopup}>X</button>
-        </div> */}
-        {children}
+          {children}
+        </div>
       </div>
     );
   }

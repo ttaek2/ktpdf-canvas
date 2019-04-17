@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+KR&subset=korean');
+@import url('https://fonts.googleapis.com/css?family=Noto+Serif+KR&subset=korean');
+
+@import url('https://fonts.googleapis.com/css?family=Nanum+Gothic&subset=korean');
+@import url('https://fonts.googleapis.com/css?family=Nanum+Myeongjo&subset=korean');
+
 @media screen and (min-width: 1001px) {
     body {
         overflow: hidden;
@@ -71,7 +77,8 @@
     }
     
     .service .editor .edit-body .editor-view .page-wrapper canvas {		
-        box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);	
+        box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        pointer-events: none;	
     }
 }
 @media screen and (max-width: 1000px) {
@@ -137,10 +144,9 @@
     .service .editor .edit-body .editor-view .page-wrapper canvas {		
         box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);	
         z-index: -10;	
+        pointer-events: none;
     }
 }
-
-
 
 .resize-handle {
     position: absolute;
@@ -163,3 +169,99 @@
     top: 0;
 }
   
+/* .editor-view .memo-header::before {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    left: -1.25rem;
+    top: 0.625rem;
+    width: 1.875rem;
+    height: 1.25rem;
+    box-sizing: border-box;
+    border-right: 1.875rem solid black;
+    border-top: 0.625rem solid rgba(0, 0, 0, 0);
+    border-bottom: 0.625rem solid rgba(0, 0, 0, 0);
+} */
+
+.service .editor .memo {
+    width: 100%;
+    height: 100%;
+    resize: none;
+    font-family: 'Nanum Gothic';
+    font-size: 12px;
+    text-decoration:none;
+    color:black;
+    background: #FFF2AB;
+    padding: 0;
+    margin: 0;
+    /* box-shadow: 5px 5px 7px rgba(33,33,33,.7); */
+    opacity: 0.9;
+    padding-top: 21px;
+    box-sizing: border-box;
+    overflow: hidden;
+    /* border-radius: 10px 10px 10px 10px; */
+}
+
+.service .editor .memo-header {
+    width: 100%;
+    position: absolute;
+    /* top: -17px; */
+    top: 0;
+    background-color: #FFEB81;
+    color: black;
+    text-align: right;
+
+    /* border-radius: 10px 10px 0 0; */
+}
+
+
+.service .editor .memo-header::before {
+    /* content: "";
+    display: inline-block;
+    position: absolute;
+    left: -1.875rem;
+    top: 1.025rem;
+    width: 1.875rem;
+    height: 1.25rem;
+    box-sizing: border-box;
+    border-right: 1.875rem solid #FFF2AB;
+    border-top: 0.625rem solid rgba(0, 0, 0, 0);
+    border-bottom: 0.625rem solid rgba(0, 0, 0, 0);
+    z-index: -1; */
+
+    /* content: "";
+    position: absolute;
+    display: inline-block;
+    left: -0.5625rem;
+    top: 0.625rem;
+    width: calc(0.5625rem * 2);
+    height: calc(0.5rem * 2);
+    background-image: url(../images/ballon-tail-white.png);
+    background-size: contain;
+    background-repeat: no-repeat; */
+}
+.service .editor .memo-header::after {
+    /* content: "";
+    display: inline-block;
+    position: absolute;
+    left: -1.675rem;
+    top: 1.025rem;
+    width: 1.875rem;
+    height: 1.25rem;
+    box-sizing: border-box;
+    border-right: 1.8rem solid white;
+    border-top: 0.6rem solid rgba(0, 0, 0, 0);
+    border-bottom: 0.6rem solid rgba(0, 0, 0, 0);
+    z-index: 1; */
+
+    /* content: "";
+    position: absolute;
+    display: inline-block;
+    left: -0.5625rem;
+    top: 0.625rem;
+    width: calc(0.5625rem * 2);
+    height: calc(0.5rem * 2);
+    background-image: url(../images/ballon-tail-white.png);
+    background-size: contain;
+    background-repeat: no-repeat; */
+}

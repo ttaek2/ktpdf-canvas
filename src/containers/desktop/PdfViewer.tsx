@@ -65,7 +65,8 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
     // console.log(document.body.scrollHeight)
     if(this.pageRendering) {
       console.log('page still rendering!')
-      return;
+      e.preventDefault();
+      return false;
     }
     if( this.thumbnail.contains(e.target) ) {
       console.log('scroll on thumbnail!')
