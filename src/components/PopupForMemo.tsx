@@ -11,6 +11,11 @@ class PopupForMemo extends React.Component<IPopup, React.ComponentState> {
     super(props);
   }
 
+  onShapeMemo = (gbnCd) => {
+    const { boxIndex, updateInputBox } = this.props;
+    updateInputBox(boxIndex, { gbnCd });
+  }
+
   render() {
     const {
       children,
@@ -24,10 +29,10 @@ class PopupForMemo extends React.Component<IPopup, React.ComponentState> {
           height: '20px',
           padding: '2px',
         }}>
-          <button>1</button>
-          <button>2</button>
-          <button>3</button>
-          <button>4</button>
+          <button onClick={() => this.onShapeMemo('lu')}>lu</button>
+          <button onClick={() => this.onShapeMemo('ld')}>ld</button>
+          <button onClick={() => this.onShapeMemo('ru')}>ru</button>
+          <button onClick={() => this.onShapeMemo('rd')}>rd</button>
         </div>
       </React.Fragment>
     );

@@ -84,16 +84,18 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
           minHeight={minH ? minH * scale : undefined}
         >
 
+        {editable &&
           <Popup
             isShowPopup={true}
-            boxHeight={h}
+            customStyle={{top: '-50px'}}
           >
             <PopupForMemo
               updateInputBox={updateInputBox}
               boxIndex={boxIndex}
             />
           </Popup>
-
+        }
+          
         <MemoMarker
           boxIndex={this.props.boxIndex}
           input={this.props.input as MemoInput}

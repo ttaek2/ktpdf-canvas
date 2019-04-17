@@ -278,7 +278,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     return {
       inputType: 'memo',
       font: 'Nanum Gothic',
-      charSize: '9',
+      charSize: 9,
       signerNo,
       x: 200,
       y: 200,
@@ -289,7 +289,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       boxIndex: this.state.inputs.length,
       minW: 100,
       minH: 50,
-      gbnCd: 'lt',
+      gbnCd: 'lu',
     }
   }
 

@@ -50,6 +50,7 @@ export default class MemoMarker extends React.Component<IBoxForTextAreaProps, Re
       addText,
       font,
       charSize,
+      gbnCd,
     } = this.props.input;
 
     const {editable, scale} = this.props;
@@ -126,12 +127,18 @@ export default class MemoMarker extends React.Component<IBoxForTextAreaProps, Re
       right: `${(-ptrWidth + 0.05) * scale}rem`,
     }
 
+    let ps = ptrStyleLeftUp;
+    if(gbnCd === 'lu') ps = ptrStyleLeftUp;
+    else if(gbnCd === 'ld') ps = ptrStyleLeftDown;
+    else if(gbnCd === 'ru') ps = ptrStyleRightUp;
+    else if(gbnCd === 'rd') ps = ptrStyleRightDown;
+
     return (
       <div style={{width: '100%', height: '100%'}} 
         // onMouseLeave={this.onMouseLeave}
       >
         <span
-          style={ptrStyleLeftUp}
+          style={ps}
         />
 
 
