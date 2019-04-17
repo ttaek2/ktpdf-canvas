@@ -83,16 +83,24 @@ class SignatureLayer extends React.Component<ISignatureLayerProps, React.Compone
         />
         <div style={{
           position: 'relative',
-          top: '40%',
+          top: '50%',
           left: '50%',
-          width: '700px',
-          height: '500px',
+          width: '400px',
+          height: '400px',
           transform: 'translate(-50%, -50%)',
           // marginTop: '-400px',
           // marginLeft: '-350px',
           backgroundColor: '#fff'
         }}>
-          <div style={{textAlign: 'right', float: 'right',}}>
+          <div 
+            // style={{textAlign: 'right', float: 'right',}}
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              userSelect: 'none',
+            }}
+          >
             <button style={{
               width: '20px',
               height: '20px',
@@ -102,17 +110,16 @@ class SignatureLayer extends React.Component<ISignatureLayerProps, React.Compone
             ref={this.signCanvasRef}
             canvasProps={{
               position: 'absolute',
-              width: '700px',
-              height: '500px',
-              top: '-100px',
+              width: '400px',
+              height: '400px',
               padding: '0px',
               margin: '0px',
               className: 'sigCanvas',
             }}
           />
-          <div style={{textAlign: 'center'}}>
-            <button style={{width: '200px', height: '50px'}} onClick={this.clear}>지우기</button>
-            <button style={{width: '200px', height: '50px', marginLeft: '10px'}} onClick={this.sign}>서명</button>
+          <div style={{textAlign: 'center', marginTop: '10px'}}>
+            <button style={{width: '150px', height: '50px', userSelect: 'none',}} onClick={this.clear}>지우기</button>
+            <button style={{width: '150px', height: '50px', userSelect: 'none', marginLeft: '10px'}} onClick={this.sign}>서명</button>
           </div>
         </div>
       </>
