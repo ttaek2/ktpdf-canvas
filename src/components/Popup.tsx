@@ -30,13 +30,13 @@ class Popup extends React.Component<IPopupProps, React.ComponentState> {
         ...customStyle,
       }}>
         <div style={{
-          padding: '10px',
+          padding: '0px',
           margin: '0px',
           backgroundColor: '#eee',
-          border: 'solid 1px',
+          border: 'solid 0.5px',
           borderRadius: '10px',
-          width: '200px',
-          fontSize: '15px', 
+          // width: '200px',
+          // fontSize: '15px', 
         }}>
           {children}
         </div>

@@ -117,7 +117,7 @@ class BoxWithTextArea extends Component<Props, any> {
         >
           <Popup
             isShowPopup={isShowPopup}
-            customStyle={{top: '-115px'}}
+            customStyle={{top: '-105px', width: '200px'}}
           >
             <PopupForTextarea
               updateInputBox={updateInputBox}
