@@ -40,11 +40,13 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
     } = this.props.input;
 
     const {editable, scale} = this.props;
-
+    if(!scale)
+      return null;
     x *= scale;
     y *= scale;
     w *= scale;
     h *= scale;
+
 
     const {updateInputBox, deleteInputBox, boxIndex} = this.props;
 
