@@ -31,6 +31,11 @@ class ContainerForBoxes extends Component<Props, null> {
       scale
     } = this.props;
 
+    if(scale === undefined) {
+      console.log('scale is undefined!')
+      return null;
+    }
+
     return (
       // <div className="inputbox-area"
       //   onMouseUp={this.props.onInutboxAreaMouseUp}

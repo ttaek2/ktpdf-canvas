@@ -86,6 +86,7 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
                 input={input as TextInput}
                 updateTextArea={updateTextArea}
                 editable={editable}
+                updateInputBox={this.props.updateInputBox}
                 scale={scale}
               />
             )

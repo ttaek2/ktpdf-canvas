@@ -1,10 +1,13 @@
 import * as React from "react";
 import { TextInput } from "src/interface/Input";
+import Popup from "./Popup";
+import PopupForTextarea from "./PopupForTextarea";
 
 interface IBoxForTextAreaProps {
   input: TextInput;
   boxIndex: number;
   updateTextArea: (...args) => void;
+  updateInputBox: (boxIndex: number, update: object) => void;
   editable: boolean
   scale: number;
 }
@@ -15,7 +18,8 @@ class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.Co
     super(props);
 
     this.state = {
-      text: ''
+      text: '',
+      isShowPopup: false,
     };
 
     this.handleOnChange = this.handleOnChange.bind(this);
@@ -25,6 +29,12 @@ class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.Co
     const { updateTextArea, boxIndex } = this.props;
     const val = e.target.value;
     updateTextArea(boxIndex, val);
+  }
+
+  togglePopup = () => {
+    this.setState({
+      isShowPopup: !this.state.isShowPopup
+    })
   }
 
   render() {
@@ -39,7 +49,7 @@ class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.Co
       charSize,
     } = this.props.input;
 
-    const {editable, scale} = this.props;
+    const {editable, scale, boxIndex, updateInputBox} = this.props;
     x *= scale;
     y *= scale;
     w *= scale;
@@ -85,7 +95,20 @@ class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.Co
           style={editable ? editableStyle : nonEditableStyle}
           onChange={this.handleOnChange}
           defaultValue={addText}
+          onDoubleClick={this.togglePopup}
         />
+
+        <Popup
+          isShowPopup={this.state.isShowPopup}
+          customStyle={{top: '-90px', width: '200px'}}
+        >
+          <PopupForTextarea
+            updateInputBox={updateInputBox}
+            boxIndex={boxIndex}
+            fontFamily={font}
+            fontSize={charSize}
+          />
+        </Popup>
       </div>
     )
   }

@@ -87,7 +87,7 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
         {editable &&
           <Popup
             isShowPopup={true}
-            customStyle={{top: '-50px'}}
+            customStyle={{top: '-50px', width: '150px'}}
           >
             <PopupForMemo
               updateInputBox={updateInputBox}

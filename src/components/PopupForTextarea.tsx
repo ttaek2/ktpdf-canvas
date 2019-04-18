@@ -52,13 +52,13 @@ class PopupForTextarea extends React.Component<IPopup, React.ComponentState> {
   handleFontChange = (e) => {
     const {name, value} = e.target;
     const { updateInputBox, boxIndex } = this.props;
-    updateInputBox(boxIndex, {fontFamily: value} );
+    updateInputBox(boxIndex, {fontFamily: value, font: value} );
   }
 
   handleFontSizeChange = (e) => {
     const {name, value} = e.target;
     const { updateInputBox, boxIndex } = this.props;
-    updateInputBox(boxIndex, {fontSize: Number(value)} );
+    updateInputBox(boxIndex, {fontSize: Number(value), charSize: Number(value)} );
   }
 
   // deleteThisTextArea() {

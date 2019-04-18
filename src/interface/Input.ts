@@ -13,7 +13,7 @@ export interface Input {
 
 export interface TextInput extends Input {
     font: string;
-    charSize: string;
+    charSize: number;
 }
 
 export interface SignInput extends Input {
