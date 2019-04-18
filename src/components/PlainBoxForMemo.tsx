@@ -40,11 +40,14 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
     } = this.props.input;
 
     const {editable, scale} = this.props;
-
+      
+    console.log('rendering plainboxformemo!', minW, minH)
+    
     x *= scale;
     y *= scale;
     w *= scale;
     h *= scale;
+
 
     const {updateInputBox, deleteInputBox, boxIndex} = this.props;
 
@@ -77,20 +80,22 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
             }
           }}
           disableDragging={!editable}
-          minWidth={minW * scale}
-          minHeight={minH * scale}
+          minWidth={minW ? minW * scale : undefined}
+          minHeight={minH ? minH * scale : undefined}
         >
 
+        {editable &&
           <Popup
             isShowPopup={true}
-            boxHeight={h}
+            customStyle={{top: '-50px'}}
           >
             <PopupForMemo
               updateInputBox={updateInputBox}
               boxIndex={boxIndex}
             />
           </Popup>
-
+        }
+          
         <MemoMarker
           boxIndex={this.props.boxIndex}
           input={this.props.input as MemoInput}

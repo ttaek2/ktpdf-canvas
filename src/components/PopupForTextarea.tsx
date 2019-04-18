@@ -76,21 +76,24 @@ class PopupForTextarea extends React.Component<IPopup, React.ComponentState> {
       height: '1px',
       border: 0,
       borderTop: '1px solid #ccc',
-      margin: '1em 0',
+      // margin: '1em 0',
       padding: 0,
+      margin: 0,
     }
     return (
       <React.Fragment>
         <div style={{
-          position: 'relative',
-          zIndex: 11,
-          height: '20px',
-          padding: '2px',
+          // position: 'relative',
+          // zIndex: 11,
+          height: '40px',
+          padding: '10px',
         }}>
-          <span style={{float: 'left', padding: '5px'}}>크  기</span>
+          <span 
+            style={{float: 'left'}}
+          >크  기</span>
           
           <select 
-            style={{width: '100px', height: '22px', float: 'right'}}
+            style={{width: '80px', float: 'right'}}
             onChange={this.handleFontSizeChange}
             defaultValue={this.props.fontSize + ''}
           >
@@ -103,15 +106,15 @@ class PopupForTextarea extends React.Component<IPopup, React.ComponentState> {
         </div>
         <hr style={hrStyle} />
         <div style={{
-          position: 'relative',
-          zIndex: 10,
-          height: '20px',
-          padding: '2px',
+          // position: 'relative',
+          // zIndex: 10,
+          height: '40px',
+          padding: '10px',
         }}>
-          <span style={{float: 'left', padding: '5px'}}>글자체</span>
+          <span style={{float: 'left'}}>글자체</span>
           
           <select 
-            style={{width: '100px', height: '22px', float: 'right'}}
+            style={{width: '80px', float: 'right'}}
             onChange={this.handleFontChange}
             defaultValue={this.props.fontFamily}
           >

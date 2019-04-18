@@ -30,7 +30,8 @@ export interface RadioInput extends Input {
 
 export interface MemoInput extends Input {
     font: string;
-    charSize: string;
+    charSize: number;
     minW: number;
     minH: number;
+    gbnCd: string;
 }

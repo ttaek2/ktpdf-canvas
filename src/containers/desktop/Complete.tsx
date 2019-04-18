@@ -1,106 +1,112 @@
 import * as React from "react";
-import {Document, Page, pdfjs} from 'react-pdf';
-
-// import "./reset.css";
-import {deepCopy} from "../../util/deepCopy";
-import DimmedLayer from "../../components/DimmedLayer";
-import SignatureLayer from "../../components/SignatureLayer";
-import {ISigner} from "../../interface/ISigner";
-import PlainBoxContainer from "../../components/PlainBoxContainer";
-import {setCompleteInfo} from "../../api/complete/setCompleteInfo";
-import ZoomController from "../../components/ZoomController";
-import $ from 'jquery';
+import { pdfjs } from 'react-pdf';
+import MemoMarker from "../../components/MemoMarker";
+import { Input, MemoInput } from "src/interface/Input";
+import { setCompleteInfo } from "../../api/complete/setCompleteInfo";
 import apiPath from "../../api/enum/apiPath";
+import { setDocumentInfoForSigner } from "../../api/signer/setDocumentInfoForSinger";
+import DimmedLayer from "../../components/DimmedLayer";
+import PlainBoxContainer from "../../components/PlainBoxContainer";
+import SignatureLayer from "../../components/SignatureLayer";
+import { ISigner } from "../../interface/ISigner";
+import { deepCopy } from "../../util/deepCopy";
+import PdfViewer from "./PdfViewer";
+// import "./reset.css";
+import $ from 'jquery';
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+// pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const styled = require('./common.css');
 
-interface IInput {
-  inputType: string;
-  font: string;
-  charSize: string;
-  signerNo: string;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
+// interface IInput {
+//   inputType: string;
+//   font: string;
+//   charSize: string;
+//   signerNo: string;
+//   x: number;
+//   y: number;
+//   w: number;
+//   h: number;
+//   addText: string;
+//   page: number;
+//   boxIndex: number;
+// }
 
 interface IContractProps {
   documentUrl: string;
   documentNo: number;
   signer: ISigner;
-  inputs: Array<IInput>;
+  inputs: Array<Input>;
+  completePage: boolean;
 }
 
-const convertView = (view_w, view_h, left, top, width, height) => {
-  console.log('convertView')
-  console.log(view_w, view_h, left, top, width, height);
+// const convertView = (view_w, view_h, left, top, width, height) => {
+//   console.log('convertView')
+//   console.log(view_w, view_h, left, top, width, height);
 
-  const x = Number(left) * view_w;
-  const w = Number(width) * Number(view_w);
-  const h = Number(height) * Number(view_h);
-  const y = (((Number(top) * view_h) - view_h) + Number(h)) * -1;
+//   const x = Number(left) * view_w;
+//   const w = Number(width) * Number(view_w);
+//   const h = Number(height) * Number(view_h);
+//   const y = (((Number(top) * view_h) - view_h) + Number(h)) * -1;
 
-  console.log(x, y, w, h)
+//   console.log(x, y, w, h)
 
-  return {
-    x,
-    y,
-    w,
-    h
-  }
-};
+//   return {
+//     x,
+//     y,
+//     w,
+//     h
+//   }
+// };
 
-class CompleteContainer extends React.Component<IContractProps, React.ComponentState> {
+class ContractContainer extends React.Component<IContractProps, React.ComponentState> {
 
   constructor(props) {
     super(props);
+    console.log('constructor!');
     this.state = {
       signer: [],
       inputs: [],
       numPages: null,
       pageNumber: 1,
       showSignLayer: false,
-      signature: null,
-      selectedIndex: -1,
-      zoom: 1,
-      view_h: -1,
-      view_w: -1,
-      originInputs: []
+      scale: undefined,
+      newInputBox: null,
     };
 
     this.updateSignUrl = this.updateSignUrl.bind(this);
     this.updateTextArea = this.updateTextArea.bind(this);
     this.controlSignLayer = this.controlSignLayer.bind(this);
-    this.onDocumentLoadSuccess = this.onDocumentLoadSuccess.bind(this);
-    this.getNewPdfItem = this.getNewPdfItem.bind(this);
+    // this.onDocumentLoadSuccess = this.onDocumentLoadSuccess.bind(this);
+    // this.getNewPdfItem = this.getNewPdfItem.bind(this);
     this.saveContractInfo = this.saveContractInfo.bind(this);
-    this.updateRightContentZoom = this.updateRightContentZoom.bind(this);
+    this.saveCompleteInfo = this.saveCompleteInfo.bind(this);
+    // this.updateRightContentZoom = this.updateRightContentZoom.bind(this);
   }
 
-  async componentDidMount() {
-    const $view = $('.doc-area');
-    const view_w = $view.width();
-    const view_h = $view.height();
-    this.setState({
-      view_w,
-      view_h
-    }, this.initBoxData);
+  componentDidMount() {
+  
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+
+    if(prevState.inputs.length > 0) {
+      return null;
+    }
+
+    console.log('prevState', prevState)
+    console.log('nextProps', nextProps)
+
+   const { signer, inputs } = nextProps;
+
+   return {
+     signer,
+     inputs,
+   };
   }
 
   componentDidUpdate(_, prevState) {
-    const $view = $('.doc-area');
-    const view_w = $view.width();
-    const view_h = $view.height();
-
-    if(view_h < 0 || prevState.view_h !== view_h){
-      this.setState({
-        view_w,
-        view_h
-      }, this.initBoxData);
-    }
+    
   }
 
   private updateTextArea(index, value) {
@@ -111,44 +117,40 @@ class CompleteContainer extends React.Component<IContractProps, React.ComponentS
     this.setState({ inputs: newInputs });
   }
 
-  private initBoxData() {
-    // const { view_w, view_h } = this.state;
-    const { pageWidth, pageHeight } = this.state;
-    const { signer, inputs } = this.props;
+  // private initBoxData() {
+  //   console.log('initBoxData!')
+  //   // const { view_w, view_h } = this.state;
+  //   // const { pageWidth, pageHeight } = this.state;    
+  //   const { signer, inputs } = this.props;
+  //   const { zoom } = this.state;
+  //   const restoreViewInfo = inputs.map(input => {
+  //     return {
+  //       ...input,
+  //       x: input.x * zoom,
+  //       y: input.y * zoom,
+  //       w: input.w * zoom,
+  //       h: input.h * zoom,
+  //     }
 
-    // const restoreViewInfo = inputs.map(input => {
-    //   const { x, y, w, h } = convertView(pageWidth, pageHeight, input.x, input.y, input.w, input.h);
-    //   return {
-    //     ...input,
-    //     x,
-    //     y,
-    //     w,
-    //     h
-    //   }
-    // });
-    const restoreViewInfo = inputs;
+  //     // const { x, y, w, h } = convertView(pageWidth, pageHeight, input.x, input.y, input.w, input.h);
+  //     // return {
+  //     //   ...input,
+  //     //   x,
+  //     //   y,
+  //     //   w,
+  //     //   h
+  //     // }
+  //   });
+  //   // const restoreViewInfo = inputs;
 
-    this.setState({
-      signer,
-      originInputs: inputs,
-      inputs: restoreViewInfo
-    });
-  }
+  //   this.setState({
+  //     signer,
+  //     originInputs: inputs,
+  //     // inputs
+  //     inputs: restoreViewInfo
+  //   });
+  // }
 
-  private getNewPdfItem(e: React.MouseEvent) {
-    e.preventDefault();
-    const {pageNumber} = this.state;
-    const idx = Number(e.currentTarget.getAttribute('data-index')) + 1;
-
-    $('li.thumbnailList').find('canvas').css('opacity', 0.7);
-    $(e.currentTarget).find('canvas').css('opacity', 1);
-    
-    this.setState({pageNumber: idx});
-  }
-
-  private onDocumentLoadSuccess({numPages}) {
-    this.setState({numPages});
-  };
 
   private controlSignLayer(index) {
     const {showSignLayer} = this.state;
@@ -182,105 +184,246 @@ class CompleteContainer extends React.Component<IContractProps, React.ComponentS
         if(!isNotEmpty) { alert('사인영역을 채워주세요.'); }
         return isNotEmpty;
     }
+    return true;
   }
 
-  private saveContractInfo() {
+  private saveContractInfo(strHash) {
+    console.log('saveContractInfo')
+    // console.log(this.state.inputs)
+
+    // 포탈에서 넘어온 해시값
+    // const userhash = strHash;    
+    const userHash = 'testhash1234';
+    
+    const { documentNo } = this.props;
+    const { inputs, signer } = this.state;
+    const signerNo = signer.signerNo;
+    const isValidInputs = inputs.every(input => this.isValidInput(input));
+    if(!isValidInputs) return false;
+
+    const newInputs = inputs.map((input, index) => {
+      if(input.inputType === 'checkbox') {
+        return {
+          ...input,
+          addText: input.addText ? 'Y' : 'N',
+        }
+      }
+      return input;
+    });
+
+    setDocumentInfoForSigner(documentNo, signerNo, {inputs: newInputs, userHash}).then((data:any) => {      
+      if(data.code == '200'){
+        alert('저장 완료');
+      }else{
+        alert('저장 처리중 에러 : ' + data.code);
+      }
+    });
+  }
+
+  private saveCompleteInfo() {
+    console.log('saveCompleteInfo')
     const { documentNo } = this.props;
     const { inputs, originInputs, signer } = this.state;
     const signerNo = signer.signerNo;
     const domain = `${apiPath.DOMAIN.HOSTNAME}:${apiPath.DOMAIN.PORT}`;
-    // const isValidInputs = inputs.every(input => this.isValidInput(input));
-    // if(!isValidInputs) return false;
-
-    // const newInputs = inputs.map((input, index) => {
-    //   const { x, y, w, h } = originInputs[index];
-
-    //   if(input.inputType === 'sign') {
-    //     const newSignUrl = input.signUrl && input.signUrl.replace(domain, '');
-    //     return {
-    //       ...input,
-    //       signUrl: newSignUrl,
-    //       x,
-    //       y,
-    //       w,
-    //       h
-    //     }
-    //   }
-
-    //   return {
-    //     ...input,
-    //     x,
-    //     y,
-    //     w,
-    //     h
-    //   }
-    // });
-
-    // setCompleteInfo(documentNo, signerNo, {inputs: newInputs}).then(_ => {
-      setCompleteInfo(documentNo, signerNo).then((data:any) => {
-        if(data.code == '200'){
-          alert('저장 완료');
-        }else{
-          alert('저장 처리중 에러 : ' + data.code);
-        }
-        
-    });
-  }
-
-  convertToPDF = () => {
-
-  }
-
-  updateRightContentZoom(zoom) {
-    const {zoom: prevScale} = this.state;
-    const nextScale = zoom;
-    const ratio = nextScale / prevScale;
-    console.log(prevScale, nextScale, ratio)
-    const newBoxDataList = this.scaleMarker(ratio);
-    this.setState({
-      zoom,
-      inputs: newBoxDataList
-    });
-  }
-
-  private scaleMarker(scale) {
-    const {inputs} = this.state;
-    const copyBoxDataList = deepCopy(inputs);
-    console.log('scale = ', scale)
-    console.log(inputs)
-    const newBoxDataList = copyBoxDataList.map((data, boxIndex) => {
-        return {
-          ...data,
-          x: data.x * scale,
-          y: data.y * scale,
-          w: data.w * scale,
-          h: data.h * scale
-        }
+    setCompleteInfo(documentNo, signerNo).then((data:any) => {
+      if(data.code == '200'){
+        alert('저장 완료');
+      }else{
+        alert('저장 처리중 에러 : ' + data.code);
       }
-    );
-    console.log(newBoxDataList)
-
-    return newBoxDataList;
+      
+    });
   }
 
-  onThumbnailRenderSuccess = (page) => {
-    if(page.pageNumber == 1) {
-      $('li.thumbnailList').find('canvas').first().css('opacity', 1.0);
+  // updateRightContentZoom(zoom) {
+  //   const {zoom: prevScale} = this.state;
+  //   const nextScale = zoom;
+  //   const ratio = nextScale / prevScale;
+  //   console.log(prevScale, nextScale, ratio)
+  //   const newBoxDataList = this.scaleMarker(ratio);
+  //   console.log(newBoxDataList)
+  //   this.setState({
+  //     zoom,
+  //     inputs: newBoxDataList
+  //   }, () => { console.log(this.state.inputs) });
+  // }
+
+  // private scaleMarker(scale) {
+    
+  //   const {inputs} = this.state;
+  //   console.log('scaling start scale = ', scale)
+  //   console.log(inputs);
+
+  //   // console.log('scale = ', scale)
+  //   // console.log(inputs)
+  //   const newBoxDataList = inputs.map((data, boxIndex) => {
+  //       return {
+  //         ...data,
+  //         x: data.x * scale,
+  //         y: data.y * scale,
+  //         w: data.w * scale,
+  //         h: data.h * scale
+  //       }
+  //     }
+  //   );
+  //   console.log('scaling done')
+  //   console.log(newBoxDataList)
+
+  //   return newBoxDataList;
+  // }
+
+
+  getInitMemo = (page, signerNo): MemoInput => {
+    return {
+      inputType: 'memo',
+      font: 'Nanum Gothic',
+      charSize: '9',
+      signerNo,
+      x: 200,
+      y: 200,
+      w: 150,
+      h: 75,
+      addText: '',
+      page,
+      boxIndex: this.state.inputs.length,
+      minW: 100,
+      minH: 50,
     }
   }
 
-  onPageLoadSuccess = (page) => {
-    console.log('PageLoadSuccess')
+  newMemo = (e) => {
+    const { inputs, originInputs, signer, pageNumber } = this.state;
+    const memo = this.getInitMemo(pageNumber, signer.signerNo);
+    memo.x = e.pageX;
+    memo.y = e.pageY;
+
+    this.setState( {
+      newMemo: memo
+    })
   }
 
-  onPageRenderSuccess = (page) => {
-    console.log('PageRenderSuccess')
-    console.log(page.width, page.height)
+  newMemo2 = (e) => {
+    const { inputs, originInputs, signer, pageNumber, scale } = this.state;
+    const memo = this.getInitMemo(pageNumber, signer.signerNo);
+    // memo.x = e.pageX;
+    // memo.y = e.pageY;
+
+    let w = memo.w;
+    let h = memo.h;
+    // let left = $('.page-wrapper').width() / scale - width - 20; // right
+    let x = $('.page-wrapper').width() / 2 / scale - w / 2; // center
+    let y = $('.editor-view').scrollTop() / scale + 120;
+    memo.x = x;
+    memo.y = y;
+
+    this.addMemo(memo);
+    // this.setState( {
+    //   newMemo: memo
+    // })
+  }
+
+  deleteInputBox = (boxIndex: number): void => {
+    
+    const { inputs } = this.state;
+    const newInputs = inputs.filter((box, index) => {
+      return boxIndex !== index;
+    });
+    
+    console.log(`deleted input box ${boxIndex}. newinputs = `, newInputs)
+
+    this.setState({inputs: newInputs});
+  }
+
+  updateInputBox = (boxIndex: number, update: object) => {
+    console.log('updateInputBox');
+    console.log(update, boxIndex)
+    const {inputs} = this.state;
+    console.log(inputs)
+    const newInputs = inputs.map((box, index) => {
+      if(boxIndex === index) {
+        return {
+          ...box,
+          ...update
+        }
+      }
+
+      return box;
+    });
+    console.log(newInputs)
+
+    this.setState({inputs: newInputs});
+  }
+
+  onPageChange = (pageNumber: number, scrollTo: number) => {
+    this.setState({pageNumber}, () => {
+      if(scrollTo >= 0) {
+        window.scrollTo(0, scrollTo);
+      }
+    });
+  }
+
+  zoomIn = (e) => {
     this.setState({
-      pageWidth: page.width,
-      pageHeight: page.height
+      scale: this.state.scale * 1.1,
+    }, () => console.log(this.state.scale))
+  }
+  zoomOut = (e) => {
+    this.setState({
+      scale: this.state.scale / 1.1,
     })
-    $('.viewerContainer').find('canvas').css('opacity', 1.0);
+  }
+  setScale = (scale) => {
+    this.setState({scale})
+  }
+
+  handleMouseMove = (e: React.MouseEvent) => {
+    const {newMemo} = this.state;
+    if(!newMemo) {
+      return;
+    }
+    
+    this.setState({
+      newMemo: {
+        ...newMemo,
+        x: e.pageX,
+        y: e.pageY
+      }
+    })
+  }
+
+  onInputboxAreaMouseUp = (e: React.MouseEvent) => {
+    const {newMemo, scale, pageNumber} = this.state;
+    if(!newMemo) {
+      return;
+    }
+    console.log('drop the beat!!')
+    let x = e.pageX - $(e.currentTarget).offset().left;
+    let y = e.pageY - $(e.currentTarget).offset().top;
+    let w = newMemo.w;
+    let h = newMemo.h;
+    
+    x /= scale; 
+    y /= scale; 
+    w /= scale; 
+    h /= scale;
+    
+    newMemo.x = x;
+    newMemo.y = y;
+    newMemo.w = w;
+    newMemo.h = h;
+    newMemo.page = pageNumber;
+    
+    this.addMemo(newMemo);
+  }
+
+  addMemo = (memo: MemoInput) => {
+    const copy = [...this.state.inputs];
+    copy.push(memo);
+    this.setState({
+      inputs: copy,
+      newMemo: null,
+    })
   }
 
   public render(): JSX.Element {
@@ -291,131 +434,166 @@ class CompleteContainer extends React.Component<IContractProps, React.ComponentS
       signer,
       inputs,
       selectedIndex,
-      zoom
+      scale,
+      newMemo
     } = this.state;
 
-    const pdfItem = [];
-    for (let i = 1; i <= numPages; i++) {
-      pdfItem.push(i);
-    }
+    console.log('inputs!!!!!!!!!!!!!!!!!!!!!!', inputs)
 
     return (
-      <div>
-        <div className={styled.rightSidebar}>
-          <div>
-            <div style={{fontSize: '15px'}}>{`${pageNumber} / ${numPages}`}</div>
-            <ZoomController updateRightContentZoom={this.updateRightContentZoom} zoom={zoom}/>
-            <div style={{
-              fontSize: '15px',
-            }}>{signer.signerNm}</div>
-          </div>
-          <div style={{padding: '600px 0'}}>
-            <button style={{
-              width: '140px',
-              height: '50px',
-              marginLeft: '15%',
-              position: 'relative',
-              zIndex: 30
-            }} onClick={this.saveContractInfo}
-            >저장
-            </button>
-          </div>
-        </div>
-        
-
-        <DimmedLayer showSignLayer={showSignLayer} >
-          <SignatureLayer
-            inputs={inputs}
-            signerNo={signer.signerNo}
-            controlSignLayer={this.controlSignLayer}
-            selectedIndex={selectedIndex}
-            updateSignUrl={this.updateSignUrl}
-          />
-        </DimmedLayer>
-        <div className={styled.wrapper}>
-          {/* <ul className={styled.leftContents}>
-            {pdfItem.length > 0 && pdfItem.map((item, index) =>
-              <li key={index}>
-                <a href="#" data-index={index} onClick={this.getNewPdfItem}>
-                  <Document
-                    className={styled.listCanvas}
-                    file={this.props.documentUrl}
-                  >
-                    <Page pageNumber={item}/>
-                  </Document>
-                </a>
-              </li>
-            )}
-          </ul> */}
-
-          <ul className={styled.leftContents}>
-            <Document
-              className={styled.listCanvas}
-              file={this.props.documentUrl}
-            >
-              {Array.from(
-                new Array(numPages),
-                (el, index) => (
-                  <li key={index} style={{padding: '2px'}} className='thumbnailList'>
-                    <a href="#" data-index={index} onClick={this.getNewPdfItem}>
-                      <Page
-                        key={`page_${index + 1}`}
-                        pageNumber={index + 1}
-                        renderMode='canvas'
-                        renderTextLayer={false}
-                        renderAnnotationLayer={false}
-                        onLoadSuccess={page => console.log(`thumbnail page-${page.pageNumber} loaded`)}
-                        onRenderSuccess={this.onThumbnailRenderSuccess}
-                        scale={0.25}
-                      />
-                    </a>
-                  </li>
-                ),
-              )}
-            </Document>
-          </ul>
-          <div
-            // style={{ zoom }}
-            className={styled.rightContents}
-          >
+      <div className="container service">
+        <div className='editor'
+          onMouseMove={this.handleMouseMove}
+        >
+          {
+            newMemo &&
             <div
-              className="doc-area"
-              style={{
-                width: this.state.pageWidth,
-                height: '100%',
-                position: 'absolute',
-                zIndex: 10,
-                left: '50%',
-                transform: 'translateX(-50%)',
-              }}
+                style={{
+                    width: newMemo.w,
+                    height: newMemo.h,
+                    left: newMemo.x,
+                    top: newMemo.y,
+                    position: 'absolute',
+                    zIndex: 100000,
+                    pointerEvents: 'none',
+                }}
             >
-              <PlainBoxContainer
-                users={[signer]}
-                inputs={inputs}
-                updateTextArea={this.updateTextArea}
-                controlSignLayer={this.controlSignLayer}
-                pageNumber={pageNumber}
+              <MemoMarker
+                boxIndex={undefined}
+                input={newMemo as MemoInput}
+                updateTextArea={undefined}
+                editable={false}
+                updateInputBox={undefined}
+                deleteInputBox={undefined}
               />
             </div>
-            <Document
-              className='viewerContainer'
-              file={this.props.documentUrl}
-              onLoadSuccess={this.onDocumentLoadSuccess}
+          }
+
+          <div className='header'>
+            <ul className="zoom">
+              <li><a onClick={(e) => this.zoomIn(e)}><span className="icon-zoomin"></span></a></li>
+              <li><a onClick={(e) => this.zoomOut(e)}><span className="icon-zoomout"></span></a></li>
+            </ul>
+            {/* <ZoomController updateRightContentZoom={this.updateRightContentZoom} zoom={zoom}/> */}
+          </div>
+          <div className="edit-body">
+
+            <PdfViewer documentUrl={this.props.documentUrl} scale={scale} onPageChange={this.onPageChange} pageNumber={pageNumber}
+                       setScale={this.setScale}
             >
-              <Page 
-                className={styled.page}
-                pageNumber={pageNumber}
-                renderTextLayer={false}
-                renderAnnotationLayer={false}
-                scale={zoom}
-                onLoadSuccess={this.onPageLoadSuccess}
-                onRenderSuccess={this.onPageRenderSuccess}
-              />
-            </Document>
+                        <PlainBoxContainer
+                          users={[signer]}
+                          inputs={inputs}
+                          updateTextArea={this.updateTextArea}
+                          controlSignLayer={this.controlSignLayer}
+                          pageNumber={pageNumber}
+                          updateInputBox={this.updateInputBox}
+                          deleteInputBox={this.deleteInputBox}
+                          scale={scale}
+                          onInputboxAreaMouseUp={this.onInputboxAreaMouseUp}
+                        />
+              </PdfViewer>
+
+            {/* <div className="thumbnail">
+              <ul>
+                      <Document
+                        file={this.props.documentUrl}
+                      >
+                        {Array.from(
+                          new Array(numPages),
+                          (el, index) => (
+                            <li 
+                              key={index}
+                              className={pageNumber === index+1  ? 'on' : undefined}
+                            >
+                              <a href="#" data-index={index} onClick={this.getNewPdfItem}>
+                                <Page
+                                  key={`page_${index + 1}`}
+                                  pageNumber={index + 1}
+                                  renderMode='canvas'
+                                  renderTextLayer={false}
+                                  renderAnnotationLayer={false}
+                                  onLoadSuccess={page => console.log(`thumbnail page-${page.pageNumber} loaded`)}
+                                  onRenderSuccess={this.onThumbnailRenderSuccess}
+                                  scale={0.22}
+                                />
+                              </a>
+                            </li>
+                          ),
+                        )}
+                      </Document>
+              </ul>
+            </div>
+            <div className="editor-view">
+              <Document
+                className='document-wrapper'
+                file={this.props.documentUrl}
+                onLoadSuccess={this.onDocumentLoadSuccess}
+              >
+                <Page 
+                  className='page-wrapper'
+                  pageNumber={pageNumber}
+                  renderTextLayer={false}
+                  renderAnnotationLayer={false}
+                  scale={zoom}
+                  onLoadSuccess={this.onPageLoadSuccess}
+                  onRenderSuccess={this.onPageRenderSuccess}
+                >
+                  <div
+                    className="inputbox-area"
+                    // style={{
+                    //   width: this.state.pageWidth,
+                    //   height: this.state.pageHeight,
+                    //   position: 'absolute',
+                    //   marginTop: '10px',
+                    //   // paddingBottom: '10px',
+                    //   zIndex: 10,
+                    //   top: 0,
+                    //   left: '50%',
+                    //   transform: 'translateX(-50%)',
+                    // }}
+                    // onMouseMove={this.documentMouseMove}
+                    // onMouseUp={this.updateEventObjectToNull}
+                  >
+                        <PlainBoxContainer
+                          users={[signer]}
+                          inputs={inputs}
+                          updateTextArea={this.updateTextArea}
+                          controlSignLayer={this.controlSignLayer}
+                          pageNumber={pageNumber}
+                          updateInputBox={this.updateInputBox}
+                          deleteInputBox={this.deleteInputBox}
+                        />
+                  </div>
+                </Page>
+              </Document>
+            </div> */}
+            
+            <div className="edit-pallet">
+              <ul>
+                {/* <li><a onClick={this.newMemo}><span className="icon-memo"></span>메모 입력</a></li> */}
+                {/* <li><a onClick={this.newMemo2}><span className="icon-memo"></span>메모 입력</a></li> */}
+                <li><a onClick={this.props.completePage ? this.saveCompleteInfo : this.saveContractInfo}>저장</a></li>
+              </ul>
+            </div>
+          
+          
+          
+
+          <DimmedLayer showSignLayer={showSignLayer} >
+            <SignatureLayer
+              inputs={inputs}
+              signerNo={signer.signerNo}
+              controlSignLayer={this.controlSignLayer}
+              selectedIndex={selectedIndex}
+              updateSignUrl={this.updateSignUrl}
+            />
+          </DimmedLayer>
+
           </div>
         </div>
       </div>
     );
   }
 }
-export default CompleteContainer;
+export default ContractContainer;
