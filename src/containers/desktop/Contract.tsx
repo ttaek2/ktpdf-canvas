@@ -573,7 +573,9 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
             <div className="edit-pallet">
               <ul>
                 {/* <li><a onClick={this.newMemo}><span className="icon-memo"></span>메모 입력</a></li> */}
-                <li><a onClick={this.newMemo2}><span className="icon-memo"></span>메모 입력</a></li>
+                {!this.props.completePage &&
+                  <li><a onClick={this.newMemo2}><span className="icon-memo"></span>메모 입력</a></li>
+                }
                 <li><a onClick={this.props.completePage ? this.saveCompleteInfo : this.saveContractInfo}>저장</a></li>
               </ul>
             </div>

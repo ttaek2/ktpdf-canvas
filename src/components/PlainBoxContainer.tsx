@@ -59,7 +59,11 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
       // >
       <React.Fragment>
         {inputs.map((input, index) => {
-          const editable = currentSignerNo == input.signerNo;
+          let editable = currentSignerNo == input.signerNo;
+          if(input.inputType === 'memo' && input.eleId) { // db에서 가져온 메모
+            editable = false;
+          }
+
           if(pageNumber !== input.page) return null;
 
           if(input.inputType === 'memo') {
