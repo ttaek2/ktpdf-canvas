@@ -1,4 +1,6 @@
 import * as React from "react";
+import { FiArrowDownLeft, FiArrowDownRight, FiArrowUpLeft, FiArrowUpRight } from "react-icons/fi";
+import { IconContext } from "react-icons";
 
 interface IPopup {
   updateInputBox: (boxIndex: number, update: object) => void;
@@ -11,6 +13,11 @@ class PopupForMemo extends React.Component<IPopup, React.ComponentState> {
     super(props);
   }
 
+  onShapeMemo = (gbnCd) => {
+    const { boxIndex, updateInputBox } = this.props;
+    updateInputBox(boxIndex, { gbnCd });
+  }
+
   render() {
     const {
       children,
@@ -21,13 +28,15 @@ class PopupForMemo extends React.Component<IPopup, React.ComponentState> {
         <div style={{
           position: 'relative',
           zIndex: 11,
-          height: '20px',
-          padding: '2px',
+          // height: '20px',
+          padding: '10px',
         }}>
-          <button>1</button>
-          <button>2</button>
-          <button>3</button>
-          <button>4</button>
+        {/* <IconContext.Provider value={closeicon}>
+        </IconContext.Provider> */}
+          <button onClick={() => this.onShapeMemo('lu')}><FiArrowUpLeft  /></button>
+          <button onClick={() => this.onShapeMemo('ld')}><FiArrowDownLeft/></button>
+          <button onClick={() => this.onShapeMemo('ru')}><FiArrowUpRight /></button>
+          <button onClick={() => this.onShapeMemo('rd')}><FiArrowDownRight /></button>
         </div>
       </React.Fragment>
     );
