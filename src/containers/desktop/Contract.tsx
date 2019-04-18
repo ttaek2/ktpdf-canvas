@@ -188,12 +188,13 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
   }
 
   private saveContractInfo(strHash) {
-    console.log('saveContractInfo')
+    console.log('saveContractInfo');
+    console.log('strHash :: ' + strHash);
     // console.log(this.state.inputs)
 
     // 포탈에서 넘어온 해시값
-    // const userhash = strHash;    
-    const userHash = 'testhash1234';
+    const userhash = strHash;    
+    // const userHash = 'testhash1234';
     
     const { documentNo } = this.props;
     const { inputs, signer } = this.state;
