@@ -46,13 +46,15 @@ class Complete extends React.Component<any, React.ComponentState> {
     const { documentNo } = this.props;
     const { signer, inputs, documentUrl } = this.state;
     
-    //console.log("inputs.length : " + inputs.length);
-    //if(inputs.length < 1) return null;
+
+    if(inputs != undefined){
+      if(inputs.length < 1) return null;
+    }
 
     return(
       <div>
         <Head>
-          <title>kt - contract</title>
+          <title>kt - complete</title>
           <link href="/assets/css/style.css" rel="stylesheet" />
           <link href="/assets/css/viewer.css" rel="stylesheet" />
         </Head>
