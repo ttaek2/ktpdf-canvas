@@ -82,7 +82,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     const {inputs} = this.state;
     let cnt = 0;
     inputs.forEach(input => {
-      if(!(input.inputType === 'memo') && this.isEmpty(input)) {
+      if(this.isMust(input) && this.isEmpty(input)) {
         cnt++;
       }
     });
@@ -93,11 +93,16 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     const {inputs} = this.state;
     let cnt = 0;
     inputs.forEach(input => {
-      if(input.inputType === 'text' || input.inputType === 'radio' || input.inputType === 'sign') {
+      if(this.isMust(input)) {
         cnt++;
       }
     });
     return cnt;
+  }
+
+  isMust = (input): boolean => {
+    const {inputType} = input;
+    return inputType === 'text' || inputType === 'radio' || inputType === 'sign';
   }
 
   isEmpty = (input): boolean => {
@@ -114,7 +119,9 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     if(inputType === 'memo') {
       return !addText;
     }
-    return false;
+    if(inputType === 'checkbox') {
+      return false;
+    }
   }
 
   emptyInputIdx = -1;
