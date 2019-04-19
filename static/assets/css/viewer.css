@@ -80,6 +80,9 @@
         box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         pointer-events: none;	
     }
+    .__resizable_base__ {
+        top: 0;
+    }
 }
 @media screen and (max-width: 1000px) {
     .service {
