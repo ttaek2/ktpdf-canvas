@@ -132,7 +132,7 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
 
     // 현재 페이지의 썸네일이 화면 밖에 있는경우 현재 페이지의 썸네일이 보이도록 썸네일부분을 스크롤함
     // (pc버전 : 세로스크롤, 모바일버전 : 가로스크롤)
-    if( !this.isElementInViewport(this.curThumbnail) ) {
+    if( this.curThumbnail && !this.isElementInViewport(this.curThumbnail) ) {
       console.log('ThumbnailNotInViewport!')
 
       if(!isMobileView()) {
