@@ -129,15 +129,7 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
       document.querySelector('.editor-view').scrollTop = this.scrollTo;
       this.scrollTo = -1;
     }
-  }
 
-  thumbnail = null; // 썸네일 DOM
-  curThumbnail = null; // 현재 페이지의 썸네일 DOM
-
-  onPageRenderSuccess = (page) => {
-    console.log('PageRenderSuccess', page)
-    this.pageRendering = false;
-    
     // 현재 페이지의 썸네일이 화면 밖에 있는경우 현재 페이지의 썸네일이 보이도록 썸네일부분을 스크롤함
     // (pc버전 : 세로스크롤, 모바일버전 : 가로스크롤)
     if( !this.isElementInViewport(this.curThumbnail) ) {
@@ -157,8 +149,14 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
         this.thumbnail.scrollLeft = scrollTo;
       }
     }
+  }
 
-    
+  thumbnail = null; // 썸네일 DOM
+  curThumbnail = null; // 현재 페이지의 썸네일 DOM
+
+  onPageRenderSuccess = (page) => {
+    console.log('PageRenderSuccess', page)
+    this.pageRendering = false;
   }
 
   onThumbnailRenderSuccess = () => {
