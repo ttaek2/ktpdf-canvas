@@ -156,8 +156,8 @@ interface IDocumentProps {
   documentNo: string;
   documentUrl: string;
   signerList: Array<ISigner>;
-  // docName: string;
-  // fileName: string;
+  docName: string;
+  fileName: string;
   userId: string;  
   inputs: [];
 }
@@ -508,10 +508,28 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     return [].concat(textAreaListFormatted, signatureAreaListFormatted, checkboxListFormatted, radioListFormatted);
   }
 
+  validationCheck = () => {
+    // 모든 서명자의 서명박스가 배치됐는지 확인
+    const {boxDataList} = this.state;
+    const {signerList} = this.props;
+    let set = new Set();
+    boxDataList.forEach((boxData) => {
+      if(boxData.type === 'sign') {
+        set.add(boxData.signerIndex);
+      }
+    });
+    return set.size === signerList.length;
+  }
+
   // 저장처리
   private updateDocumentInfo() {
     const {documentNo, docName, fileName, documentUrl, userId} = this.props;
     const {boxDataList} = this.state;
+
+    if(!this.validationCheck()) {
+      alert('모든 계약참여자의 서명위치를 지정해야 합니다.');
+      return;
+    }
 
     // console.log('boaDataList', boxDataList)
     const dataList = this.convertDataForAPI(boxDataList); 

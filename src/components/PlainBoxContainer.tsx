@@ -41,6 +41,7 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
       controlSignLayer,
       pageNumber,
       scale,
+      focusInput,
     } = this.props;
 
     if(scale === undefined) {
@@ -59,6 +60,7 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
       // >
       <React.Fragment>
         {inputs.map((input, index) => {
+          let focused = input === focusInput;
           let editable = currentSignerNo == input.signerNo;
           if(input.inputType === 'memo' && input.eleId) { // db에서 가져온 메모
             editable = false;
@@ -92,6 +94,7 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
                 editable={editable}
                 updateInputBox={this.props.updateInputBox}
                 scale={scale}
+                focused={focused}
               />
             )
           }
@@ -105,6 +108,7 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
                 controlSignLayer={controlSignLayer}
                 editable={editable}
                 scale={scale}
+                focused={focused}
               />
             )
           }
@@ -118,6 +122,7 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
                 updateTextArea={updateTextArea}
                 editable={editable}
                 scale={scale}
+                focused={focused}
               />
             )
           }
@@ -131,6 +136,7 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
                 updateTextArea={updateTextArea}
                 editable={editable}
                 scale={scale}
+                focused={focused}
               />
             )
           }

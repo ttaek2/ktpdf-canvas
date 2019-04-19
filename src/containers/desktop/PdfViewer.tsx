@@ -3,13 +3,8 @@ import * as React from "react";
 import { Document, Page, pdfjs } from 'react-pdf';
 import { isMobileView } from '../../util/isMobileView';
 
-
-
-
-// pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+// pdf worker 지정
 pdfjs.GlobalWorkerOptions.workerSrc = `pdf.worker.js`;
-
-
 
 
 
@@ -56,13 +51,10 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
     if(isMobileView()) {
       return;
     }
-
-    // console.log($(window).scrollTop(), $(window).height(), $(document).height())
-    console.log($('.editor-view').scrollTop()
-              , $('.editor-view').height()
-              , $('.editor-view').scrollTop() + $('.editor-view').height()
-              , $('.document-wrapper').height())
-    // console.log(document.body.scrollHeight)
+    // console.log($('.editor-view').scrollTop()
+    //           , $('.editor-view').height()
+    //           , $('.editor-view').scrollTop() + $('.editor-view').height()
+    //           , $('.document-wrapper').height())
     if(this.pageRendering) {
       console.log('page still rendering!')
       e.preventDefault();
@@ -74,27 +66,20 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
     }
 
     if(e.originalEvent.wheelDelta /120 > 0) {
-        console.log('scrolling up !');
-        
-        // if($(window).scrollTop() == 0) {
+        // console.log('scrolling up !');
         if($('.editor-view').scrollTop() == 0) {
           console.log('Document.tsx top boom!')
-          let {pageNumber, numPages} = this.state;
+          let {pageNumber} = this.state;
           pageNumber--;
           if(pageNumber >= 1) {
             console.log('setting page ', pageNumber)
             e.preventDefault()
-            this.pageRendering = true;
-            // this.scrollTo = document.body.scrollHeight;
-            this.scrollTo = $('.document-wrapper').height();
-            this.props.onPageChange(pageNumber);
-            // window.scrollTo(0,document.body.scrollHeight);
+            this.moveTo(pageNumber, $('.document-wrapper').height());
           }
         }
     }
     else{
-        console.log('scrolling down !');
-        
+        // console.log('scrolling down !');
         if($('.editor-view').scrollTop() + $('.editor-view').height() > $('.document-wrapper').height()) {
           console.log('Document.tsx bottom boom!')
           let {pageNumber, numPages} = this.state;
@@ -102,10 +87,7 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
           if(pageNumber <= numPages) {
             console.log('setting page ', pageNumber)
             e.preventDefault();
-            this.pageRendering = true;
-            this.scrollTo = 0;
-            this.props.onPageChange(pageNumber);
-            // window.scrollTo(0, 0)
+            this.moveTo(pageNumber, 0);
           }
         }
     }
@@ -119,43 +101,47 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
   private getNewPdfItem(e: React.MouseEvent) {
     e.preventDefault();
     const pageNumber = Number(e.currentTarget.getAttribute('data-index')) + 1;
-    this.pageRendering = true;
-    this.props.onPageChange(pageNumber, undefined);
+    // this.pageRendering = true;
+    // this.props.onPageChange(pageNumber);
+    this.moveTo(pageNumber, -1);
   }
 
 
-  onDocumentLoadSuccess = (pdf) => {
-    console.log('DocumentLoadSuccess', screen.width, pdf)
+  onDocumentLoadSuccess = (document) => {
+    console.log('DocumentLoadSuccess', document)
     this.setState({
-      numPages: pdf.numPages
+      numPages: document.numPages
     });
   };
 
   onPageLoadSuccess = (page) => {
-    console.log('Document.tsx PageLoadSuccess')
+    console.log('PageLoadSuccess')
+    
+    // 페이지 최초로드후 scale 계산함
     if(this.props.scale === undefined) {
       const width = $('.editor-view').width();
       const scale = width / page.originalWidth / 1.1;
       this.props.setScale(scale);
     }
     
+    // 페이지 로드후 scrollTo 값이 설정되어있는 경우 해당위치로 스크롤함
     if(this.scrollTo !== -1) {
       document.querySelector('.editor-view').scrollTop = this.scrollTo;
-      // window.scrollTo(0, this.scrollTo);
       this.scrollTo = -1;
     }
   }
 
-  thumbnail = null;
-  curThumbnail = null;
+  thumbnail = null; // 썸네일 DOM
+  curThumbnail = null; // 현재 페이지의 썸네일 DOM
 
   onPageRenderSuccess = (page) => {
-    // $('.editor-view canvas').css('width', '').css('height', '')
-    console.log('Document.tsx PageRenderSuccess', page)
+    console.log('PageRenderSuccess', page)
     this.pageRendering = false;
     
+    // 현재 페이지의 썸네일이 화면 밖에 있는경우 현재 페이지의 썸네일이 보이도록 썸네일부분을 스크롤함
+    // (pc버전 : 세로스크롤, 모바일버전 : 가로스크롤)
     if( !this.isElementInViewport(this.curThumbnail) ) {
-      console.log('ElementNotInViewport!')
+      console.log('ThumbnailNotInViewport!')
 
       if(!isMobileView()) {
         let scrollTo = this.curThumbnail.offsetTop;
@@ -175,12 +161,9 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
     
   }
 
-
   onThumbnailRenderSuccess = () => {
     $('.thumbnail canvas').css('width', '').css('height', '').css('display', '');
   }
-
-  
 
   isElementInViewport = (el) => {
     var rect = el.getBoundingClientRect();
@@ -191,6 +174,17 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
         rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
         rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
     );
+  }
+
+  moveTo = (page: number, scroll: number) => {
+    if(this.state.pageNumber !== page) {
+      this.scrollTo = scroll;
+      this.pageRendering = true;
+      this.props.onPageChange(page);
+    }
+    else {
+      document.querySelector('.editor-view').scrollTop = scroll;
+    }
   }
   
 
@@ -203,7 +197,6 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
 
     const { scale } = this.props;
     console.log('scale = ', scale)
-
 
     return (
           <React.Fragment>
@@ -243,14 +236,6 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
                         )}
                         </ul>
                       </Document>
-                  {/* <li><div><img src="/assets/images/sample.jpg" alt=""></img></div></li>
-                  <li><div><img src="/assets/images/sample.jpg" alt=""></img></div></li>
-                  <li><div><img src="/assets/images/sample.jpg" alt=""></img></div></li>
-                  <li><div><img src="/assets/images/sample.jpg" alt=""></img></div></li>
-                  <li><div><img src="/assets/images/sample.jpg" alt=""></img></div></li>
-                  <li><div><img src="/assets/images/sample.jpg" alt=""></img></div></li>
-                  <li><div><img src="/assets/images/sample.jpg" alt=""></img></div></li>
-                  <li><div><img src="/assets/images/sample.jpg" alt=""></img></div></li> */}
             </div>
             <div className="editor-view">
               <Document

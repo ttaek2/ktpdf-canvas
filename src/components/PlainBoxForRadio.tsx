@@ -55,7 +55,7 @@ class PlainBoxForRadio extends React.Component<IBoxForCheckboxProps, React.Compo
       h,
     } = this.props.input;
 
-    const {editable, scale} = this.props;
+    const {editable, scale, focused} = this.props;
 
     x *= scale;
     y *= scale;
@@ -95,7 +95,7 @@ class PlainBoxForRadio extends React.Component<IBoxForCheckboxProps, React.Compo
 
     const radioiconHorizontal = {
       // color: backgroundColor, 
-      className: "global-class-name", 
+      // className: focused ? 'focused-input' : undefined,
     //   size: "100%",
       padding: 0,
       margin: 0,
@@ -109,7 +109,7 @@ class PlainBoxForRadio extends React.Component<IBoxForCheckboxProps, React.Compo
 
     const radioiconVertical = {
       // color: backgroundColor, 
-      className: "global-class-name", 
+      // className: focused ? 'focused-input' : undefined,
     //   size: "100%",
       padding: 0,
       margin: 0,
@@ -169,6 +169,7 @@ class PlainBoxForRadio extends React.Component<IBoxForCheckboxProps, React.Compo
       <div
         style={editable ? editableStyle : nonEditableStyle}
         // onClick={editable ? this.toggleCheckbox : this.doNothing}
+        className={focused ? 'focused-input' : undefined}
       >
         {radioSelection == '1' 
         ? (

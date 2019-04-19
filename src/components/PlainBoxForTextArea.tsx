@@ -49,7 +49,7 @@ class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.Co
       charSize,
     } = this.props.input;
 
-    const {editable, scale, boxIndex, updateInputBox} = this.props;
+    const {editable, scale, boxIndex, updateInputBox, focused} = this.props;
     x *= scale;
     y *= scale;
     w *= scale;
@@ -70,6 +70,13 @@ class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.Co
       margin: 0,
       overflow: 'hidden',
     };
+
+    const focusedStyle = {
+      ...editableStyle,
+      outline: 'none',
+      borderColor: '#9ecaed',
+      boxShadow: '0 0 15px #9ecaed',
+    }
 
     const nonEditableStyle = {
       ...editableStyle,
@@ -96,6 +103,8 @@ class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.Co
           onChange={this.handleOnChange}
           defaultValue={addText}
           onDoubleClick={this.togglePopup}
+          className={focused ? 'focused-input' : undefined}
+          placeholder='텍스트 입력'
         />
 
         <Popup

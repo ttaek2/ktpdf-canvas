@@ -11,26 +11,8 @@ import SignatureLayer from "../../components/SignatureLayer";
 import { ISigner } from "../../interface/ISigner";
 import { deepCopy } from "../../util/deepCopy";
 import PdfViewer from "./PdfViewer";
-// import "./reset.css";
 import $ from 'jquery';
 
-// pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-
-const styled = require('./common.css');
-
-// interface IInput {
-//   inputType: string;
-//   font: string;
-//   charSize: string;
-//   signerNo: string;
-//   x: number;
-//   y: number;
-//   w: number;
-//   h: number;
-//   addText: string;
-//   page: number;
-//   boxIndex: number;
-// }
 
 interface IContractProps {
   documentUrl: string;
@@ -39,25 +21,6 @@ interface IContractProps {
   inputs: Array<Input>;
   completePage: boolean;
 }
-
-// const convertView = (view_w, view_h, left, top, width, height) => {
-//   console.log('convertView')
-//   console.log(view_w, view_h, left, top, width, height);
-
-//   const x = Number(left) * view_w;
-//   const w = Number(width) * Number(view_w);
-//   const h = Number(height) * Number(view_h);
-//   const y = (((Number(top) * view_h) - view_h) + Number(h)) * -1;
-
-//   console.log(x, y, w, h)
-
-//   return {
-//     x,
-//     y,
-//     w,
-//     h
-//   }
-// };
 
 class ContractContainer extends React.Component<IContractProps, React.ComponentState> {
 
@@ -72,16 +35,14 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       showSignLayer: false,
       scale: undefined,
       newInputBox: null,
+      focusInput: null,
     };
 
     this.updateSignUrl = this.updateSignUrl.bind(this);
     this.updateTextArea = this.updateTextArea.bind(this);
     this.controlSignLayer = this.controlSignLayer.bind(this);
-    // this.onDocumentLoadSuccess = this.onDocumentLoadSuccess.bind(this);
-    // this.getNewPdfItem = this.getNewPdfItem.bind(this);
     this.saveContractInfo = this.saveContractInfo.bind(this);
     this.saveCompleteInfo = this.saveCompleteInfo.bind(this);
-    // this.updateRightContentZoom = this.updateRightContentZoom.bind(this);
   }
 
   componentDidMount() {
@@ -117,39 +78,76 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     this.setState({ inputs: newInputs });
   }
 
-  // private initBoxData() {
-  //   console.log('initBoxData!')
-  //   // const { view_w, view_h } = this.state;
-  //   // const { pageWidth, pageHeight } = this.state;    
-  //   const { signer, inputs } = this.props;
-  //   const { zoom } = this.state;
-  //   const restoreViewInfo = inputs.map(input => {
-  //     return {
-  //       ...input,
-  //       x: input.x * zoom,
-  //       y: input.y * zoom,
-  //       w: input.w * zoom,
-  //       h: input.h * zoom,
-  //     }
+  emptyInputCnt = (): number => {
+    const {inputs} = this.state;
+    let cnt = 0;
+    inputs.forEach(input => {
+      if(!(input.inputType === 'memo') && this.isEmpty(input)) {
+        cnt++;
+      }
+    });
+    return cnt;
+  }
 
-  //     // const { x, y, w, h } = convertView(pageWidth, pageHeight, input.x, input.y, input.w, input.h);
-  //     // return {
-  //     //   ...input,
-  //     //   x,
-  //     //   y,
-  //     //   w,
-  //     //   h
-  //     // }
-  //   });
-  //   // const restoreViewInfo = inputs;
+  totalInputCnt = (): number => {
+    const {inputs} = this.state;
+    let cnt = 0;
+    inputs.forEach(input => {
+      if(input.inputType === 'text' || input.inputType === 'radio' || input.inputType === 'sign') {
+        cnt++;
+      }
+    });
+    return cnt;
+  }
 
-  //   this.setState({
-  //     signer,
-  //     originInputs: inputs,
-  //     // inputs
-  //     inputs: restoreViewInfo
-  //   });
-  // }
+  isEmpty = (input): boolean => {
+    const {inputType, addText, signUrl} = input;
+    if(inputType === 'text') {
+      return !addText;
+    }
+    if(inputType === 'radio') {
+      return !addText;
+    }
+    if(inputType === 'sign') {
+      return !signUrl;
+    }
+    if(inputType === 'memo') {
+      return !addText;
+    }
+    return false;
+  }
+
+  emptyInputIdx = -1;
+  showNextEmptyInput = () => {
+    if(this.emptyInputCnt() === 0) {
+      return;
+    }
+    const {inputs} = this.state;
+    let i = this.emptyInputIdx;
+    while(true) {
+      i = (i+1) % inputs.length;
+      if(inputs[i].inputType === 'memo') {
+        continue;
+      }
+      if(this.isEmpty(inputs[i])) {
+        this.emptyInputIdx = i;
+        break;
+      }
+    }
+    const emptyInput = inputs[this.emptyInputIdx];
+    this.setState({focusInput: emptyInput});
+    this.moveTo(emptyInput);
+  }
+
+
+  moveTo = (input: Input) => {
+    const {scale} = this.state;
+    const {page, y} = input;
+    const scroll = y * scale - 50;
+    this.pdfViewer.moveTo(page, scroll);
+  }
+
+  pdfViewer = null; // PdfViewer 버츄얼돔
 
 
   private controlSignLayer(index) {
@@ -187,9 +185,19 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     return true;
   }
 
+  validationCheck = () => {
+    // 입력필드에 값을 모두 입력했는지 여부
+    return this.emptyInputCnt() === 0;
+  }
+
   private saveContractInfo(strHash) {
     console.log('saveContractInfo')
     // console.log(this.state.inputs)
+
+    if(!this.validationCheck()) {
+      alert('입력이 모두 완료되지 않았습니다.');
+      return;
+    }
 
     // 포탈에서 넘어온 해시값
     // const userhash = strHash;    
@@ -235,44 +243,6 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       
     });
   }
-
-  // updateRightContentZoom(zoom) {
-  //   const {zoom: prevScale} = this.state;
-  //   const nextScale = zoom;
-  //   const ratio = nextScale / prevScale;
-  //   console.log(prevScale, nextScale, ratio)
-  //   const newBoxDataList = this.scaleMarker(ratio);
-  //   console.log(newBoxDataList)
-  //   this.setState({
-  //     zoom,
-  //     inputs: newBoxDataList
-  //   }, () => { console.log(this.state.inputs) });
-  // }
-
-  // private scaleMarker(scale) {
-    
-  //   const {inputs} = this.state;
-  //   console.log('scaling start scale = ', scale)
-  //   console.log(inputs);
-
-  //   // console.log('scale = ', scale)
-  //   // console.log(inputs)
-  //   const newBoxDataList = inputs.map((data, boxIndex) => {
-  //       return {
-  //         ...data,
-  //         x: data.x * scale,
-  //         y: data.y * scale,
-  //         w: data.w * scale,
-  //         h: data.h * scale
-  //       }
-  //     }
-  //   );
-  //   console.log('scaling done')
-  //   console.log(newBoxDataList)
-
-  //   return newBoxDataList;
-  // }
-
 
   getInitMemo = (page, signerNo): MemoInput => {
     return {
@@ -356,12 +326,8 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     this.setState({inputs: newInputs});
   }
 
-  onPageChange = (pageNumber: number, scrollTo: number) => {
-    this.setState({pageNumber}, () => {
-      if(scrollTo >= 0) {
-        window.scrollTo(0, scrollTo);
-      }
-    });
+  onPageChange = (pageNumber: number) => {
+    this.setState({pageNumber});
   }
 
   zoomIn = (e) => {
@@ -436,10 +402,13 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       inputs,
       selectedIndex,
       scale,
-      newMemo
+      newMemo,
+      focusInput,
     } = this.state;
 
+
     console.log('inputs!!!!!!!!!!!!!!!!!!!!!!', inputs)
+    console.log(`${this.emptyInputCnt()} / ${this.totalInputCnt()}`);
 
     return (
       <div className="container service">
@@ -475,12 +444,12 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
               <li><a onClick={(e) => this.zoomIn(e)}><span className="icon-zoomin"></span></a></li>
               <li><a onClick={(e) => this.zoomOut(e)}><span className="icon-zoomout"></span></a></li>
             </ul>
-            {/* <ZoomController updateRightContentZoom={this.updateRightContentZoom} zoom={zoom}/> */}
           </div>
           <div className="edit-body">
 
             <PdfViewer documentUrl={this.props.documentUrl} scale={scale} onPageChange={this.onPageChange} pageNumber={pageNumber}
                        setScale={this.setScale}
+                       ref={ref => this.pdfViewer = ref}
             >
                         <PlainBoxContainer
                           users={[signer]}
@@ -492,85 +461,19 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
                           deleteInputBox={this.deleteInputBox}
                           scale={scale}
                           onInputboxAreaMouseUp={this.onInputboxAreaMouseUp}
+                          focusInput={focusInput}
                         />
               </PdfViewer>
 
-            {/* <div className="thumbnail">
-              <ul>
-                      <Document
-                        file={this.props.documentUrl}
-                      >
-                        {Array.from(
-                          new Array(numPages),
-                          (el, index) => (
-                            <li 
-                              key={index}
-                              className={pageNumber === index+1  ? 'on' : undefined}
-                            >
-                              <a href="#" data-index={index} onClick={this.getNewPdfItem}>
-                                <Page
-                                  key={`page_${index + 1}`}
-                                  pageNumber={index + 1}
-                                  renderMode='canvas'
-                                  renderTextLayer={false}
-                                  renderAnnotationLayer={false}
-                                  onLoadSuccess={page => console.log(`thumbnail page-${page.pageNumber} loaded`)}
-                                  onRenderSuccess={this.onThumbnailRenderSuccess}
-                                  scale={0.22}
-                                />
-                              </a>
-                            </li>
-                          ),
-                        )}
-                      </Document>
-              </ul>
-            </div>
-            <div className="editor-view">
-              <Document
-                className='document-wrapper'
-                file={this.props.documentUrl}
-                onLoadSuccess={this.onDocumentLoadSuccess}
-              >
-                <Page 
-                  className='page-wrapper'
-                  pageNumber={pageNumber}
-                  renderTextLayer={false}
-                  renderAnnotationLayer={false}
-                  scale={zoom}
-                  onLoadSuccess={this.onPageLoadSuccess}
-                  onRenderSuccess={this.onPageRenderSuccess}
-                >
-                  <div
-                    className="inputbox-area"
-                    // style={{
-                    //   width: this.state.pageWidth,
-                    //   height: this.state.pageHeight,
-                    //   position: 'absolute',
-                    //   marginTop: '10px',
-                    //   // paddingBottom: '10px',
-                    //   zIndex: 10,
-                    //   top: 0,
-                    //   left: '50%',
-                    //   transform: 'translateX(-50%)',
-                    // }}
-                    // onMouseMove={this.documentMouseMove}
-                    // onMouseUp={this.updateEventObjectToNull}
-                  >
-                        <PlainBoxContainer
-                          users={[signer]}
-                          inputs={inputs}
-                          updateTextArea={this.updateTextArea}
-                          controlSignLayer={this.controlSignLayer}
-                          pageNumber={pageNumber}
-                          updateInputBox={this.updateInputBox}
-                          deleteInputBox={this.deleteInputBox}
-                        />
-                  </div>
-                </Page>
-              </Document>
-            </div> */}
             
             <div className="edit-pallet">
+              {/* <div>
+                입력완료 : {this.totalInputCnt() - this.emptyInputCnt()} / {this.totalInputCnt()}
+                <button style={{marginLeft: '10px'}}
+                  onClick={this.showNextEmptyInput}
+                >미입력>></button>
+              </div> */}
+              
               <ul>
                 {/* <li><a onClick={this.newMemo}><span className="icon-memo"></span>메모 입력</a></li> */}
                 {!this.props.completePage &&
