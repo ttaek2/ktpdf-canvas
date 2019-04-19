@@ -67,6 +67,7 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
           enableResizing={{ top:false, right:false, bottom:false, left:false, topRight:false, bottomRight:editable, bottomLeft:false, topLeft:false }}
           enableUserSelectHack={false}
           bounds='.document-wrapper'
+          dragHandleClassName={`memo-${boxIndex}`}
           resizeHandleStyles={{
             bottomRight: {
               position: 'absolute',
@@ -87,7 +88,7 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
         {editable &&
           <Popup
             isShowPopup={true}
-            customStyle={{top: '-50px', width: '150px'}}
+            customStyle={{top: '-50px', width: '170px' }}
           >
             <PopupForMemo
               updateInputBox={updateInputBox}
@@ -103,6 +104,7 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
           editable={editable}
           updateInputBox={this.props.updateInputBox}
           deleteInputBox={this.props.deleteInputBox}
+          className={`memo-${boxIndex}`}
           scale={scale}
         />
 
