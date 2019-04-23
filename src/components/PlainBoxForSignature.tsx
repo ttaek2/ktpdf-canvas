@@ -9,6 +9,7 @@ interface IBoxForSignatureProps {
   boxIndex: number;
   editable: boolean;
   scale: number;
+  focused: boolean;
 }
 
 class PlainBoxForSignature extends React.Component<IBoxForSignatureProps, React.ComponentState> {

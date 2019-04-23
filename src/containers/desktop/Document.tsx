@@ -633,7 +633,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   zoomIn = (e) => {
     this.setState({
       scale: this.state.scale * 1.1,
-    }, () => console.log(this.state.scale))
+    })
   }
   zoomOut = (e) => {
     this.setState({

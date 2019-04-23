@@ -1,7 +1,7 @@
+import $ from 'jquery';
 import * as React from "react";
-import { pdfjs } from 'react-pdf';
-import MemoMarker from "../../../src/components/MemoMarker";
 import { Input, MemoInput } from "src/interface/Input";
+import MemoMarker from "../../../src/components/MemoMarker";
 import { setCompleteInfo } from "../../api/complete/setCompleteInfo";
 import apiPath from "../../api/enum/apiPath";
 import { setDocumentInfoForSigner } from "../../api/signer/setDocumentInfoForSinger";
@@ -11,7 +11,6 @@ import SignatureLayer from "../../components/SignatureLayer";
 import { ISigner } from "../../interface/ISigner";
 import { deepCopy } from "../../util/deepCopy";
 import PdfViewer from "./PdfViewer";
-import $ from 'jquery';
 
 
 interface IContractProps {
@@ -55,15 +54,12 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       return null;
     }
 
-    console.log('prevState', prevState)
-    console.log('nextProps', nextProps)
+    const { signer, inputs } = nextProps;
 
-   const { signer, inputs } = nextProps;
-
-   return {
-     signer,
-     inputs,
-   };
+    return {
+      signer,
+      inputs,
+    };
   }
 
   componentDidUpdate(_, prevState) {
@@ -175,23 +171,6 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     this.setState({ inputs: newInputs });
   }
 
-  private isValidInput(input) {
-    let isNotEmpty;
-
-    switch(input.inputType) {
-      case 'text':
-        
-        isNotEmpty = this.state.signerNo != input.signerNo || !!input.addText ;
-        if(!isNotEmpty) { alert('텍스트영역을 채워주세요.'); }
-        return isNotEmpty;
-      case 'sign':
-        isNotEmpty = this.state.signerNo != input.signerNo || !!input.signUrl;
-        if(!isNotEmpty) { alert('사인영역을 채워주세요.'); }
-        return isNotEmpty;
-    }
-    return true;
-  }
-
   validationCheck = () => {
     // 입력필드에 값을 모두 입력했는지 여부
     return this.emptyInputCnt() === 0;
@@ -213,8 +192,6 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     const { documentNo } = this.props;
     const { inputs, signer } = this.state;
     const signerNo = signer.signerNo;
-    const isValidInputs = inputs.every(input => this.isValidInput(input));
-    if(!isValidInputs) return false;
 
     const newInputs = inputs.map((input, index) => {
       if(input.inputType === 'checkbox') {
@@ -266,12 +243,13 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
       boxIndex: this.state.inputs.length,
       minW: 100,
       minH: 50,
-      gbnCd: 'lu',
+      gbnCd: 'lu', // 기본값: left up
     }
   }
 
+  // 메모를 마우스로 끌어다 배치
   newMemo = (e) => {
-    const { inputs, originInputs, signer, pageNumber } = this.state;
+    const { signer, pageNumber } = this.state;
     const memo = this.getInitMemo(pageNumber, signer.signerNo);
     memo.x = e.pageX;
     memo.y = e.pageY;
@@ -281,8 +259,9 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     })
   }
 
+  // 메모추가 클릭시 메모를 pdf 위에 바로배치
   newMemo2 = (e) => {
-    const { inputs, originInputs, signer, pageNumber, scale } = this.state;
+    const { signer, pageNumber, scale } = this.state;
     const memo = this.getInitMemo(pageNumber, signer.signerNo);
     // memo.x = e.pageX;
     // memo.y = e.pageY;
@@ -314,10 +293,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
   }
 
   updateInputBox = (boxIndex: number, update: object) => {
-    console.log('updateInputBox');
-    console.log(update, boxIndex)
     const {inputs} = this.state;
-    console.log(inputs)
     const newInputs = inputs.map((box, index) => {
       if(boxIndex === index) {
         return {
@@ -328,7 +304,6 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
 
       return box;
     });
-    console.log(newInputs)
 
     this.setState({inputs: newInputs});
   }
@@ -340,7 +315,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
   zoomIn = (e) => {
     this.setState({
       scale: this.state.scale * 1.1,
-    }, () => console.log(this.state.scale))
+    })
   }
   zoomOut = (e) => {
     this.setState({
@@ -351,6 +326,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     this.setState({scale})
   }
 
+  // 새 메모가 pdf 위에 배치전 마우스 커서를 따라가도록 하는 이벤트 핸들러
   handleMouseMove = (e: React.MouseEvent) => {
     const {newMemo} = this.state;
     if(!newMemo) {
@@ -366,6 +342,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     })
   }
 
+  // 마우스 커서 위치에 새 메모가 있는 상태에서 pdf 위를 클릭했을때 클릭위치에 메모 배치
   onInputboxAreaMouseUp = (e: React.MouseEvent) => {
     const {newMemo, scale, pageNumber} = this.state;
     if(!newMemo) {
@@ -474,12 +451,12 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
 
             
             <div className="edit-pallet">
-              {/* <div>
+              <div>
                 입력완료 : {this.totalInputCnt() - this.emptyInputCnt()} / {this.totalInputCnt()}
                 <button style={{marginLeft: '10px'}}
                   onClick={this.showNextEmptyInput}
                 >미입력>></button>
-              </div> */}
+              </div>
               
               <ul>
                 {/* <li><a onClick={this.newMemo}><span className="icon-memo"></span>메모 입력</a></li> */}

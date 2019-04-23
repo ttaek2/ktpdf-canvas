@@ -22,6 +22,7 @@ interface IBoxContainerProps {
   deleteInputBox: (index: number) => void;
   scale: number;
   onInputboxAreaMouseUp: (e: React.MouseEvent) => void;
+  focusInput: Input;
 }
 
 class PlainBoxContainer extends React.Component<IBoxContainerProps, React.ComponentState> {

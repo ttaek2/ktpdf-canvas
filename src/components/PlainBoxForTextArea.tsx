@@ -10,6 +10,7 @@ interface IBoxForTextAreaProps {
   updateInputBox: (boxIndex: number, update: object) => void;
   editable: boolean
   scale: number;
+  focused: boolean;
 }
 
 class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.ComponentState> {
@@ -55,7 +56,7 @@ class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.Co
     w *= scale;
     h *= scale;
 
-    const editableStyle = {
+    const editableStyle: React.CSSProperties = {
       width: '100%',
       height: '100%',
       resize: 'none',

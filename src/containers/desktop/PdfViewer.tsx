@@ -40,6 +40,7 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
     $('.editor-view').off('mousewheel', this.handleMouseWheel);
   }
   
+  // props 의 변경이 state 에 반영됨(return되는 값이 state 에 반영됨. 여기서는 pageNumber)
   static getDerivedStateFromProps(nextProps, prevState) {
     if(nextProps.pageNumber !== prevState.pageNumber) {
       return {pageNumber: nextProps.pageNumber};
@@ -74,7 +75,7 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
           if(pageNumber >= 1) {
             console.log('setting page ', pageNumber)
             e.preventDefault()
-            this.moveTo(pageNumber, $('.document-wrapper').height());
+            this.pageTo(pageNumber, $('.document-wrapper').height());
           }
         }
     }
@@ -87,7 +88,7 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
           if(pageNumber <= numPages) {
             console.log('setting page ', pageNumber)
             e.preventDefault();
-            this.moveTo(pageNumber, 0);
+            this.pageTo(pageNumber, 0);
           }
         }
     }
@@ -101,9 +102,7 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
   private getNewPdfItem(e: React.MouseEvent) {
     e.preventDefault();
     const pageNumber = Number(e.currentTarget.getAttribute('data-index')) + 1;
-    // this.pageRendering = true;
-    // this.props.onPageChange(pageNumber);
-    this.moveTo(pageNumber, -1);
+    this.pageTo(pageNumber, -1);
   }
 
 
@@ -174,13 +173,16 @@ export default class PdfViewer extends React.Component<Props, React.ComponentSta
     );
   }
 
-  moveTo = (page: number, scroll: number) => {
+  pageTo = (page: number, scroll: number) => {
     if(this.state.pageNumber !== page) {
+      // 스크롤값만 설정해두고 페이지변경후 스크롤 : onPageLoadSuccess에서 처리
       this.scrollTo = scroll;
+      // 페이지 렌더링중 다른 페이지로 이동 막기 위해 pageRendering = true 로 설정
       this.pageRendering = true;
       this.props.onPageChange(page);
     }
-    else {
+    else { 
+      // 현재페이지에서 스크롤만 처리
       document.querySelector('.editor-view').scrollTop = scroll;
     }
   }

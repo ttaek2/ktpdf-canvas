@@ -10,6 +10,7 @@ interface IBoxForCheckboxProps {
   boxIndex: number;
   editable: boolean;
   scale: number;
+  focused: boolean;
 }
 
 class PlainBoxForRadio extends React.Component<IBoxForCheckboxProps, React.ComponentState> {
@@ -75,7 +76,7 @@ class PlainBoxForRadio extends React.Component<IBoxForCheckboxProps, React.Compo
       }
     }
 
-    const nonEditableStyle = {
+    const nonEditableStyle: React.CSSProperties = {
       position: 'absolute',
       left: x,
       top: y,

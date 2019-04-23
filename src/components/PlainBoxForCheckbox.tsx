@@ -9,6 +9,7 @@ interface IBoxForCheckboxProps {
   boxIndex: number;
   editable: boolean;
   scale: number;
+  focused: boolean;
 }
 
 class PlainBoxForCheckbox extends React.Component<IBoxForCheckboxProps, React.ComponentState> {
@@ -62,7 +63,7 @@ class PlainBoxForCheckbox extends React.Component<IBoxForCheckboxProps, React.Co
       }
     }
 
-    const nonEditableStyle = {
+    const nonEditableStyle: React.CSSProperties = {
       position: 'absolute',
       left: x,
       top: y,
