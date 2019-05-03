@@ -50,10 +50,12 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
 
   static getDerivedStateFromProps(nextProps, prevState) {
 
+    // 입력박스 정보를 최초에 한번만 읽어오도록함
     if(prevState.inputs.length > 0) {
       return null;
     }
 
+    // props에서 서명자 및 입력박스 정보를 읽어 state 에 저장함
     const { signer, inputs } = nextProps;
 
     return {
@@ -139,15 +141,15 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     }
     const emptyInput = inputs[this.emptyInputIdx];
     this.setState({focusInput: emptyInput});
-    this.moveTo(emptyInput);
+    this.pageTo(emptyInput);
   }
 
 
-  moveTo = (input: Input) => {
+  pageTo = (input: Input) => {
     const {scale} = this.state;
     const {page, y} = input;
     const scroll = y * scale - 50;
-    this.pdfViewer.moveTo(page, scroll);
+    this.pdfViewer.pageTo(page, scroll);
   }
 
   pdfViewer = null; // PdfViewer 버츄얼돔
@@ -269,8 +271,8 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     let w = memo.w;
     let h = memo.h;
     // let left = $('.page-wrapper').width() / scale - width - 20; // right
-    let x = $('.page-wrapper').width() / 2 / scale - w / 2; // center
-    let y = $('.editor-view').scrollTop() / scale + 120;
+    let x = $('.page-wrapper').width() / 2 / scale - w / 2; // 가로 : pdf 페이지 가운데 배치
+    let y = $('.editor-view').scrollTop() / scale + 120; // 세로 : 현재 보이는 화면위치에 배치
     memo.x = x;
     memo.y = y;
 

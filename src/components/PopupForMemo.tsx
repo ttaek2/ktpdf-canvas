@@ -19,9 +19,6 @@ class PopupForMemo extends React.Component<IPopup, React.ComponentState> {
   }
 
   render() {
-    const {
-      children,
-    } = this.props;
 
     return (
       <React.Fragment>

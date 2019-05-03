@@ -59,9 +59,10 @@ class BoxWithRadio extends Component<Props, any> {
     console.log(this.radioMarker && this.radioMarker.state.mode)
 
     return (
-        <Rnd
+        <Rnd // 리사이즈 및 드래그 모듈
           size={{ width: width,  height: height }}
           position={{ x: left, y: top }}
+          // 객체이동 드래그 멈춤시 위치 업데이트
           onDragStop={(e, d) => { updateInputBox(boxIndex, {left: d.x / scale, top: d.y / scale}) }}
           // onResizeStop={(e, direction, ref, delta, position) => {
           //     const w = (width + delta.width) / scale;
@@ -79,6 +80,8 @@ class BoxWithRadio extends Component<Props, any> {
           //       this.setState({mode: 'vertical'})
           //     }
           // }}
+
+          // 크기조절 드래그시 크기 업데이트
           onResize={(e, direction, ref, delta, position) => {
             let width = Number(ref.style.width.replace('px', '')) / scale;
             let height = Number(ref.style.height.replace('px', '')) / scale;
@@ -87,25 +90,13 @@ class BoxWithRadio extends Component<Props, any> {
               width, 
               height
             });
-
-            // if(this.state.mode === 'horizontal' && width < 2 * height) {
-            //   this.setState({mode: 'vertical'})
-            // }
-            // else if(this.state.mode === 'vertical' && height < 2 * width) {
-            //   this.setState({mode: 'horizontal'})
-            // }
-
-            // if(width > height) {
-            //   this.setState({mode: 'horizontal'})
-            // } else {
-            //   this.setState({mode: 'vertical'})
-            // }
           }}
+          // 리사이징 허용여부 - 우측하단만 true로함
           enableResizing={{ top:false, right:false, bottom:false, left:false, topRight:false, bottomRight:true, bottomLeft:false, topLeft:false }}
           enableUserSelectHack={true}
-          bounds='parent'
+          bounds='parent' // 부모 요소 안에서만 이동 및 리사이징 가능
           lockAspectRatio={false}
-          resizeHandleStyles={{
+          resizeHandleStyles={{ // 우측하단의 리사이즈 핸들 스타일
             bottomRight: {
                 position: 'absolute',
                 width: '10px',
@@ -117,13 +108,9 @@ class BoxWithRadio extends Component<Props, any> {
                 cursor: 'se-resize',
             }
           }}
-          // minWidth={this.radioMarker && this.radioMarker.state.mode === 'horizontal' ? height * 1 : undefined}
-          // minHeight={this.radioMarker && this.radioMarker.state.mode === 'vertical' ? width * 1 : undefined}
-          // minWidth={this.radioMarker && this.radioMarker.state.mode === 'vertical' ? 20 * scale : undefined}
-          // minHeight={this.radioMarker && this.radioMarker.state.mode === 'horizontal' ? 20 * scale : undefined}
-          // maxWidth={maxWidth ? maxWidth * scale : undefined}
-          // maxHeight={maxHeight ? maxHeight * scale : undefined}
+          // 최소 가로길이
           minWidth={this.radioMarker && this.radioMarker.state.mode === 'vertical' ? minWidth * scale : undefined}
+          // 최소 세로길이
           minHeight={this.radioMarker && this.radioMarker.state.mode === 'horizontal' ? minWidth * scale : undefined}
         >
           
@@ -138,57 +125,6 @@ class BoxWithRadio extends Component<Props, any> {
             height={height}
           />
 
-          {/* <div
-            className='inputbox-header' 
-            style={{
-              width: '100%',
-              height: '18px',
-              position: 'absolute',
-              top: '-17px',
-              border: `1px solid ${backgroundColor}`,
-              backgroundColor: `${backgroundColor}`,
-              color: 'white',
-              borderRadius: '10px 10px 0 0',
-              textAlign: 'right',
-              display: 'none',
-            }}
-          >
-            <span
-              onClick={this.onCloseBtnClick}  
-            >
-              <IconContext.Provider value={closeicon}>
-                <IoMdCloseCircle  />
-              </IconContext.Provider>
-            </span>
-          </div>
-
-          <div 
-            style={{
-              width: '100%',
-              height: '100%',
-              border: `1px solid ${backgroundColor}`,
-            //   overflow: 'hidden',
-              backgroundColor: 'white',
-              opacity: 0.7,
-              position: 'absolute',
-              textAlign: 'left',
-            }}
-            className='inputbox-body'
-            data-number={boxIndex}
-            data-type={type}
-            data-page={page}
-            onMouseOver={this.onMouseOver}
-          >
-            <IconContext.Provider value={this.state.mode === 'horizontal' ? radioiconLeft : radioiconTop}>
-              <IoMdRadioButtonOn />
-            </IconContext.Provider>
-
-            <IconContext.Provider value={this.state.mode === 'horizontal' ? radioiconRight : radioiconBottom}>
-              <IoMdRadioButtonOn />
-            </IconContext.Provider>
-          </div> */}
-
-          
         </Rnd>
     );
   }

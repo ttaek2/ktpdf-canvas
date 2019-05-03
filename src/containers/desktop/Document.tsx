@@ -276,18 +276,16 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   }
 
   // 새 입력박스를 pdf 위에 바로배치
-  private newInputBox2(type, e) {
+  private newInputBox2(type) {
       
-    if(this.state.newInputBox) {
-      return;
-    }
-
     const {
       boxDataList,
       pageNumber,
       selectSignerIndex,
       scale,
     } = this.state;
+
+    // 참여자 선택여부 확인
     const isSelected = this.checkSelectedValue();
     if (!isSelected) {
       return false;
@@ -314,22 +312,13 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
     let width = initBoxData.width;
     let height = initBoxData.height;
-    let left = $('.page-wrapper').width() / 2 / scale - width / 2; // center
-    let top = $('.editor-view').scrollTop() / scale + 150;
+    let left = $('.page-wrapper').width() / 2 / scale - width / 2; // 가로 : pdf 페이지 가운데 배치
+    let top = $('.editor-view').scrollTop() / scale + 150; // 세로 : 현재 보이는 화면위치에 배치
     
-    console.log(left, top, width, height)
-
     initBoxData.left = left;
     initBoxData.top = top;
     initBoxData.width = width;
     initBoxData.height = height;
-
-    console.log(initBoxData)
-
-    // this.setState( {
-    //   newInputBox: initBoxData
-    // })
-
 
     copyBoxDataList.push(initBoxData);
 
@@ -518,6 +507,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         set.add(boxData.signerIndex);
       }
     });
+    // return 서명박스가 배치된 서명자수 == 서명자수
     return set.size === signerList.length;
   }
 
@@ -697,14 +687,15 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         <div className='editor'
           onMouseMove={this.handleMouseMove}
         >
-          {
+          {/* { 
+          // 마우스로 끌어서 입력박스 배치시 사용
           this.state.newInputBox &&
           <NewInputbox
             inputbox={this.state.newInputBox}
             users={signerList}
             scale={scale}
           />
-          }
+          } */}
           <div className='header'>
             <ul className="zoom">
               <li><a onClick={(e) => this.zoomIn(e)}><span className="icon-zoomin"></span></a></li>
@@ -750,10 +741,10 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
                 <li><a onClick={e => this.newInputBox('radio', e.pageX, e.pageY)}><span className="icon-selected-list"></span>선택항목</a></li> */}
                 
                 {/* 새 입력박스 pdf 위에 즉시배치 */}
-                <li><a onClick={e => this.newInputBox2('text', e)}><span className="icon-insert-txt"></span>텍스트 입력</a></li>
-                <li><a onClick={e => this.newInputBox2('sign', e)}><span className="icon-stamp"></span>서명 (Stamp)</a></li>
-                <li><a onClick={e => this.newInputBox2('checkbox', e)}><span className="icon-checklist"></span>체크항목</a></li>
-                <li><a onClick={e => this.newInputBox2('radio', e)}><span className="icon-selected-list"></span>선택항목</a></li>
+                <li><a onClick={e => this.newInputBox2('text')}><span className="icon-insert-txt"></span>텍스트 입력</a></li>
+                <li><a onClick={e => this.newInputBox2('sign')}><span className="icon-stamp"></span>서명 (Stamp)</a></li>
+                <li><a onClick={e => this.newInputBox2('checkbox')}><span className="icon-checklist"></span>체크항목</a></li>
+                <li><a onClick={e => this.newInputBox2('radio')}><span className="icon-selected-list"></span>선택항목</a></li>
                 
                 {/* <li><a><span className="icon-memo"></span>메모 입력</a></li> */}
                 <li><a onClick={this.updateDocumentInfo}>저장</a></li>

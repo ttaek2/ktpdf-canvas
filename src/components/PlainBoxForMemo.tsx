@@ -1,9 +1,6 @@
 import * as React from "react";
-import { IconContext } from "react-icons";
-import { IoMdCloseCircle } from 'react-icons/io';
 import { Rnd } from 'react-rnd';
 import { MemoInput } from "src/interface/Input";
-import $ from 'jquery';
 import MemoMarker from "./MemoMarker";
 import Popup from "./Popup";
 import PopupForMemo from "./PopupForMemo";
@@ -52,23 +49,24 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
     const {updateInputBox, deleteInputBox, boxIndex} = this.props;
 
     return (
-      <Rnd
+      <Rnd // 리사이즈 및 드래그 모듈
           size={{ width: w,  height: h }}
           position={{ x: x, y: y }}
+          // 객체이동 드래그 멈춤시 위치 업데이트
           onDragStop={(e, d) => { updateInputBox(boxIndex, {x: d.x / scale, y: d.y / scale}) }}
-          // onDragStop={(e, d) => { console.log(d.x, d.y) }}
+           // 크기조절 드래그 멈춤시 크기 업데이트
           onResizeStop={(e, direction, ref, delta, position) => {
               updateInputBox(boxIndex, {
                   w: (w + delta.width) / scale,
                   h: (h + delta.height) / scale,
               });
-              // console.log('resize stop')
           }}
+          // 리사이징 허용여부 - 우측하단만 true로함
           enableResizing={{ top:false, right:false, bottom:false, left:false, topRight:false, bottomRight:editable, bottomLeft:false, topLeft:false }}
           enableUserSelectHack={false}
-          bounds='.document-wrapper'
+          bounds='.document-wrapper' // .document-wrapper 영역 안에서만 이동 및 리사이징 가능
           dragHandleClassName={`memo-${boxIndex}`}
-          resizeHandleStyles={{
+          resizeHandleStyles={{ // 우측하단의 리사이즈 핸들 스타일
             bottomRight: {
               position: 'absolute',
               width: '10px',
@@ -80,9 +78,9 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
               cursor: 'se-resize',
             }
           }}
-          disableDragging={!editable}
-          minWidth={minW ? minW * scale : undefined}
-          minHeight={minH ? minH * scale : undefined}
+          disableDragging={!editable} // 편집가능 여부에 따라 드래그 허용여부 결정함
+          minWidth={minW ? minW * scale : undefined} // 최소 가로길이
+          minHeight={minH ? minH * scale : undefined} // 최소 세로길이
         >
 
         {editable &&
@@ -108,54 +106,6 @@ class PlainBoxForMemo extends React.Component<IBoxForTextAreaProps, React.Compon
           scale={scale}
         />
 
-
-      {/* <div
-        className='memo-header' 
-        style={{
-          width: '100%',
-          height: '18px',
-          position: 'absolute',
-          top: '-17px',
-          border: `1px solid orange`,
-          backgroundColor: `orange`,
-          color: 'white',
-          borderRadius: '10px 10px 0 0',
-          textAlign: 'right',
-          display: 'none',
-        }}
-      >
-        <span
-          style={{
-            float: 'left',
-            fontSize: '0.9em',
-          }}
-        >{this.props.input.signerNo}님의 메모</span>
-        <span
-          onClick={this.onCloseBtnClick}  
-        >
-          <IconContext.Provider value={closeicon}>
-            <IoMdCloseCircle  />
-          </IconContext.Provider>
-        </span>
-      </div>
-      
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          // position: 'relative',
-        }}
-        onMouseOver={this.onMouseOver}
-      >
-        <textarea
-          className="memo"
-          disabled={editable ? false : true}
-          style={editable ? editableStyle : nonEditableStyle}
-          onChange={this.handleOnChange}
-          placeholder={editable ? "메모 입력" : undefined}
-          value={addText}
-        />
-      </div> */}
       </Rnd>
     )
   }

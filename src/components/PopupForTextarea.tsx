@@ -9,82 +9,39 @@ interface IPopup {
   fontSize: number;
 }
 
-// const fontFamilyList = ['Times-Roman', 'Courier-Bold', 'Dotum', 'Gulim', 'Batang', 'Gungsuh'];
-// const fontFamilyNmList = ['Times-Roman', 'Courier-Bold', '돋움', '굴림', '바탕', '궁서'];
-// const fontList=[
-//   // {fontFamily: 'Times-Roman', fontName: 'Times-Roman'},
-//   // {fontFamily: 'Courier-Bold', fontName: 'Courier-Bold'},
-//   // {fontFamily: 'Dotum', fontName: '돋움'},
-//   // {fontFamily: "'Noto Sans KR', sans-serif", fontName: '본고딕'},
-//   // {fontFamily: "'Noto Serif KR', serif", fontName: '본명조'},
-//   // {fontFamily: 'Malgun', fontName: '맑은 고딕'},
-//   {fontFamily: 'Batang', fontName: '바탕'},
-//   {fontFamily: 'Gulim', fontName: '굴림'},
-//   // {fontFamily: 'Batang', fontName: '바탕'},
-//   // {fontFamily: 'Gungsuh', fontName: '궁서'},
-// ]
-// const fontSizeList = [12, 14, 16, 18, 20, 24];
-
-
-
 class PopupForTextarea extends React.Component<IPopup, React.ComponentState> {
 
   constructor(props) {
     super(props);
-
-    // this.updateFontSize = this.updateFontSize.bind(this);
-    // this.updateFontFamily = this.updateFontFamily.bind(this);
-    // this.deleteThisTextArea = this.deleteThisTextArea.bind(this);
   }
-
-  // updateFontSize({ datas, index }) {
-  //   const { updateInputBox, boxIndex } = this.props;
-  //   const selectedFontSize = datas[index];
-  //   updateInputBox(boxIndex, {fontSize: selectedFontSize} );
-  // }
-
-  // updateFontFamily({ datas, index }) {
-  //   const { updateInputBox, boxIndex } = this.props;
-  //   const selectedFontFamily = datas[index];
-  //   updateInputBox(boxIndex, {fontFamily: selectedFontFamily} );
-  // }
 
   handleFontChange = (e) => {
     const {name, value} = e.target;
     const { updateInputBox, boxIndex } = this.props;
+    // 생성자 화면 및 서명자 화면에서 모두 호출되어야하는데 각 화면에서 글자체 변수명이 fontFamily 와 font 로 달라서 둘다 업데이트함
     updateInputBox(boxIndex, {fontFamily: value, font: value} );
   }
 
   handleFontSizeChange = (e) => {
     const {name, value} = e.target;
     const { updateInputBox, boxIndex } = this.props;
+    // 생성자 화면 및 서명자 화면에서 모두 호출되어야하는데 각 화면에서 글자크기 변수명이 fontSize 와 charSize 로 달라서 둘다 업데이트함
     updateInputBox(boxIndex, {fontSize: Number(value), charSize: Number(value)} );
   }
 
-  // deleteThisTextArea() {
-  //   const { boxIndex, deleteTextArea } = this.props;
-  //   deleteTextArea(boxIndex);
-  // }
-
   render() {
-    const {
-      children,
-    } = this.props;
 
     const hrStyle = {
       display: 'block',
       height: '1px',
       border: 0,
       borderTop: '1px solid #ccc',
-      // margin: '1em 0',
       padding: 0,
       margin: 0,
     }
     return (
       <React.Fragment>
         <div style={{
-          // position: 'relative',
-          // zIndex: 11,
           height: '40px',
           padding: '10px',
         }}>
@@ -106,8 +63,6 @@ class PopupForTextarea extends React.Component<IPopup, React.ComponentState> {
         </div>
         <hr style={hrStyle} />
         <div style={{
-          // position: 'relative',
-          // zIndex: 10,
           height: '40px',
           padding: '10px',
         }}>

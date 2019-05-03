@@ -1,23 +1,3 @@
-export const getFontCode = (font: string): string => {
-    if(font === 'Dotum') {
-        return 'F01';
-    }
-    else if(font === 'Gulim') {
-        return 'F02';
-    }
-    return undefined;
-}
-
-export const getFont = (fontCode : string): string => {
-    if(fontCode === 'F01') {
-        return 'Dotum';
-    }
-    else if(fontCode === 'F02') {
-        return 'Gulim';
-    }
-    return undefined;
-}
-
 export const fontList = [
     // {fontFamily: 'Times-Roman', fontName: 'Times-Roman'},
     // {fontFamily: 'Courier-Bold', fontName: 'Courier-Bold'},

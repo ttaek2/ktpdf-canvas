@@ -117,10 +117,12 @@ class BoxWithCheckbox extends Component<Props, any> {
     }
 
     return (
-        <Rnd
+        <Rnd // 리사이즈 및 드래그 모듈
           size={{ width: width,  height: height }}
           position={{ x: left, y: top }}
+          // 객체이동 드래그 멈춤시 위치 업데이트
           onDragStop={(e, d) => { updateInputBox(boxIndex, {left: d.x / scale, top: d.y / scale}) }}
+           // 크기조절 드래그 멈춤시 크기 업데이트
           onResizeStop={(e, direction, ref, delta, position) => {
               updateInputBox(boxIndex, {
                 width: (width + delta.width) / scale,
@@ -128,11 +130,12 @@ class BoxWithCheckbox extends Component<Props, any> {
                   // ...position,
               });
           }}
+          // 리사이징 허용여부 - 우측하단만 true로함
           enableResizing={{ top:false, right:false, bottom:false, left:false, topRight:false, bottomRight:true, bottomLeft:false, topLeft:false }}
           enableUserSelectHack={true}
-          bounds='parent'
-          lockAspectRatio={true}
-          resizeHandleStyles={{
+          bounds='parent' // 부모 요소 안에서만 이동 및 리사이징 가능
+          lockAspectRatio={true} // 가로 세로 비율 고정
+          resizeHandleStyles={{ // 우측하단의 리사이즈 핸들 스타일
             bottomRight: {
                 position: 'absolute',
                 width: '10px',
@@ -145,8 +148,8 @@ class BoxWithCheckbox extends Component<Props, any> {
             }
           }}
           onMouseLeave={this.onMouseLeave}
-          minWidth={minWidth * scale}
-          minHeight={minWidth * scale}
+          minWidth={minWidth * scale} // 최소 가로길이
+          minHeight={minWidth * scale} // 최소 세로길이
         >
 
           <CheckboxMarker
@@ -156,52 +159,6 @@ class BoxWithCheckbox extends Component<Props, any> {
             deleteInputBox={this.props.deleteInputBox}
             className={`checkboxMarker-${boxIndex}`}
           />
-          
-          {/* <div
-            className='inputbox-header' 
-            style={{
-              width: '100%',
-              height: '18px',
-              position: 'absolute',
-              top: '-17px',
-              border: `1px solid ${backgroundColor}`,
-              backgroundColor: `${backgroundColor}`,
-              color: 'white',
-              borderRadius: '10px 10px 0 0',
-              textAlign: 'right',
-              display: 'none',
-            }}
-          >
-            <span
-              onClick={this.onCloseBtnClick}  
-            >
-              <IconContext.Provider value={closeicon}>
-                <IoMdCloseCircle  />
-              </IconContext.Provider>
-            </span>
-          </div>
-
-          <div 
-            style={{
-              width: '100%',
-              height: '100%',
-              border: `1px solid ${backgroundColor}`,
-              overflow: 'hidden',
-              backgroundColor: 'white',
-              opacity: 0.7,
-            }}
-            className='inputbox-body'
-            data-number={boxIndex}
-            data-type={type}
-            data-page={page}
-            onMouseOver={this.onMouseOver}
-          >
-            <IconContext.Provider value={checkicon}>
-              <IoMdCheckmark />
-            </IconContext.Provider>
-          </div> */}
-
-          
         </Rnd>
     );
   }
