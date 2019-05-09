@@ -4,12 +4,11 @@ import 'es6-promise';
 // import 'reset-css/reset.css';
 import "@babel/polyfill";
 import * as React from 'react';
-// import CompleteContainer from '../../src/containers/desktop/Complete';
+import CompleteContainer from '../../src/containers/desktop/Complete';
 import HTML5Backend from "react-dnd-html5-backend";
 import {DragDropContextProvider} from "react-dnd";
 import {getCompleteInfo} from "../../src/api/complete/getCompleteInfo";
-// import ContractContainer from '../../src/containers/desktop/Contract';
-import CompleteContainer from '../../src/containers/desktop/Complete';
+import ContractContainer from '../../src/containers/desktop/Contract';
 import Head from 'next/head'
 
 class Complete extends React.Component<any, React.ComponentState> {
@@ -47,18 +46,20 @@ class Complete extends React.Component<any, React.ComponentState> {
     const { documentNo } = this.props;
     const { signer, inputs, documentUrl } = this.state;
     
-    //console.log("inputs.length : " + inputs.length);
-    //if(inputs.length < 1) return null;
+
+    if(inputs != undefined){
+      if(inputs.length < 1) return null;
+    }
 
     return(
       <div>
         <Head>
-          <title>kt - contract</title>
+          <title>kt - complete</title>
           <link href="/assets/css/style.css" rel="stylesheet" />
           <link href="/assets/css/viewer.css" rel="stylesheet" />
         </Head>
         <DragDropContextProvider backend={HTML5Backend}>
-          <CompleteContainer
+          <ContractContainer
             signer={signer}
             inputs={inputs}
             documentUrl={documentUrl}

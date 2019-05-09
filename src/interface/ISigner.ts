@@ -1,6 +1,7 @@
 export interface ISigner {
-  signerNo: string;
+  signerId: string;
   signerNm: string;
   signerType: string;
   email: string;
+  backgroundColor: string;
 }

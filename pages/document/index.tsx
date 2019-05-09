@@ -1,17 +1,13 @@
-import 'raf/polyfill';
-import 'es6-shim';
-import 'es6-promise';
-// import 'reset-css/reset.css';
 import "@babel/polyfill";
-import * as React from 'react';
-import DocumentContainer from '../../src/containers/desktop/Document';
-import {getDocumentInfo} from "../../src/api/document/getDocumentInfo";
-import {getDocumentInfoForSigner} from "../../src/api/signer/getDocumentInfoForSinger";
-import {ISigner} from "../../src/interface/ISigner";
+import 'es6-promise';
+import 'es6-shim';
 import Head from 'next/head';
-import { pdfjs } from 'react-pdf';
+import 'raf/polyfill';
+import * as React from 'react';
+import { getDocumentInfo } from "../../src/api/document/getDocumentInfo";
+import DocumentContainer from '../../src/containers/desktop/Document';
+import { ISigner } from "../../src/interface/ISigner";
 
-// pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface IDocumentProps {
   documentNo: string;
@@ -58,6 +54,7 @@ const backgroundColorList = [
 
 const defaultBackgroundColor = '#fff';
 
+// url 쿼리 스트링에서 파라미터 얻음
 function getParameterByName(name, url) {
   if (!url) url = window.location.href;
   name = name.replace(/[\[\]]/g, '\\$&');
@@ -70,7 +67,7 @@ function getParameterByName(name, url) {
 
 class Document extends React.Component<IDocumentProps, React.ComponentState> {
 
-  /*
+  /* // node 서버에서 실행됨 (서버사이드 스크립트)
   static async getInitialProps({query}) {
 
     // 포탈에서 호출 시 시작
@@ -180,7 +177,7 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
     // const {documentNo} = this.props;
     const {documentNo, documentUrl, signerList} = this.state;
     // const {documentUrl, signerList} = this.props;
-    const {docName, fileName} = this.state;
+    // const {docName, fileName} = this.state;
 
     const {regId} = this.props;
     // console.log("regId : " + regId);
@@ -206,8 +203,8 @@ class Document extends React.Component<IDocumentProps, React.ComponentState> {
           documentUrl={documentUrl}
           signerList={users}
           documentNo={documentNo}
-          docName={docName}
-          fileName={fileName}
+          // docName={docName}
+          // fileName={fileName}
           userId={regId}
           inputs={inputs}          
         />

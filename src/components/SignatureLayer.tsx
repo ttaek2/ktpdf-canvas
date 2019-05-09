@@ -51,8 +51,10 @@ class SignatureLayer extends React.Component<ISignatureLayerProps, React.Compone
       return false;
     }
 
+    // 서명 이미지를 base64 데이터로  
     const base64 = canvas.toDataURL();
 
+    // 저장한다
     await this.saveImage(base64);
     controlSignLayer();
 

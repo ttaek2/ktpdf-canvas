@@ -22,6 +22,7 @@ interface IBoxContainerProps {
   deleteInputBox: (index: number) => void;
   scale: number;
   onInputboxAreaMouseUp: (e: React.MouseEvent) => void;
+  focusInput: Input;
 }
 
 class PlainBoxContainer extends React.Component<IBoxContainerProps, React.ComponentState> {
@@ -41,6 +42,7 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
       controlSignLayer,
       pageNumber,
       scale,
+      focusInput,
     } = this.props;
 
     if(scale === undefined) {
@@ -59,7 +61,12 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
       // >
       <React.Fragment>
         {inputs.map((input, index) => {
-          const editable = currentSignerNo == input.signerNo;
+          let focused = input === focusInput;
+          let editable = currentSignerNo == input.signerNo;
+          if(input.inputType === 'memo' && input.eleId) { // db에서 가져온 메모
+            editable = false;
+          }
+
           if(pageNumber !== input.page) return null;
 
           if(input.inputType === 'memo') {
@@ -86,7 +93,9 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
                 input={input as TextInput}
                 updateTextArea={updateTextArea}
                 editable={editable}
+                updateInputBox={this.props.updateInputBox}
                 scale={scale}
+                focused={focused}
               />
             )
           }
@@ -100,6 +109,7 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
                 controlSignLayer={controlSignLayer}
                 editable={editable}
                 scale={scale}
+                focused={focused}
               />
             )
           }
@@ -113,6 +123,7 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
                 updateTextArea={updateTextArea}
                 editable={editable}
                 scale={scale}
+                focused={focused}
               />
             )
           }
@@ -126,6 +137,7 @@ class PlainBoxContainer extends React.Component<IBoxContainerProps, React.Compon
                 updateTextArea={updateTextArea}
                 editable={editable}
                 scale={scale}
+                focused={focused}
               />
             )
           }

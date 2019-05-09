@@ -27,12 +27,16 @@ export default class RadioMarker extends Component<Props, any> {
     };
   }
 
+
   static getDerivedStateFromProps(nextProps, prevState) {
+    // 가로, 세로 길이에 따라 가로모드 또는 세로모드로 설정함
     const {width, height} = nextProps.boxData;
     // console.log(width, height)
     if(width > height) {
+      // return 값이 state 에 설정됨
       return {mode: 'horizontal'}
     } else {
+      // return 값이 state 에 설정됨
       return {mode: 'vertical'}
     }
   }

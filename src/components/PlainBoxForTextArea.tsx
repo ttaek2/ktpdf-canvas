@@ -1,12 +1,16 @@
 import * as React from "react";
 import { TextInput } from "src/interface/Input";
+import Popup from "./Popup";
+import PopupForTextarea from "./PopupForTextarea";
 
 interface IBoxForTextAreaProps {
   input: TextInput;
   boxIndex: number;
   updateTextArea: (...args) => void;
+  updateInputBox: (boxIndex: number, update: object) => void;
   editable: boolean
   scale: number;
+  focused: boolean;
 }
 
 class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.ComponentState> {
@@ -15,7 +19,8 @@ class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.Co
     super(props);
 
     this.state = {
-      text: ''
+      text: '',
+      isShowPopup: false,
     };
 
     this.handleOnChange = this.handleOnChange.bind(this);
@@ -25,6 +30,12 @@ class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.Co
     const { updateTextArea, boxIndex } = this.props;
     const val = e.target.value;
     updateTextArea(boxIndex, val);
+  }
+
+  togglePopup = () => {
+    this.setState({
+      isShowPopup: !this.state.isShowPopup
+    })
   }
 
   render() {
@@ -39,13 +50,13 @@ class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.Co
       charSize,
     } = this.props.input;
 
-    const {editable, scale} = this.props;
+    const {editable, scale, boxIndex, updateInputBox, focused} = this.props;
     x *= scale;
     y *= scale;
     w *= scale;
     h *= scale;
 
-    const editableStyle = {
+    const editableStyle: React.CSSProperties = {
       width: '100%',
       height: '100%',
       resize: 'none',
@@ -60,6 +71,13 @@ class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.Co
       margin: 0,
       overflow: 'hidden',
     };
+
+    const focusedStyle = {
+      ...editableStyle,
+      outline: 'none',
+      borderColor: '#9ecaed',
+      boxShadow: '0 0 15px #9ecaed',
+    }
 
     const nonEditableStyle = {
       ...editableStyle,
@@ -85,7 +103,22 @@ class PlainBoxForTextArea extends React.Component<IBoxForTextAreaProps, React.Co
           style={editable ? editableStyle : nonEditableStyle}
           onChange={this.handleOnChange}
           defaultValue={addText}
+          onDoubleClick={this.togglePopup}
+          className={focused ? 'focused-input' : undefined}
+          placeholder='텍스트 입력'
         />
+
+        <Popup
+          isShowPopup={this.state.isShowPopup}
+          customStyle={{top: '-90px', width: '200px'}}
+        >
+          <PopupForTextarea
+            updateInputBox={updateInputBox}
+            boxIndex={boxIndex}
+            fontFamily={font}
+            fontSize={charSize}
+          />
+        </Popup>
       </div>
     )
   }

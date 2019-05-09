@@ -1,23 +1,19 @@
 import $ from 'jquery';
 import * as React from "react";
-import { pdfjs } from 'react-pdf';
 import { CheckBox, InputBox, RadioBox, SignBox, TextBox } from "src/interface/InputBox";
 import NewInputbox from '../../../src/components/NewInputBox';
 import { setDocumentInfo } from "../../api/document/setDocumentInfo";
 import ContainerForBoxes from "../../components/ContainerForBoxes";
 import { ISigner } from "../../interface/ISigner";
-import { deepCopy } from "../../util/deepCopy";
 import { fontList, fontSizeList } from '../../util/fontCode';
 import PdfViewer from "./PdfViewer";
-// import "./reset.css";
 
 
 
-
-// pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-// pdfjs.GlobalWorkerOptions.workerSrc = `../../pdf.worker.js`;
+// 입력박스 카운터 - 새 입력박스의 boxIndex를 할당하는데 사용됨
 let boxCnt = 0;
 
+// 입력박스 기본값
 const defaultData = {
   width: 200,
   height: 100,
@@ -33,7 +29,7 @@ const defaultData = {
   radioboxMinWidth: 20,
 };
 
-const getInitTextBox = (page, signerIndex, boxIndex): TextBox => {
+const getInitTextBox = (page, signerIndex): TextBox => {
   return {
     type: 'text',
     top: defaultData.top,
@@ -51,7 +47,7 @@ const getInitTextBox = (page, signerIndex, boxIndex): TextBox => {
     maxHeight: undefined,
   }
 }
-const getInitSignBox = (page, signerIndex, boxIndex): SignBox => {
+const getInitSignBox = (page, signerIndex): SignBox => {
   return {
     type: 'sign',
     top: defaultData.top,
@@ -67,7 +63,40 @@ const getInitSignBox = (page, signerIndex, boxIndex): SignBox => {
     maxHeight: undefined,
   }
 }
-const roadInitTextBox = (input, index): TextBox => {
+const getInitCheckBox = (page, signerIndex): CheckBox => {
+  return {
+    type: 'checkbox',
+    top: defaultData.top,
+    left: defaultData.signLeft,
+    width: 20,
+    height: 20,
+    signerIndex,
+    page,
+    boxIndex: boxCnt++,
+    minWidth: defaultData.checkboxMinWidth,
+    minHeight: undefined,
+    maxWidth: undefined,
+    maxHeight: undefined,
+  }
+}
+
+const getInitRadioBox = (page, signerIndex): RadioBox => {
+  return {
+    type: 'radio',
+    top: defaultData.top,
+    left: defaultData.signLeft,
+    width: 100,
+    height: 20,
+    signerIndex,
+    page,
+    boxIndex: boxCnt++,
+    minWidth: defaultData.radioboxMinWidth,
+    minHeight: undefined,
+    maxWidth: undefined,
+    maxHeight: undefined,
+  }
+}
+const roadInitTextBox = (input): TextBox => {
   return {
     type: 'text',
     top: input.y,
@@ -86,7 +115,7 @@ const roadInitTextBox = (input, index): TextBox => {
   }
 }
 
-const roadInitSignBox = (input, index): SignBox => {
+const roadInitSignBox = (input): SignBox => {
   return {
     type: 'sign',
     top: input.y,
@@ -103,7 +132,7 @@ const roadInitSignBox = (input, index): SignBox => {
   }
 }
 
-const roadInitCheckBox = (input, index): SignBox => {
+const roadInitCheckBox = (input): CheckBox => {
   return {
     type: 'checkbox',
     top: input.y,
@@ -120,39 +149,8 @@ const roadInitCheckBox = (input, index): SignBox => {
   }
 }
 
-const getInitCheckBox = (page, signerIndex, boxIndex): CheckBox => {
-  return {
-    type: 'checkbox',
-    top: defaultData.top,
-    left: defaultData.signLeft,
-    width: 20,
-    height: 20,
-    signerIndex,
-    page,
-    boxIndex: boxCnt++,
-    minWidth: defaultData.checkboxMinWidth,
-    minHeight: undefined,
-    maxWidth: undefined,
-    maxHeight: undefined,
-  }
-}
 
-const getInitRadioBox = (page, signerIndex, boxIndex): RadioBox => {
-  return {
-    type: 'radio',
-    top: defaultData.top,
-    left: defaultData.signLeft,
-    width: 100,
-    height: 20,
-    signerIndex,
-    page,
-    boxIndex: boxCnt++,
-    minWidth: defaultData.radioboxMinWidth,
-    minHeight: undefined,
-    maxWidth: undefined,
-    maxHeight: undefined,
-  }
-}
+
 
 interface IDocumentProps {
   documentNo: string;
@@ -161,7 +159,6 @@ interface IDocumentProps {
   docName: string;
   fileName: string;
   userId: string;  
-  // inputs: Array<IInput>;
   inputs: [];
 }
 
@@ -170,19 +167,13 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   constructor(props) {
     super(props);
     this.state = {
-      docName: '',
-      fileName: '',
-      userId: '',
-      inputs: [],
-
-      signerList: [],
-      numPages: null,
-      pageNumber: 1,
-      boxDataList: [],
+      numPages: null, // pdf 총페이지수
+      pageNumber: 1, // 현재페이지
+      boxDataList: [], // 입력박스 리스트
       // scale: 1.5,
-      scale: undefined,
-      selectSignerIndex: -1,      
-      newInputBox: null,
+      scale: undefined, // pdf 로드후 pdf가로길이 및 화면너비에 따라 scale 계산하도록 수정함(PdfViewer.tsx - onPageLoadSuccess() 에 구현)
+      selectSignerIndex: -1, // 선택서명자      
+      newInputBox: null, // 새 입력박스(마우스로 끌어다 배치시)
     };
 
     this.checkSelectedValue = this.checkSelectedValue.bind(this);
@@ -190,17 +181,14 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     this.deleteInputBox = this.deleteInputBox.bind(this);
     this.newInputBox = this.newInputBox.bind(this);
     this.setSelectedIndex = this.setSelectedIndex.bind(this);
-    this.getNewPdfItem = this.getNewPdfItem.bind(this);
     this.updateDocumentInfo = this.updateDocumentInfo.bind(this);
-    this.updateRightContentZoom = this.updateRightContentZoom.bind(this);
 
 
     this.roadInputData = this.roadInputData.bind(this);
   }
 
   componentDidMount() {
-    // console.log("Document.tsx ============================== componentDidMount ");
-    this.initBoxData();
+    console.log("Document.tsx ============================== componentDidMount ");
 
     // tmpDocId를 통해 조회한 객체가 있다면 표시
     const {inputs} = this.props;
@@ -220,43 +208,8 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
 
   componentDidUpdate(_, prevState): void {
-    // console.log('Document.tsx componentDidUpdate');
-    const $view = $('.inputbox-area');
-    const view_w = $view.width();
-    const view_h = $view.height();
-
-    if(view_h < 0 || prevState.view_h !== view_h){
-      this.setState({
-        view_w,
-        view_h,
-      }, this.initBoxData);
-    }
+  
   }
-
-  private initBoxData() {    
-    // console.log("Document.tsx Document.tsx             initBoxData          ");
-    
-    const {signerList} = this.props;
-    // const {signerList, inputs} = this.props;
-    
-    this.setState({
-      signerList
-      // ,inputs
-    });
-  }
-
-  private getNewPdfItem(e: React.MouseEvent) {
-    // console.log('Document.tsx getNewPdfItem called')
-    e.preventDefault();
-    const {pageNumber} = this.state;
-    const idx = Number(e.currentTarget.getAttribute('data-index')) + 1;
-    
-    // $('li.thumbnailList').find('canvas').css('opacity', 0.7);
-    // $(e.currentTarget).find('canvas').css('opacity', 1);
-    
-    this.setState({pageNumber: idx});
-  }
-
 
 
   private checkSelectedValue(): boolean {
@@ -267,8 +220,8 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     return false;
   }
 
+  // 마우스 위치에 새 입력박스 추가
   private newInputBox(type, mouseX, mouseY) {
-  // private addInputBox(type) {
     
     if(this.state.newInputBox) {
       return;
@@ -291,16 +244,16 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     
     let initBoxData;
     if(type === 'text') {
-      initBoxData = getInitTextBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
+      initBoxData = getInitTextBox(pageNumber, selectSignerIndex);
     }
     else if(type === 'sign') {
-      initBoxData = getInitSignBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
+      initBoxData = getInitSignBox(pageNumber, selectSignerIndex);
     }
     else if(type === 'checkbox') {
-      initBoxData = getInitCheckBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
+      initBoxData = getInitCheckBox(pageNumber, selectSignerIndex);
     }
     else if(type === 'radio') {
-      initBoxData = getInitRadioBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
+      initBoxData = getInitRadioBox(pageNumber, selectSignerIndex);
     }
 
     
@@ -322,18 +275,17 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     // });
   }
 
-  private newInputBox2(type, e) {
+  // 새 입력박스를 pdf 위에 바로배치
+  private newInputBox2(type) {
       
-    if(this.state.newInputBox) {
-      return;
-    }
-
     const {
       boxDataList,
       pageNumber,
       selectSignerIndex,
       scale,
     } = this.state;
+
+    // 참여자 선택여부 확인
     const isSelected = this.checkSelectedValue();
     if (!isSelected) {
       return false;
@@ -346,40 +298,27 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     
     let initBoxData;
     if(type === 'text') {
-      initBoxData = getInitTextBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
+      initBoxData = getInitTextBox(pageNumber, selectSignerIndex);
     }
     else if(type === 'sign') {
-      initBoxData = getInitSignBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
+      initBoxData = getInitSignBox(pageNumber, selectSignerIndex);
     }
     else if(type === 'checkbox') {
-      initBoxData = getInitCheckBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
+      initBoxData = getInitCheckBox(pageNumber, selectSignerIndex);
     }
     else if(type === 'radio') {
-      initBoxData = getInitRadioBox(pageNumber, selectSignerIndex, copyBoxDataList.length);
+      initBoxData = getInitRadioBox(pageNumber, selectSignerIndex);
     }
 
-    
-    // let left = e.pageX - $(e.currentTarget).offset().left;
-    // let top = e.pageY - $(e.currentTarget).offset().top;
     let width = initBoxData.width;
     let height = initBoxData.height;
-    // let left = $('.page-wrapper').width() / scale - width - 20; // right
-    let left = $('.page-wrapper').width() / 2 / scale - width / 2; // center
-    let top = $('.editor-view').scrollTop() / scale + 150;
+    let left = $('.page-wrapper').width() / 2 / scale - width / 2; // 가로 : pdf 페이지 가운데 배치
+    let top = $('.editor-view').scrollTop() / scale + 150; // 세로 : 현재 보이는 화면위치에 배치
     
-    console.log(left, top, width, height)
-
     initBoxData.left = left;
     initBoxData.top = top;
     initBoxData.width = width;
     initBoxData.height = height;
-
-    console.log(initBoxData)
-
-    // this.setState( {
-    //   newInputBox: initBoxData
-    // })
-
 
     copyBoxDataList.push(initBoxData);
 
@@ -429,27 +368,10 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     this.setState({selectSignerIndex});
   }
 
-  private scaleMarker(scale) {
-    const {boxDataList} = this.state;
-    const copyBoxDataList = deepCopy(boxDataList);
-    const newBoxDataList = copyBoxDataList.map((data, boxIndex) => {
-        return {
-          ...data,
-          width: data.width * scale,
-          height: data.height * scale,
-          top: data.top * scale,
-          left: data.left * scale
-        }
-      }
-    );
-
-    return newBoxDataList;
-  }
-
   private convertDataForAPI(boxDataList) {
     const {
       signerList,
-    } = this.state;
+    } = this.props;
 
 
     const textAreaList = boxDataList.filter(({ type }) => type === 'text');
@@ -465,7 +387,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         height
       } = data;
 
-      // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
       const x = left;
       const y = top;
       const w = width;
@@ -497,7 +418,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         height
       } = data;
 
-      // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
       const x = left;
       const y = top;
       const w = width;
@@ -526,7 +446,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         height
       } = data;
 
-      // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
       const x = left;
       const y = top;
       const w = width;
@@ -555,7 +474,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         height
       } = data;
 
-      // const { x, y, w, h } = convertView(pageWidth, pageHeight, left, top, width, height);
       const x = left;
       const y = top;
       const w = width;
@@ -579,10 +497,29 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     return [].concat(textAreaListFormatted, signatureAreaListFormatted, checkboxListFormatted, radioListFormatted);
   }
 
+  validationCheck = () => {
+    // 모든 서명자의 서명박스가 배치됐는지 확인
+    const {boxDataList} = this.state;
+    const {signerList} = this.props;
+    let set = new Set();
+    boxDataList.forEach((boxData) => {
+      if(boxData.type === 'sign') {
+        set.add(boxData.signerIndex);
+      }
+    });
+    // return 서명박스가 배치된 서명자수 == 서명자수
+    return set.size === signerList.length;
+  }
+
   // 저장처리
   private updateDocumentInfo() {
-    const {documentNo, docName, fileName, documentUrl, userId, signerList} = this.props;
+    const {documentNo, docName, fileName, documentUrl, userId} = this.props;
     const {boxDataList} = this.state;
+
+    if(!this.validationCheck()) {
+      alert('모든 계약참여자의 서명위치를 지정해야 합니다.');
+      return;
+    }
 
     // console.log('boaDataList', boxDataList)
     const dataList = this.convertDataForAPI(boxDataList); 
@@ -634,17 +571,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     return result;
   }
 
-  private updateRightContentZoom(zoom) {
-    const {zoom: prevScale} = this.state;
-    const nextScale = zoom;
-    const ratio = nextScale / prevScale;
-    // console.log(prevScale, nextScale, ratio)
-    const newBoxDataList = this.scaleMarker(ratio);
-    this.setState({
-      zoom,
-      boxDataList: newBoxDataList
-    });
-  }
 
 
   onSelectionChange = (e) => {
@@ -652,6 +578,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     this.setSelectedIndex({index});
   }
 
+  // 새 입력박스가 pdf 위에 배치전 마우스 커서를 따라가도록 하는 이벤트 핸들러
   handleMouseMove = (e: React.MouseEvent) => {
     const {newInputBox} = this.state;
     if(!newInputBox) {
@@ -677,13 +604,13 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     
     inputs.forEach((input, index) => {      
       if(input.inputType == 'text'){
-        const initBoxData = roadInitTextBox(input, index);
+        const initBoxData = roadInitTextBox(input);
         copyBoxDataList.push(initBoxData);
       }else if(input.inputType == 'sign'){
-        const initBoxData = roadInitSignBox(input, index);
+        const initBoxData = roadInitSignBox(input);
         copyBoxDataList.push(initBoxData);
       }else if(input.inputType == 'checkbox'){
-        const initBoxData = roadInitCheckBox(input, index);
+        const initBoxData = roadInitCheckBox(input);
         copyBoxDataList.push(initBoxData);
       }
     });
@@ -696,7 +623,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   zoomIn = (e) => {
     this.setState({
       scale: this.state.scale * 1.1,
-    }, () => console.log(this.state.scale))
+    })
   }
   zoomOut = (e) => {
     this.setState({
@@ -708,6 +635,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     this.setState({scale})
   }
 
+  // 마우스 커서 위치에 새 입력박스가 있는 상태에서 pdf 위를 클릭했을때 클릭위치에 입력박스 배치
   onInutboxAreaMouseUp = (e: React.MouseEvent) => {
     const {newInputBox, scale, pageNumber} = this.state;
     if(!newInputBox) {
@@ -743,12 +671,12 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
     const {
       pageNumber,
-      numPages,
       boxDataList,
-      signerList,
       scale,
       selectSignerIndex
     } = this.state;
+
+    const { signerList } = this.props;
 
 
     const curPageInputBox = boxDataList.filter(box => box.page === pageNumber);
@@ -759,20 +687,20 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         <div className='editor'
           onMouseMove={this.handleMouseMove}
         >
-          {
+          {/* { 
+          // 마우스로 끌어서 입력박스 배치시 사용
           this.state.newInputBox &&
           <NewInputbox
             inputbox={this.state.newInputBox}
             users={signerList}
             scale={scale}
           />
-          }
+          } */}
           <div className='header'>
             <ul className="zoom">
               <li><a onClick={(e) => this.zoomIn(e)}><span className="icon-zoomin"></span></a></li>
               <li><a onClick={(e) => this.zoomOut(e)}><span className="icon-zoomout"></span></a></li>
             </ul>
-            {/* <ZoomController updateRightContentZoom={this.updateRightContentZoom} zoom={scale}/> */}
           </div>
           <div className="edit-body">
             <PdfViewer documentUrl={this.props.documentUrl} scale={scale} onPageChange={this.onPageChange} pageNumber={pageNumber}
@@ -789,86 +717,6 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
                         />
             </PdfViewer>
 
-            {/* <div className="thumbnail">
-
-              <ul>
-                      <Document
-                        file={this.props.documentUrl}
-                      >
-                        {Array.from(
-                          new Array(numPages),
-                          (el, index) => (
-                            <li 
-                              key={index}
-                              className={pageNumber === index+1  ? 'on' : undefined}
-                            >
-                              <a href="#" data-index={index} onClick={this.getNewPdfItem}>
-                                <Page
-                                  key={`page_${index + 1}`}
-                                  pageNumber={index + 1}
-                                  renderMode='canvas'
-                                  renderTextLayer={false}
-                                  renderAnnotationLayer={false}
-                                  // onLoadSuccess={page => console.log(`thumbnail page-${page.pageNumber} loaded`)}
-                                  onRenderSuccess={this.onThumbnailRenderSuccess}
-                                  scale={0.22}
-                                />
-                              </a>
-                            </li>
-                          ),
-                        )}
-                      </Document>
-              </ul>
-
-            </div>
-            <div className="editor-view">
-              
-              <Document
-                className='document-wrapper'
-                file={this.props.documentUrl}
-                onLoadSuccess={this.onDocumentLoadSuccess}
-              >
-                <Page 
-                  className='page-wrapper'
-                  pageNumber={pageNumber}
-                  renderTextLayer={false}
-                  renderAnnotationLayer={false}
-                  scale={scale}
-                  onLoadSuccess={this.onPageLoadSuccess}
-                  onRenderSuccess={this.onPageRenderSuccess}
-                >
-                  <div
-                    className="inputbox-area"
-                    style={{
-                      // width: this.state.pageWidth,
-                      // height: this.state.pageHeight,
-                      width: '100%',
-                      height: '100%',
-                      position: 'absolute',
-                      // marginTop: '10px',
-                      // paddingBottom: '10px',
-                      zIndex: 10,
-                      top: 0,
-                      // left: '50%',
-                      // transform: 'translateX(-50%)',
-                    }}
-                    // onMouseMove={this.documentMouseMove}
-                    // onMouseUp={this.updateEventObjectToNull}
-                    onMouseUp={this.handleMouseUp}
-                  >
-                        <ContainerForBoxes
-                          updateInputBox={this.updateInputBox}
-                          boxDataList={curPageInputBox}
-                          users={signerList}
-                          page={pageNumber}
-                          deleteInputBox={this.deleteInputBox}
-                          scale={scale}
-                        />
-                  </div>
-                </Page>
-              </Document>
-
-            </div> */}
             <div className="edit-pallet">
               <div className="input-select secondary">
                 <select
@@ -886,14 +734,18 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
                 </select>
               </div>
               <ul>
+                {/* 새 입력박스를 pdf 위로 끌어다 배치 */}
                 {/* <li><a onClick={e => this.newInputBox('text', e.pageX, e.pageY)}><span className="icon-insert-txt"></span>텍스트 입력</a></li>
                 <li><a onClick={e => this.newInputBox('sign', e.pageX, e.pageY)}><span className="icon-stamp"></span>서명 (Stamp)</a></li>
                 <li><a onClick={e => this.newInputBox('checkbox', e.pageX, e.pageY)}><span className="icon-checklist"></span>체크항목</a></li>
                 <li><a onClick={e => this.newInputBox('radio', e.pageX, e.pageY)}><span className="icon-selected-list"></span>선택항목</a></li> */}
-                <li><a onClick={e => this.newInputBox2('text', e)}><span className="icon-insert-txt"></span>텍스트 입력</a></li>
-                <li><a onClick={e => this.newInputBox2('sign', e)}><span className="icon-stamp"></span>서명 (Stamp)</a></li>
-                <li><a onClick={e => this.newInputBox2('checkbox', e)}><span className="icon-checklist"></span>체크항목</a></li>
-                <li><a onClick={e => this.newInputBox2('radio', e)}><span className="icon-selected-list"></span>선택항목</a></li>
+                
+                {/* 새 입력박스 pdf 위에 즉시배치 */}
+                <li><a onClick={e => this.newInputBox2('text')}><span className="icon-insert-txt"></span>텍스트 입력</a></li>
+                <li><a onClick={e => this.newInputBox2('sign')}><span className="icon-stamp"></span>서명 (Stamp)</a></li>
+                <li><a onClick={e => this.newInputBox2('checkbox')}><span className="icon-checklist"></span>체크항목</a></li>
+                <li><a onClick={e => this.newInputBox2('radio')}><span className="icon-selected-list"></span>선택항목</a></li>
+                
                 {/* <li><a><span className="icon-memo"></span>메모 입력</a></li> */}
                 <li><a onClick={this.updateDocumentInfo}>저장</a></li>
               </ul>

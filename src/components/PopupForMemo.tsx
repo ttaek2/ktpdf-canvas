@@ -19,16 +19,10 @@ class PopupForMemo extends React.Component<IPopup, React.ComponentState> {
   }
 
   render() {
-    const {
-      children,
-    } = this.props;
 
     return (
       <React.Fragment>
         <div style={{
-          position: 'relative',
-          zIndex: 11,
-          // height: '20px',
           padding: '10px',
         }}>
         {/* <IconContext.Provider value={closeicon}>

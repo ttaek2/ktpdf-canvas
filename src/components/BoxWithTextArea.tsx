@@ -74,11 +74,11 @@ class BoxWithTextArea extends Component<Props, any> {
     const { backgroundColor } = users[signerIndex];
 
     return (
-        <Rnd
+        <Rnd // 리사이즈 및 드래그 모듈
           size={{ width: width,  height: height }}
           position={{ x: left, y: top }}
-          onDragStop={(e, d) => { updateInputBox(boxIndex, {left: d.x / scale, top: d.y / scale}) }}
-          onResizeStop={(e, direction, ref, delta, position) => {
+          onDragStop={(e, d) => { updateInputBox(boxIndex, {left: d.x / scale, top: d.y / scale}) }} // 객체이동 드래그 멈춤시 위치 업데이트
+          onResizeStop={(e, direction, ref, delta, position) => { // 크기조절 드래그 멈춤시 크기 업데이트
               updateInputBox(boxIndex, {
                   width: (width + delta.width) / scale,
                   height: (height + delta.height) / scale,
@@ -94,11 +94,13 @@ class BoxWithTextArea extends Component<Props, any> {
           //     height
           //   });
           // }}
+
+          // 리사이징 허용여부 - 우측하단만 true로함
           enableResizing={{ top:false, right:false, bottom:false, left:false, topRight:false, bottomRight:true, bottomLeft:false, topLeft:false }}
           enableUserSelectHack={false}
-          bounds='parent'
+          bounds='parent' // 부모 요소 안에서만 이동 및 리사이징 가능
           dragHandleClassName={`textMarker-${boxIndex}`}
-          resizeHandleStyles={{
+          resizeHandleStyles={{ // 우측하단의 리사이즈 핸들 스타일
             bottomRight: {
               position: 'absolute',
               width: '10px',
@@ -110,9 +112,8 @@ class BoxWithTextArea extends Component<Props, any> {
               cursor: 'se-resize',
             }
           }}
-          // style={{zIndex: 10000}}
-          minHeight={fontSize * scale * 1.2}
-          minWidth={minWidth * scale}
+          minHeight={fontSize * scale * 1.2} // 최소 세로길이
+          minWidth={minWidth * scale} // 최소 가로길이
           // resizeGrid={[1, fontSize * scale * 1.2]}
         >
           <Popup
@@ -137,59 +138,6 @@ class BoxWithTextArea extends Component<Props, any> {
             scale={scale}
           />
 
-          {/* <div
-            className='inputbox-header' 
-            style={{
-              width: '100%',
-              height: '18px',
-              position: 'absolute',
-              top: '-17px',
-              border: `1px solid ${backgroundColor}`,
-              backgroundColor: `${backgroundColor}`,
-              color: 'white',
-              borderRadius: '10px 10px 0 0',
-              textAlign: 'right',
-              display: 'none',
-            }}
-          >
-            <span
-              onClick={this.onCloseBtnClick}  
-            >
-              <IconContext.Provider value={closeicon}>
-                <IoMdCloseCircle  />
-              </IconContext.Provider>
-            </span>
-          </div>
-
-          <div
-            className={`textbox-${boxIndex}`}
-            style={{width: '100%', height: '100%'}}
-            onMouseOver={this.onMouseOver}
-            // onMouseLeave={this.onMouseLeave}
-          >
-            <textarea
-              // disabled={false}
-              data-number={boxIndex}
-              data-type={type}
-              data-page={page}
-            
-              style={{
-                width: '100%',
-                height: '100%',
-                fontFamily: fontFamily,
-                fontSize: fontSize,
-                resize: 'none',
-                boxSizing: 'border-box',
-                backgroundColor: '#fff',
-                opacity: 0.7,
-                border: `1px solid ${backgroundColor}`,
-              }}
-              placeholder="텍스트 입력란"
-              onDoubleClick={this.togglePopup}
-              
-            />
-            
-          </div> */}
         </Rnd>
     );
   }

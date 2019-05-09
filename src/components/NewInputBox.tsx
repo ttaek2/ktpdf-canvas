@@ -5,7 +5,6 @@ import CheckboxMarker from './CheckboxMarker';
 import RadioMarker from './RadioMarker';
 import SignatureMarker from './SignatureMarker';
 import TextMarker from './TextMarker';
-import { Input } from 'src/interface/Input';
 
 interface Props {
   inputbox: InputBox;
@@ -57,7 +56,7 @@ export default class NewInputbox extends Component<Props, null> {
                     users={users}
                     updateInputBox={undefined}
                     deleteInputBox={undefined}
-                    className={`new-text-marker`}
+                    className={`new-signature-marker`}
                 />
             }
 
@@ -67,7 +66,7 @@ export default class NewInputbox extends Component<Props, null> {
                     users={users}
                     updateInputBox={undefined}
                     deleteInputBox={undefined}
-                    className={`new-text-marker`}
+                    className={`new-checkbox-marker`}
                 />
             }
 
@@ -77,7 +76,7 @@ export default class NewInputbox extends Component<Props, null> {
                     users={users}
                     updateInputBox={undefined}
                     deleteInputBox={undefined}
-                    className={`new-text-marker`}
+                    className={`new-radio-marker`}
                     width={inputbox.width}
                     height={inputbox.height}
                 />

@@ -9,6 +9,7 @@ interface IBoxForSignatureProps {
   boxIndex: number;
   editable: boolean;
   scale: number;
+  focused: boolean;
 }
 
 class PlainBoxForSignature extends React.Component<IBoxForSignatureProps, React.ComponentState> {
@@ -37,14 +38,14 @@ class PlainBoxForSignature extends React.Component<IBoxForSignatureProps, React.
       signUrl,
     } = this.props.input;
 
-    const {editable, scale} = this.props;
+    const {editable, scale, focused} = this.props;
 
     x *= scale;
     y *= scale;
     w *= scale;
     h *= scale;
 
-    const nonEditableStyle = {
+    const nonEditableStyle: React.CSSProperties = {
       position: 'absolute',
       left: x,
       top: y,
@@ -84,6 +85,7 @@ class PlainBoxForSignature extends React.Component<IBoxForSignatureProps, React.
       <div
         style={editable ? editableStyle : nonEditableStyle}
         onClick={editable ? this.showSignatureLayer : this.doNothing}
+        className={focused ? 'focused-input' : undefined}
       >
         {signUrl
           ? <img

@@ -80,6 +80,9 @@
         box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         pointer-events: none;	
     }
+    .__resizable_base__ {
+        top: 0;
+    }
 }
 @media screen and (max-width: 1000px) {
     .service {
@@ -169,19 +172,6 @@
     top: 0;
 }
   
-/* .editor-view .memo-header::before {
-    content: "";
-    display: inline-block;
-    position: absolute;
-    left: -1.25rem;
-    top: 0.625rem;
-    width: 1.875rem;
-    height: 1.25rem;
-    box-sizing: border-box;
-    border-right: 1.875rem solid black;
-    border-top: 0.625rem solid rgba(0, 0, 0, 0);
-    border-bottom: 0.625rem solid rgba(0, 0, 0, 0);
-} */
 
 .service .editor .memo {
     width: 100%;
@@ -214,54 +204,14 @@
     /* border-radius: 10px 10px 0 0; */
 }
 
-
-.service .editor .memo-header::before {
-    /* content: "";
-    display: inline-block;
-    position: absolute;
-    left: -1.875rem;
-    top: 1.025rem;
-    width: 1.875rem;
-    height: 1.25rem;
-    box-sizing: border-box;
-    border-right: 1.875rem solid #FFF2AB;
-    border-top: 0.625rem solid rgba(0, 0, 0, 0);
-    border-bottom: 0.625rem solid rgba(0, 0, 0, 0);
-    z-index: -1; */
-
-    /* content: "";
-    position: absolute;
-    display: inline-block;
-    left: -0.5625rem;
-    top: 0.625rem;
-    width: calc(0.5625rem * 2);
-    height: calc(0.5rem * 2);
-    background-image: url(../images/ballon-tail-white.png);
-    background-size: contain;
-    background-repeat: no-repeat; */
-}
-.service .editor .memo-header::after {
-    /* content: "";
-    display: inline-block;
-    position: absolute;
-    left: -1.675rem;
-    top: 1.025rem;
-    width: 1.875rem;
-    height: 1.25rem;
-    box-sizing: border-box;
-    border-right: 1.8rem solid white;
-    border-top: 0.6rem solid rgba(0, 0, 0, 0);
-    border-bottom: 0.6rem solid rgba(0, 0, 0, 0);
-    z-index: 1; */
-
-    /* content: "";
-    position: absolute;
-    display: inline-block;
-    left: -0.5625rem;
-    top: 0.625rem;
-    width: calc(0.5625rem * 2);
-    height: calc(0.5rem * 2);
-    background-image: url(../images/ballon-tail-white.png);
-    background-size: contain;
-    background-repeat: no-repeat; */
+.service .editor .focused-input {
+    outline: none;
+    /* border-color: #9ecaed;
+    box-shadow: 0 0 15px #9ecaed; */
+    /* border-color: #2cbbb6;
+    box-shadow: 0 0 15px  #2cbbb6; */
+    border-color: #FF4136;
+    box-shadow: 0 0 15px  #FF4136;
+    /* border-color: #FF851B;
+    box-shadow: 0 0 15px  #FF851B; */
 }

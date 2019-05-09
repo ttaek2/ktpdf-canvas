@@ -11,6 +11,7 @@ interface IBoxForTextAreaProps {
   editable: boolean;
   updateInputBox: (boxIndex: number, update: object) => void;
   deleteInputBox: (index: number) => void;
+  className: string;
   scale: number;
 }
 
@@ -136,6 +137,7 @@ export default class MemoMarker extends React.Component<IBoxForTextAreaProps, Re
     return (
       <div style={{width: '100%', height: '100%'}} 
         // onMouseLeave={this.onMouseLeave}
+        className={this.props.className}
       >
         <span
           style={ps}
