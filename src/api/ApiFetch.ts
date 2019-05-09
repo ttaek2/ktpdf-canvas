@@ -8,7 +8,7 @@ export default class ApiFetch {
 
   constructor(url: string, data = null, config = {}) {
 
-    const urlWithDomain = `${apiPath.DOMAIN.HOSTNAME}:${apiPath.DOMAIN.PORT}${url}`;
+    const urlWithDomain = `${apiPath.DOMAIN.HOSTNAME}:${apiPath.DOMAIN.PORT}${url}`;    
 
     this.url = urlWithDomain;
     this.data = data;

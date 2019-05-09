@@ -193,7 +193,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     // console.log(this.state.inputs)
 
     // 포탈에서 넘어온 해시값
-    const userhash = strHash;    
+    const userHash = strHash?strHash:"hashvaluetest";
     // const userHash = 'testhash1234';
     
     const { documentNo } = this.props;
@@ -575,7 +575,7 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
               <ul>
                 {/* <li><a onClick={this.newMemo}><span className="icon-memo"></span>메모 입력</a></li> */}
                 <li><a onClick={this.newMemo2}><span className="icon-memo"></span>메모 입력</a></li>
-                <li><a onClick={this.props.completePage ? this.saveCompleteInfo : this.saveContractInfo}>저장</a></li>
+                <li><a onClick={this.props.completePage ? this.saveCompleteInfo : () => this.saveContractInfo}>저장</a></li>
               </ul>
             </div>
           

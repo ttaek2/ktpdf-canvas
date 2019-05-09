@@ -199,7 +199,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   }
 
   componentDidMount() {
-    console.log("Document.tsx ============================== componentDidMount ");
+    // console.log("Document.tsx ============================== componentDidMount ");
     this.initBoxData();
 
     // tmpDocId를 통해 조회한 객체가 있다면 표시
@@ -409,7 +409,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
   }
 
   private updateInputBox(boxIndex: number, update: object) {
-    console.log('Document.tsx updateInputBox');
+    // console.log('Document.tsx updateInputBox');
     const {boxDataList} = this.state;
     const newBoxDataList = boxDataList.map(box => {
       if(box.boxIndex === boxIndex) {
@@ -573,8 +573,8 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
       }
     });
 
-    console.log('radioListFormatted ========================= ')
-    console.log(radioListFormatted)
+    // console.log('radioListFormatted ========================= ')
+    // console.log(radioListFormatted)
 
     return [].concat(textAreaListFormatted, signatureAreaListFormatted, checkboxListFormatted, radioListFormatted);
   }
@@ -589,7 +589,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     
     // 유저리스트의 싸인박스가 있는지 체크
     // console.log(signerList);
-    console.log('dataList', dataList);
+    // console.log('dataList', dataList);
     
     // 싸인 객체만 추출
     const signObj = dataList.filter(function(item){
@@ -713,7 +713,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
     if(!newInputBox) {
       return;
     }
-    console.log('drop the beat!!')
+    // console.log('drop the beat!!')
     let left = e.pageX - $(e.currentTarget).offset().left;
     let top = e.pageY - $(e.currentTarget).offset().top;
     let width = newInputBox.width;
@@ -752,7 +752,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
 
 
     const curPageInputBox = boxDataList.filter(box => box.page === pageNumber);
-    console.log('curPageInputBox = ', curPageInputBox)
+    // console.log('curPageInputBox = ', curPageInputBox)
 
     return (
       <div className="container service">
