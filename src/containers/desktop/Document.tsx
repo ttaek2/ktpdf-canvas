@@ -149,6 +149,23 @@ const roadInitCheckBox = (input): CheckBox => {
   }
 }
 
+const roadInitRadio = (input): RadioBox => {
+  return {
+    type: 'radio',
+    top: input.y,
+    left: input.x,    
+    width: input.w,
+    height: input.h,
+    signerIndex:0,  // 생성자꺼...
+    page: input.page,
+    boxIndex: boxCnt++,
+    minWidth: defaultData.radioboxMinWidth,
+    minHeight: undefined,
+    maxWidth: undefined,
+    maxHeight: undefined,
+  }
+}
+
 
 
 
@@ -611,6 +628,9 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         copyBoxDataList.push(initBoxData);
       }else if(input.inputType == 'checkbox'){
         const initBoxData = roadInitCheckBox(input);
+        copyBoxDataList.push(initBoxData);
+      }else if(input.inputType == 'radio'){
+        const initBoxData = roadInitRadio(input);
         copyBoxDataList.push(initBoxData);
       }
     });
