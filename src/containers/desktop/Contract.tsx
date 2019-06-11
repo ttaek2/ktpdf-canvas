@@ -189,8 +189,8 @@ class ContractContainer extends React.Component<IContractProps, React.ComponentS
     }
 
     // 포탈에서 넘어온 해시값
-    const userHash = strHash?strHash:"hashvaluetest";
-    // const userHash = 'testhash1234';
+    //const userHash = strHash?strHash:"hashvaluetest";
+     const userHash = 'testhash1234';
     
     const { documentNo } = this.props;
     const { inputs, signer } = this.state;

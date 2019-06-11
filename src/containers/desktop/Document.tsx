@@ -94,6 +94,7 @@ const getInitRadioBox = (page, signerIndex): RadioBox => {
     minHeight: undefined,
     maxWidth: undefined,
     maxHeight: undefined,
+    
   }
 }
 const roadInitTextBox = (input): TextBox => {
@@ -488,7 +489,7 @@ class DocumentContainer extends React.Component<IDocumentProps, React.ComponentS
         page,
         signerIndex,
         width,
-        height
+        height,
       } = data;
 
       const x = left;
