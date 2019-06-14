@@ -127,6 +127,7 @@ export default class TextMarker extends Component<Props, any> {
             onMouseOver={this.onMouseOver}
             // onMouseLeave={this.onMouseLeave}
           >
+            <input type="checkbox" name='aaaa'/>필수
             <textarea
             //   disabled={true}
               data-number={boxIndex}
