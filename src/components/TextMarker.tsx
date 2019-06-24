@@ -9,6 +9,7 @@ const defaultZIndex = 20;
 const oo = 987654321;
 
 interface Props {
+  boxIndex: number;
   boxData: TextBox;
   users: Array<ISigner>;
   updateInputBox: (boxIndex: number, update: object) => void;
@@ -16,17 +17,24 @@ interface Props {
   onDoubleClick: () => void;
   className: string;
   scale: number;
+  requiredYn: string;
+  checked: boolean;
 }
 
 export default class TextMarker extends Component<Props, any> {
 
   constructor(props) {
     super(props);
-
+    const { boxData } = this.props;
+    console.log("boxData.requiredYn: "+boxData.requiredYn);
     this.state = {
       zIndex: defaultZIndex,
       showCloseBtn: false,
+      checked: boxData.requiredYn === "Y" ? true : false,
+      //checkedValue: 'Y',
     };
+
+    console.log("TextMarker constructor!!!");
   }
 
 
@@ -66,6 +74,36 @@ export default class TextMarker extends Component<Props, any> {
     }
   }
 
+  handleCheckBoxChange = (e) => {
+    const { target: { checked } } = e;
+    this.setState({ checked });
+    console.log("체크여부: "+checked);
+
+    
+    //const { checkedValue  } = this.state;
+    const { boxData } = this.props;
+
+    if(checked) {
+      console.log("check: ");
+      //updateInputBox(boxIndex, {requiredYn: 'Y'} );
+      boxData.requiredYn = "Y";
+      //this.setState({ checkedValue: 'Y' });
+    } else {
+      console.log("notcheck: ");
+      //updateInputBox(boxIndex, {requiredYn: 'N'} );
+      boxData.requiredYn = "N";
+      //this.setState({ checkedValue: 'N' });
+    }
+
+    boxData.checked = checked;
+    
+    //console.log("checkedValue: "+checkedValue);
+//    const value = e.target;
+    //const { updateInputBox, boxIndex, boxData } = this.props;
+    //updateInputBox(boxIndex, {requiredYn: checkedValue} );
+    //boxData.requiredYn = checkedValue;
+  }
+
   render() {
     const {
       page,
@@ -74,6 +112,8 @@ export default class TextMarker extends Component<Props, any> {
       signerIndex,
       fontFamily,
       fontSize,
+      requiredYn,
+      checked,
     } = this.props.boxData;
 
     const {
@@ -127,7 +167,6 @@ export default class TextMarker extends Component<Props, any> {
             onMouseOver={this.onMouseOver}
             // onMouseLeave={this.onMouseLeave}
           >
-            <input type="checkbox" name='aaaa'/>필수
             <textarea
             //   disabled={true}
               data-number={boxIndex}
@@ -161,6 +200,28 @@ export default class TextMarker extends Component<Props, any> {
               // onBeforeInput={this.onBeforeInput}
               // onInput={this.onInput}
             />
+            <div  
+              style={{
+                position: 'absolute',
+                left: '-50px',
+                top: '0px',
+                fontFamily: fontFamily,
+                // fontSize: `${fontSize * scale}px`,
+                // resize: 'none',
+                // boxSizing: 'border-box',
+                // backgroundColor: '#fff',
+                // opacity: 0.7,
+                // border: `1px solid ${backgroundColor}`,
+                // overflow: 'hidden',
+                // padding: 0,
+                // margin: 0,
+            }}>
+              <input type="checkbox" onChange={this.handleCheckBoxChange}
+                checked={this.state.checked} title="필수여부"
+                //value={this.state.checkedValue}
+                
+              />필수
+            </div>
             {/* {showCloseBtn && 
             // {true && 
               <div 
